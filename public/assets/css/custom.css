@@ -1,0 +1,23 @@
+@import url('https://cdn-uicons.flaticon.com/2.4.2/uicons-solid-straight/css/uicons-solid-straight.css');
+
+.bg-primary,.btn-primary  {
+    background-color: blue !important;
+}
+
+.sidenav .navbar-brand {
+    justify-content: center;
+    display: flex;
+}
+
+.sidenav .navbar-brand img {
+    width: 80px !important;
+    max-height: fit-content;
+}
+
+
+
+@media (min-width: 992px) {
+    :not(.main-content) .navbar .dropdown .dropdown-menu {
+        top: 0rem !important;
+    }
+}
