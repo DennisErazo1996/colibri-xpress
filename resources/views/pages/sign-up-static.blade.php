@@ -4,7 +4,7 @@
 <nav class="navbar navbar-expand-lg position-absolute top-0 z-index-3 w-100 shadow-none my-3 navbar-transparent mt-4">
     <div class="container">
         <a class="navbar-brand font-weight-bolder ms-lg-0 ms-3 text-white" href="{{ route('home') }}">
-            Argon Dashboard 2 Laravel
+            <img id="logo-colibri-xpress" src="{{asset('img/logo-colibri-xpress.png')}}" alt="">
         </a>
         <button class="navbar-toggler shadow-none ms-2" type="button" data-bs-toggle="collapse"
             data-bs-target="#navigation" aria-controls="navigation" aria-expanded="false"
@@ -55,12 +55,12 @@
 <!-- End Navbar -->
 <main class="main-content  mt-0">
     <div class="page-header align-items-start min-vh-50 pt-5 pb-11 m-3 border-radius-lg"
-        style="background-image: url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/signup-cover.jpg'); background-position: top;">
+        style="background-image: url('https://images.pexels.com/photos/6170458/pexels-photo-6170458.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); background-position: top;">
         <span class="mask bg-gradient-dark opacity-6"></span>
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-5 text-center mx-auto">
-                    <h1 class="text-white mb-2 mt-5">Welcome!</h1>
+                    <h1 class="text-white mb-2 mt-5">Crear casilleto</h1>
                     <p class="text-lead text-white">Use these awesome forms to login or create new account in your
                         project for free.</p>
                 </div>

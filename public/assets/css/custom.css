@@ -19,6 +19,14 @@ img#logo-colibri-xpress{
     width: 180px !important;
 }
 
+img#logo-colibri-xpress-small{
+    width: 80px !important;
+}
+
+.blur{
+    background-color: white !important;
+}
+
 
 .sidenav .navbar-brand {
     justify-content: center;
