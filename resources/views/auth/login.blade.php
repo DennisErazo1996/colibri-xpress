@@ -70,6 +70,6 @@
         </section>
     </main>
     <footer>
-        &copy; Todos los derechos reservados.Colibrí Xpress.
+        &copy; Todos los derechos reservados. Colibrí Xpress.
     </footer>
 @endsection

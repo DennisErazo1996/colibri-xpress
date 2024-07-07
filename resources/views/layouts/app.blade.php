@@ -20,6 +20,11 @@
     <!-- CSS Files -->
     <link id="pagestyle" href="assets/css/argon-dashboard.css" rel="stylesheet" />
     <link  href="assets/css/custom.css" rel="stylesheet" />
+
+    <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.0.8/datatables.min.css" rel="stylesheet">
+ 
+
+    
 </head>
 
 <body class="{{ $class ?? '' }}">
@@ -48,6 +53,8 @@
     @endauth
 
     <!--   Core JS Files   -->
+
+    <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.0.8/datatables.min.js"></script>
     <script src="assets/js/core/popper.min.js"></script>
     <script src="assets/js/core/bootstrap.min.js"></script>
     <script src="assets/js/plugins/perfect-scrollbar.min.js"></script>

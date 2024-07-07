@@ -1,4 +1,5 @@
 @import url('https://cdn-uicons.flaticon.com/2.4.2/uicons-solid-straight/css/uicons-solid-straight.css');
+@import url('https://cdn-uicons.flaticon.com/2.4.2/uicons-solid-rounded/css/uicons-solid-rounded.css');
 
 .bg-primary,.btn-primary  {
     background: rgb(54,9,121);
@@ -13,6 +14,10 @@ span.bg-gradient-primary{
 .text-gradient.text-primary{
     /* color: rgb(37, 9, 121) !important; */
     background-image: linear-gradient(310deg, #111fa4 0%, #621198 100%) !important;
+}
+
+.text-primary{
+    color: rgba(31,9,121,1) !important;
 }
 
 img#logo-colibri-xpress{
@@ -36,6 +41,20 @@ img#logo-colibri-xpress-small{
 .sidenav .navbar-brand img {
     width: 80px !important;
     max-height: fit-content;
+}
+
+div.card{
+    padding: 15px !important;
+}
+
+.page-item.active .page-link{
+    background-color:  rgba(31,9,121,1) !important;
+    border: none !important;
+}
+
+.form-control {
+    border: none !important;
+    background-color: #eef2ff !important;
 }
 
 footer{
