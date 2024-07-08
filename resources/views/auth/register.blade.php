@@ -85,22 +85,22 @@
                             <form method="POST" action="{{ route('register.perform') }}">
                                 @csrf
                                 <div class="flex flex-row">
-                                    <div class="flex flex-col mb-3">
+                                    <div class="col-md-6">
                                         <input type="text" name="username" class="form-control" placeholder="Username" aria-label="Name" value="{{ old('username') }}" >
                                         @error('username') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
                                         
                                     </div>
-                                    <div class="flex flex-col mb-3">
+                                    <div class="col-md-6">
                                         <input type="number" name="identity" class="form-control" placeholder="Identidad" aria-label="Identity" value="{{ old('identity') }}" >
                                         @error('username') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
                                         
                                     </div>
-                                    <div class="flex flex-col mb-3">
+                                    <div class="col-md-6">
                                         <input type="email" name="email" class="form-control" placeholder="Email" aria-label="Email" value="{{ old('email') }}" >
                                         @error('email') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
                                     </div>
                                 </div>
-                                <div class="flex flex-col mb-3">
+                                <div class="col-md-6">
                                     <input type="password" name="password" class="form-control" placeholder="Password" aria-label="Password">
                                     @error('password') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
                                 </div>
@@ -113,7 +113,7 @@
                                     @error('terms') <p class='text-danger text-xs'> {{ $message }} </p> @enderror
                                 </div>
                                 <div class="text-center">
-                                    <button type="submit" class="btn bg-gradient-dark w-100 my-4 mb-2">Crear casillero</button>
+                                    <button type="submit" class="btn btn-primary w-100 my-4 mb-2">Crear casillero</button>
                                 </div>
                                 <p class="text-sm mt-3 mb-0">Ya cuentas con un casillero? <a href="{{ route('login') }}"
                                         class="text-dark font-weight-bolder">Iniciar sesión</a></p>
