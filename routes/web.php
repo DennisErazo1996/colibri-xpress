@@ -27,7 +27,7 @@ use App\Http\Controllers\ChangePassword;
             
 
 Route::get('/', function () {return redirect('/dashboard');})->middleware('auth');
-	Route::get('/register', [RegisterController::class, 'create'])->middleware('guest')->name('register');
+	Route::get('/crear-casillero', [RegisterController::class, 'create'])->middleware('guest')->name('crear-casillero');
 	Route::post('/register', [RegisterController::class, 'store'])->middleware('guest')->name('register.perform');
 	Route::get('/login', [LoginController::class, 'show'])->middleware('guest')->name('login');
 	Route::post('/login', [LoginController::class, 'login'])->middleware('guest')->name('login.perform');
@@ -45,6 +45,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/sign-in-static', [PageController::class, 'signin'])->name('sign-in-static');
 	Route::get('/sign-up-static', [PageController::class, 'signup'])->name('sign-up-static'); 
 	Route::get('/paquetes', [PageController::class, 'paquetes'])->name('paquetes'); 
+	
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 });

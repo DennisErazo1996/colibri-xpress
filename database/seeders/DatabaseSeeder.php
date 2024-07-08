@@ -15,6 +15,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $departamentos = [
+            ['nombre'=>'Olancho'],
+            ['nombre'=>'Catacamas'],
+        ];
+
         DB::table('users')->insert([
             'username' => 'derazo',
             'identity' => '0000000000000',
@@ -23,5 +28,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'derazo@colibrixpress.com',
             'password' => bcrypt('skillet1996')
         ]);
+
+        foreach($departamentos as $deptos){
+            DB::table('departamentos')->insert($deptos);
+        }
     }
 }

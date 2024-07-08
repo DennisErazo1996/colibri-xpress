@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    @include('layouts.navbars.guest.navbar')
+    {{-- @include('layouts.navbars.guest.navbar') --}}
     <main class="main-content  mt-0">
         <div class="page-header align-items-start min-vh-50 pt-5 pb-11 m-3 border-radius-lg"
             style="background-image: url('https://images.pexels.com/photos/7203788/pexels-photo-7203788.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); background-position: top;">
@@ -10,7 +10,8 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-5 text-center mx-auto">
                         <br>
-                        <h1 class="text-white mb-2 mt-5">Crear casillero</h1>
+                        <img id="logo-colibri-xpress" src="{{asset('img/logo-colibri-xpress-blanco.png')}}" alt="">
+                        <h1 class="text-white mb-2 mt-2">Crear casillero</h1>
                         <p class="text-lead text-white">Ingresa tus datos para empezar a recibir y enviar tus compras</p>
                     </div>
                 </div>
@@ -84,26 +85,52 @@
                         <div class="card-body">
                             <form method="POST" action="{{ route('register.perform') }}">
                                 @csrf
-                                <div class="flex flex-row">
+                                <div class="row">
                                     <div class="col-md-6">
-                                        <input type="text" name="username" class="form-control" placeholder="Username" aria-label="Name" value="{{ old('username') }}" >
-                                        @error('username') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
-                                        
+                                        <div class="form-group">
+                                            <input type="text" name="firstname" class="form-control" placeholder="Nombres" aria-label="Name" value="{{ old('firstname') }}" >
+                                          @error('firstname') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <input type="number" name="identity" class="form-control" placeholder="Identidad" aria-label="Identity" value="{{ old('identity') }}" >
-                                        @error('username') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
-                                        
+                                        <div class="form-group">
+                                            <input type="text" name="lastname" class="form-control" placeholder="Apellidos" aria-label="Lastname" value="{{ old('lastname') }}" >
+                                            @error('lastname') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <input type="email" name="email" class="form-control" placeholder="Email" aria-label="Email" value="{{ old('email') }}" >
-                                        @error('email') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
+                                        <div class="form-group">
+                                            <input type="number" name="identity" class="form-control" placeholder="Identidad" aria-label="Identity" value="{{ old('identity') }}" >
+                                            @error('username') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        {{-- <label for="FormControlSelect1">Example select</label> --}}
+                                        <select name="country" class="form-control" id="exampleFormControlSelect1" disabled>
+                                          <option selected>Honduras</option>                                          
+                                        </select>
+                                    </div>
+                                    
+                                    {{-- <div class="col-md-6">
+                                        <div class="form-group">
+                                            <input type="text" name="username" class="form-control" placeholder="Username" aria-label="Name" value="{{ old('username') }}" >
+                                          @error('username') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
+                                        </div>
+                                    </div> --}}
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <input type="email" name="email" class="form-control" placeholder="Correo electrónico" aria-label="Email" value="{{ old('email') }}" >
+                                            @error('email') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <input type="password" name="password" class="form-control" placeholder="Contraseña" aria-label="Password">
+                                             @error('password') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <input type="password" name="password" class="form-control" placeholder="Password" aria-label="Password">
-                                    @error('password') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
-                                </div>
+                               
                                 <div class="form-check form-check-info text-start">
                                     {{-- <input class="form-check-input" type="checkbox" name="terms" id="flexCheckDefault" >
                                     <label class="form-check-label" for="flexCheckDefault">
@@ -115,8 +142,8 @@
                                 <div class="text-center">
                                     <button type="submit" class="btn btn-primary w-100 my-4 mb-2">Crear casillero</button>
                                 </div>
-                                <p class="text-sm mt-3 mb-0">Ya cuentas con un casillero? <a href="{{ route('login') }}"
-                                        class="text-dark font-weight-bolder">Iniciar sesión</a></p>
+                                {{-- <p class="text-sm mt-3 mb-0">Ya cuentas con un casillero? <a href="{{ route('login') }}"
+                                        class="text-dark font-weight-bolder">Iniciar sesión</a></p> --}}
                             </form>
                         </div>
                     </div>
@@ -124,5 +151,8 @@
             </div>
         </div>
     </main>
-    @include('layouts.footers.guest.footer')
+    <footer>
+        &copy; Todos los derechos reservados. Colibrí Xpress.
+    </footer>
+    {{-- @include('layouts.footers.guest.footer') --}}
 @endsection

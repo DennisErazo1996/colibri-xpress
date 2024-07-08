@@ -49,7 +49,7 @@
                                 <div class="card-footer text-center pt-0 px-lg-2 px-1">
                                     <p class="mb-4 text-sm mx-auto">
                                         ¿Aún no tienes casillero?
-                                        <a href="{{ route('register') }}" class="text-primary text-gradient font-weight-bold">Crear casillero</a>
+                                        <a href="{{ route('crear-casillero') }}" class="text-primary text-gradient font-weight-bold">Crear casillero</a>
                                     </p>
                                 </div>
                             </div>
