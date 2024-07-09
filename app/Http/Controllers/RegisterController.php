@@ -16,19 +16,22 @@ class RegisterController extends Controller
     {
         //$nombre = $request->firstname;
         $attributes = request()->validate([
-            'identity' => 'required',
+            'identity' => 'required|unique',
             'firstname' => 'required',
-            'country' => 'required',
             'lastname' => 'required',
+            'country' => 'required',
+            'department' => 'required',
+            'city' => 'required',
+            'address' => 'required',
             // 'username' => 'required|max:255|min:2',
             'email' => 'required|email|max:255|unique:users,email',
-            'password' => 'required|min:5|max:255',
+            'password' => 'required|confirmed|min:5|max:255',
             //'terms' => 'required'
         ]);
         $user = User::create($attributes);
         //auth()->login($user);
                      
-
+        
         return view('bienvenido')->with('data', $user);
         //return redirect('/dashboard');
     }

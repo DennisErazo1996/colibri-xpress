@@ -88,26 +88,40 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <input type="text" name="firstname" class="form-control" placeholder="Nombres" aria-label="Name" value="{{ old('firstname') }}" >
-                                          @error('firstname') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
+                                            <input type="text" name="firstname" class="form-control" placeholder="Nombres" aria-label="Name" required>
+                                          {{-- @error('firstname') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror --}}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <input type="text" name="lastname" class="form-control" placeholder="Apellidos" aria-label="Lastname" value="{{ old('lastname') }}" >
-                                            @error('lastname') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
+                                            <input type="text" name="lastname" class="form-control" placeholder="Apellidos" aria-label="Lastname" required>
+                                            {{-- @error('lastname') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror --}}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <input type="number" name="identity" class="form-control" placeholder="Identidad" aria-label="Identity" value="{{ old('identity') }}" >
-                                            @error('username') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
+                                            <input type="number" name="identity" class="form-control" placeholder="Identidad" aria-label="Identity" required>
+                                            {{-- @error('username') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror --}}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <input type="email" name="email" class="form-control" placeholder="Correo electrónico" aria-label="Email" required>
+                                            @error('email') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6 form-group">
                                         {{-- <label for="FormControlSelect1">Example select</label> --}}
-                                        <select name="country" class="form-control" id="exampleFormControlSelect1" disabled>
+                                        <select name="country" class="form-control" required>
                                           <option selected>Honduras</option>                                          
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        {{-- <label for="FormControlSelect1">Example select</label> --}}
+                                        <select name="department" class="form-control" required>
+                                          <option selected disabled>Seleccione el departamento</option>                                          
+                                          <option>Olancho</option>                                          
+                                          <option>Francisco Morazan</option>                                          
                                         </select>
                                     </div>
                                     
@@ -117,19 +131,35 @@
                                           @error('username') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
                                         </div>
                                     </div> --}}
+                                   
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <input type="email" name="email" class="form-control" placeholder="Correo electrónico" aria-label="Email" value="{{ old('email') }}" >
-                                            @error('email') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
+                                            <textarea name="address" placeholder="Ingrese su dirección" class="form-control" rows="1" required></textarea>
+                                            @error('address') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
+                                          </div>
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        {{-- <label for="FormControlSelect1">Example select</label> --}}
+                                        <select name="city" class="form-control" required>
+                                          <option selected disabled>Seleccione el municipio</option>                                          
+                                          <option>Juticalpa</option>                                          
+                                          <option>Catacamas</option>                                          
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <input type="password" name="password" class="form-control" placeholder="Contraseña" aria-label="Password" required>
+                                             @error('password') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <input type="password" name="password" class="form-control" placeholder="Contraseña" aria-label="Password">
+                                            <input type="password" name="password_confirmation" class="form-control" placeholder="Confirmar contraseña" aria-label="Password" required>
                                              @error('password') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
                                         </div>
                                     </div>
                                 </div>
+                                
                                
                                 <div class="form-check form-check-info text-start">
                                     {{-- <input class="form-check-input" type="checkbox" name="terms" id="flexCheckDefault" >

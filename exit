@@ -1,0 +1,47 @@
+[33mcommit 5df1fa722c9a4cb19b9d712c093f22835aab995c[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Dennis Erazo <dennis.erazo96@gmail.com>
+Date:   Mon Jul 8 16:37:56 2024 -0600
+
+    Multiples cambios en resgistro
+
+[33mcommit 1ba6935dfc20d15643b3f779affb4c8f8676ec33[m
+Author: Dennis Erazo <dennis.erazo96@gmail.com>
+Date:   Sun Jul 7 23:43:26 2024 -0600
+
+    Mejoras en el dashboard
+
+[33mcommit cd5874a6af2773afd9579fefa48144c7c6f4fdca[m
+Author: Dennis Erazo <dennis.erazo96@gmail.com>
+Date:   Sun Jul 7 16:01:20 2024 -0600
+
+    Mejoras en el dashboard y en el registro
+
+[33mcommit b30c1841afa89b16f11750271904f1926d6aea39[m
+Author: Dennis Erazo <dennis.erazo96@gmail.com>
+Date:   Fri Jul 5 14:55:27 2024 -0600
+
+    Adicion columnas a base de datos
+
+[33mcommit 2232b7bf89666477d339223355de52de9553b0a0[m
+Author: Dennis Erazo <dennis.erazo96@gmail.com>
+Date:   Wed Jul 3 16:34:45 2024 -0600
+
+    Edicion del registro del template
+
+[33mcommit 2a481caa143fc427e316df3fa240200ff966fe94[m
+Author: Dennis Erazo <dennis.erazo96@gmail.com>
+Date:   Wed Jul 3 11:49:02 2024 -0600
+
+    Edicion del login del template
+
+[33mcommit 73361132525198abb45b1c08bbe2dbf7885d42dd[m
+Author: Dennis Erazo <dennis.erazo96@gmail.com>
+Date:   Wed Jul 3 00:03:16 2024 -0600
+
+    Edicion del template dashboard
+
+[33mcommit 507dcb361293887d6f78b4677cb11d79a26609ac[m
+Author: Dennis Erazo <dennis.erazo96@gmail.com>
+Date:   Tue Jul 2 16:39:18 2024 -0600
+
+    first commit
