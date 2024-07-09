@@ -6,8 +6,22 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="icon" type="image/png" href="{{asset('img/favicon-colibri.png')}}">
     <title>Bienvenido</title>
+
+    <link  href="assets/css/custom.css" rel="stylesheet" />
 </head>
-<body>
+<body id="welcome">
    
+    <img id="logo-colibri-xpress" src="{{asset('img/logo-colibri-xpress-blanco.png')}}" alt="">
+    
+    <div class="card">
+        <h1>¡Bienvenido/a, {{$data['firstname']}}!</h1>
+        {{-- <h1>¡Bienvenido/a, Dennis Armando!</h1> --}}
+    <p>Gracias por crear tu casillero, hemos enviado un correo a <strong>{{$data['email']}}</strong><br>
+    {{-- <p>Gracias por crear tu casillero, hemos enviado un correo a <strong>derazo@unag.edu.hn</strong><br> --}}
+        con la información de nuestra dirección en Bradenton, Florida. </p>
+        <p>Para cualquier consulta puede escribirnos a nuestro Whatsapp: <a href="https://wa.me/+50492136696">+50492136696</a></p>
+    </div>
+
+    <footer>&copy; Todos los derechos reservados. Colibrí Xpress.</footer>
 </body>
 </html>

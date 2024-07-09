@@ -83,6 +83,13 @@
                             </div>
                         </div> --}}
                         <div class="card-body">
+                            <div class="alert alert-light alert-dismissible fade show" role="alert">
+                                <span class="alert-icon"><i class="ni ni-notification-70"></i></span>
+                                <span class="alert-text"><strong>Nota!</strong> La contraseña será para ingresar a nuestro sistema una vez esté terminado.</span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
                             <form method="POST" action="{{ route('register.perform') }}">
                                 @csrf
                                 <div class="row">
@@ -159,18 +166,20 @@
                                         </div>
                                     </div>
                                 </div>
+                               
                                 
                                
-                                <div class="form-check form-check-info text-start">
-                                    {{-- <input class="form-check-input" type="checkbox" name="terms" id="flexCheckDefault" >
+                                {{-- <div class="form-check form-check-info text-start">
+                                    
+                                    <input class="form-check-input" type="checkbox" name="terms" id="flexCheckDefault" >
                                     <label class="form-check-label" for="flexCheckDefault">
                                         I agree the <a href="javascript:;" class="text-dark font-weight-bolder">Terms and
                                             Conditions</a>
-                                    </label> --}}
+                                    </label>
                                     @error('terms') <p class='text-danger text-xs'> {{ $message }} </p> @enderror
-                                </div>
+                                </div> --}}
                                 <div class="text-center">
-                                    <button type="submit" class="btn btn-primary w-100 my-4 mb-2">Crear casillero</button>
+                                    <button type="submit" class="btn btn-primary w-50 my-4 mb-2">Crear casillero</button>
                                 </div>
                                 {{-- <p class="text-sm mt-3 mb-0">Ya cuentas con un casillero? <a href="{{ route('login') }}"
                                         class="text-dark font-weight-bolder">Iniciar sesión</a></p> --}}

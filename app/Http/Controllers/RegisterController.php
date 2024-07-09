@@ -16,7 +16,7 @@ class RegisterController extends Controller
     {
         //$nombre = $request->firstname;
         $attributes = request()->validate([
-            'identity' => 'required|unique',
+            'identity' => 'required',
             'firstname' => 'required',
             'lastname' => 'required',
             'country' => 'required',
