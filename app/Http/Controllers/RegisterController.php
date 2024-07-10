@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 // use App\Http\Requests\RegisterRequest;
 use App\Models\User;
+use Mail;
+use App\Mail\WelcomeMail;
 
 class RegisterController extends Controller
 {
@@ -29,10 +31,19 @@ class RegisterController extends Controller
             //'terms' => 'required'
         ]);
         $user = User::create($attributes);
+        $userId = $user->id;
+
+
+
+             
+
+        Mail::to($user->email)->send(new WelcomeMail($user, $userId));
         //auth()->login($user);
                      
         
-        return view('bienvenido')->with('data', $user);
+        return view('bienvenido')
+            ->with('data', $user)
+            ->with('id', $userId);
         //return redirect('/dashboard');
     }
 }
