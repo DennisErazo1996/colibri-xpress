@@ -95,38 +95,49 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <input type="text" name="firstname" class="form-control" placeholder="Nombres" aria-label="Name" required>
+                                            <label for="department">Nombres</label>
+                                            <input type="text" name="firstname" class="form-control" placeholder="Ingresa tus nombres" aria-label="Name" required autofocus>
                                           {{-- @error('firstname') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror --}}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <input type="text" name="lastname" class="form-control" placeholder="Apellidos" aria-label="Lastname" required>
+                                            <label for="department">Apellidos*</label>
+                                            <input type="text" name="lastname" class="form-control" placeholder="Ingresa tus apellidos" aria-label="Lastname" required>
                                             {{-- @error('lastname') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror --}}
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
-                                            <input type="number" name="identity" class="form-control" placeholder="Identidad" aria-label="Identity" required>
+                                            <label for="department">Número de identidad*</label>
+                                            <input type="number" name="identity" oninput="removeNonNumeric(this)" class="form-control" placeholder="Ingresa tu identidad" aria-label="Identity" required>
                                             {{-- @error('username') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror --}}
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
-                                            <input type="email" name="email" class="form-control" placeholder="Correo electrónico" aria-label="Email" required>
+                                            <label for="department">Correo electrónico*</label>
+                                            <input type="email" name="email" class="form-control" placeholder="Ingresa tu correo electrónico" aria-label="Email" required>
                                             @error('email') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-6 form-group">
-                                        {{-- <label for="FormControlSelect1">Example select</label> --}}
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="FormControlSelect1">Número de celular*</label>
+                                            <input type="text" name="phone" class="form-control" max="8" oninput="formatPhone(this)" placeholder="Ingresa tu número de celular" aria-label="Phone" required>
+                                             @error('password') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 form-group">
+                                        <label for="country">País*</label>
                                         <select name="country" class="form-control" required>
                                           <option selected>Honduras</option>                                          
                                         </select>
                                     </div>
-                                    <div class="col-md-6 form-group">
-                                        {{-- <label for="FormControlSelect1">Example select</label> --}}
+                                    <div class="col-md-4 form-group">
+                                        <label for="department">Departamento*</label>
                                         <select name="department" class="form-control" required>
-                                          <option selected disabled>Seleccione el departamento</option>                                          
+                                          <option selected disabled>Selecciona el departamento</option>                                          
                                           <option>Olancho</option>                                          
                                           <option>Francisco Morazan</option>                                          
                                         </select>
@@ -138,29 +149,33 @@
                                           @error('username') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
                                         </div>
                                     </div> --}}
-                                   
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <textarea name="address" placeholder="Ingrese su dirección" class="form-control" rows="1" required></textarea>
-                                            @error('address') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
-                                          </div>
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        {{-- <label for="FormControlSelect1">Example select</label> --}}
+                                    <div class="col-md-4 form-group">
+                                        <label for="city">Municipio*</label>
                                         <select name="city" class="form-control" required>
-                                          <option selected disabled>Seleccione el municipio</option>                                          
+                                          <option selected disabled>Selecciona el municipio</option>                                          
                                           <option>Juticalpa</option>                                          
                                           <option>Catacamas</option>                                          
                                         </select>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
-                                            <input type="password" name="password" class="form-control" placeholder="Contraseña" aria-label="Password" required>
+                                            <label for="FormControlSelect1">Dirección*</label>
+                                            <textarea name="address" placeholder="Ingresa tu dirección" class="form-control" rows="1" required></textarea>
+                                            @error('address') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
+                                          </div>
+                                    </div>
+                                   
+        
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="FormControlSelect1">Contraseña*</label>
+                                            <input type="password" name="password" class="form-control" placeholder="Ingresa tu contraseña" aria-label="Password" required>
                                              @error('password') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
+                                            <label for="FormControlSelect1">Confirmar contraseña*</label>
                                             <input type="password" name="password_confirmation" class="form-control" placeholder="Confirmar contraseña" aria-label="Password" required>
                                              @error('password') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
                                         </div>
@@ -195,3 +210,21 @@
     </footer>
     {{-- @include('layouts.footers.guest.footer') --}}
 @endsection
+@push('js')
+<script>
+    function formatPhone(input) {
+        let value = input.value.replace(/\D/g, '');
+        if (value.length > 8) value = value.slice(0, 8);
+        const parts = [];
+        for (let i = 0; i < value.length; i += 4) {
+            parts.push(value.slice(i, i + 4));
+        }
+        input.value = parts.join('-');
+    }
+
+    function removeNonNumeric(input) {
+            input.value = input.value.replace(/\D/g, '');
+        }
+</script>
+    
+@endpush

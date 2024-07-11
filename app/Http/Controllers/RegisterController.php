@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Mail;
 use App\Mail\WelcomeMail;
+use Illuminate\Support\Facades\DB;
 
 class RegisterController extends Controller
 {
@@ -27,17 +28,20 @@ class RegisterController extends Controller
             'address' => 'required',
             // 'username' => 'required|max:255|min:2',
             'email' => 'required|email|max:255|unique:users,email',
+            'phone' => 'required',
             'password' => 'required|confirmed|min:5|max:255',
             //'terms' => 'required'
         ]);
         $user = User::create($attributes);
         $userId = $user->id;
+        $lockNum = DB::select("SELECT 'CX-' || LPAD(:id::TEXT, 4, '10') AS locker_number", ['id'=>$user->id]);
+        foreach($lockNum as $ln){
+            $lockerNumber = $ln->locker_number;
+        }
+        
 
 
-
-             
-
-        Mail::to($user->email)->send(new WelcomeMail($user, $userId));
+        Mail::to($user->email)->send(new WelcomeMail($user, $lockerNumber));
         //auth()->login($user);
                      
         

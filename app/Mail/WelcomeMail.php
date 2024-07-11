@@ -11,16 +11,17 @@ class WelcomeMail extends Mailable
     use Queueable, SerializesModels;
 
     public $user;
-    public $userId;
+    public $lockerNumber;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($user)
+    public function __construct($user, $lockerNumber)
     {
         $this->user = $user;
+        $this->lockerNumber = $lockerNumber;
     }
 
     /**
@@ -31,6 +32,6 @@ class WelcomeMail extends Mailable
     public function build()
     {
         return $this->view('mail.welcome-mail')
-                    ->subject('Welcome to Our Application');
+                    ->subject('Creación de casillero');
     }
 }
