@@ -95,47 +95,47 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="department">Nombres</label>
+                                            <label for="department">Nombres <span style="color: red">*</span></label>
                                             <input type="text" name="firstname" class="form-control" placeholder="Ingresa tus nombres" aria-label="Name" required autofocus>
                                           {{-- @error('firstname') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror --}}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="department">Apellidos*</label>
+                                            <label for="department">Apellidos<span style="color: red">*</span></label>
                                             <input type="text" name="lastname" class="form-control" placeholder="Ingresa tus apellidos" aria-label="Lastname" required>
                                             {{-- @error('lastname') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror --}}
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="department">Número de identidad*</label>
+                                            <label for="department">Número de identidad<span style="color: red">*</span></label>
                                             <input type="number" name="identity" oninput="removeNonNumeric(this)" class="form-control" placeholder="Ingresa tu identidad" aria-label="Identity" required>
                                             {{-- @error('username') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror --}}
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="department">Correo electrónico*</label>
+                                            <label for="department">Correo electrónico<span style="color: red">*</span></label>
                                             <input type="email" name="email" class="form-control" placeholder="Ingresa tu correo electrónico" aria-label="Email" required>
                                             @error('email') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="FormControlSelect1">Número de celular*</label>
+                                            <label for="FormControlSelect1">Número de celular<span style="color: red">*</span></label>
                                             <input type="text" name="phone" class="form-control" max="8" oninput="formatPhone(this)" placeholder="Ingresa tu número de celular" aria-label="Phone" required>
                                              @error('password') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-4 form-group">
-                                        <label for="country">País*</label>
+                                        <label for="country">País<span style="color: red">*</span></label>
                                         <select name="country" class="form-control" required>
                                           <option selected>Honduras</option>                                          
                                         </select>
                                     </div>
                                     <div class="col-md-4 form-group">
-                                        <label for="department">Departamento*</label>
+                                        <label for="department">Departamento<span style="color: red">*</span></label>
                                         <select name="department" class="form-control" required>
                                           <option selected disabled>Selecciona el departamento</option>                                          
                                           <option>Olancho</option>                                          
@@ -150,7 +150,7 @@
                                         </div>
                                     </div> --}}
                                     <div class="col-md-4 form-group">
-                                        <label for="city">Municipio*</label>
+                                        <label for="city">Municipio<span style="color: red">*</span></label>
                                         <select name="city" class="form-control" required>
                                           <option selected disabled>Selecciona el municipio</option>                                          
                                           <option>Juticalpa</option>                                          
@@ -159,7 +159,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="FormControlSelect1">Dirección*</label>
+                                            <label for="FormControlSelect1">Dirección<span style="color: red">*</span></label>
                                             <textarea name="address" placeholder="Ingresa tu dirección" class="form-control" rows="1" required></textarea>
                                             @error('address') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
                                           </div>
@@ -168,14 +168,14 @@
         
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="FormControlSelect1">Contraseña*</label>
+                                            <label for="FormControlSelect1">Contraseña<span style="color: red">*</span></label>
                                             <input type="password" name="password" class="form-control" placeholder="Ingresa tu contraseña" aria-label="Password" required>
                                              @error('password') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="FormControlSelect1">Confirmar contraseña*</label>
+                                            <label for="FormControlSelect1">Confirmar contraseña<span style="color: red">*</span></label>
                                             <input type="password" name="password_confirmation" class="form-control" placeholder="Confirmar contraseña" aria-label="Password" required>
                                              @error('password') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
                                         </div>
