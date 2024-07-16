@@ -157,8 +157,8 @@ table.center-on-narrow {
                   <tr>
                     <td style="padding: 40px; text-align: center; font-family: 'Nunito Sans', sans-serif; font-size: 15px; mso-height-rule: exactly; line-height: 20px; color: #404040;">
                         Bienvenido/a, {{$user['firstname']}} <br>
-                        su casillero es <strong>{{$lockerNumber}}</strong> <br> <br>
-                        A continuación le mostramos los datos de la dirección para empezar a enviar sus compras: <br> <br>
+                        tu casillero es <strong>{{$lockerNumber}}</strong> <br> <br>
+                        A continuación te mostramos los datos de la dirección para empezar a enviar tus compras: <br> <br>
                         <strong>Nombre:</strong> {{$lockerNumber}}/ {{$user['firstname'].' '.$user['lastname']}} <br>
                         <strong>Dirección:</strong> 2907 39th AVE W <br>
                         <strong>Unidad:</strong> Unit A <br>

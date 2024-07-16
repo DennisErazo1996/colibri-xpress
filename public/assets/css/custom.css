@@ -124,6 +124,10 @@ body#welcome footer {
     color: white;
 }
 
+table thead {
+    text-align: center !important;
+}
+
 footer {
     display: flex;
     justify-content: center;

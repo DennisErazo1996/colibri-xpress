@@ -9,6 +9,7 @@
                 <li class="breadcrumb-item text-sm text-white active" aria-current="page">{{ $title }}</li> --}}
             </ol>
             <h1 class="font-weight-bolder text-white mb-0">{{ $title }}</h1>
+            {{-- <p style="color: white">{{$description}}</p> --}}
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
             <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -50,7 +51,7 @@
                 <li class="nav-item dropdown pe-2 d-flex align-items-center">
                     <a href="javascript:;" class="nav-link text-white p-0" id="dropdownMenuButton"
                         data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fa fa-user cursor-pointer"></i> &nbsp;{{Auth::user()->firstname.' '.Auth::user()->lastname;}}
+                        <i class="fa fa-user cursor-pointer"></i> &nbsp;{{Auth::user()->firstname}}
                     </a>
                     <ul class="dropdown-menu  dropdown-menu-end  px-2 py-3 me-sm-n4"
                         aria-labelledby="dropdownMenuButton">

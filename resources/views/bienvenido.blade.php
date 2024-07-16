@@ -19,7 +19,7 @@
     <p>Gracias por crear tu casillero, hemos enviado un correo a <strong>{{$data['email']}}</strong><br>
     {{-- <p>Gracias por crear tu casillero, hemos enviado un correo a <strong>derazo@unag.edu.hn</strong><br> --}}
         con la información de nuestra dirección en Bradenton, Florida. </p>
-        <p>Para cualquier consulta puede escribirnos a nuestro Whatsapp: <a href="https://wa.me/+50492136696">+50492136696</a></p>
+        <p>Para cualquier consulta puedes escribirnos a nuestro Whatsapp: <a href="https://wa.me/+50492136696">+50492136696</a></p>
     </div>
 
     <footer>&copy; Todos los derechos reservados. Colibrí Xpress.</footer>
