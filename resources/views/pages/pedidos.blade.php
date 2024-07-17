@@ -1,7 +1,7 @@
 @extends('layouts.app', ['class' => 'g-sidenav-show bg-gray-100'])
 
 @section('content')
-    @include('layouts.navbars.auth.topnav', ['title' => 'Cajas'])
+    @include('layouts.navbars.auth.topnav', ['title' => 'Pedidos'])
     <div class="container-fluid py-4">
         <div class="row">
             <div class="col-12">
@@ -33,10 +33,11 @@
                                         <td>{{$bxs->fecha_envio}}</td>
                                         <td>{{$bxs->fecha_arribo}}</td>
                                         <td>
-                                          <a class="btn btn-1 m-0" href="" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver caja" data-container="body" data-animation="true"><i class="fi fi-sr-eye"></i></a>
-                                          <a class="btn btn-1 m-0" href="" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar caja" data-container="body" data-animation="true"><i class="fi fi-sr-edit"></i></a>
-                                          <a class="btn btn-1 m-0" href="" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar caja" data-container="body" data-animation="true"><i class="fi fi-sr-trash"></i></a>
-                                          <a class="btn btn-1 btn-success m-0" href="" data-bs-toggle="tooltip" data-bs-placement="top" title="Agregar pedido" data-container="body" data-animation="true"><i class="fi fi-ss-order-history"></i></a>
+                                          {{-- <a class="btn btn-default" href="" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver pedidos" data-container="body" data-animation="true"><i class="fi fi-sr-eye"></i></a> --}}
+                                          <button class="btn btn-icon btn-sm btn-success m-0" type="button">
+                                            <span class="btn-inner--icon"><i class="fi fi-sr-eye"></i></span>
+                                            <span class="btn-inner--text">Ver pedidos</span>
+                                          </button>
                                         </td>
                                     </tr>    
                                     @endforeach
@@ -62,7 +63,7 @@
               <div class="modal-body p-0">
                 <div class="card card-plain">
                   <div class="card-header pb-0 text-left">
-                    <h3 class="font-weight-bolder text-default ">Agregar nueva caja</h3>
+                    <h3 class="font-weight-bolder text-info text-gradient">Agregar nueva caja</h3>
                     {{-- <p class="mb-0">Enter your email and password to sign in</p> --}}
                   </div>
                   <div class="card-body">
@@ -70,15 +71,14 @@
                         @csrf
                       <label>Fecha de envío</label>
                       <div class="input-group mb-3">
-                        <input type="date" name="fechaEnvio" class="form-control" placeholder="Selecciona la fecha" aria-label="Date" required>
+                        <input type="date" name="fechaEnvio" class="form-control" placeholder="Selecciona la fecha" aria-label="Date">
                       </div>
                       <label>Fecha estimada de llegada</label>
                       <div class="input-group mb-3">
-                        <input type="date" name="fechaArribo" class="form-control" placeholder="Ingresa la fecha de llegada" aria-label="Date" required>
+                        <input type="date" name="fechaArribo" class="form-control" placeholder="Ingresa la fecha de llegada" aria-label="Date">
                       </div>
-                      <div class="text-center d-flex flex-row">
+                      <div class="text-center">
                         <button id="btn-crear-caja" type="submit" class="btn btn-round bg-gradient-info btn-lg w-100 mt-4 mb-0">Crear</button>
-                        <button id="btn-cancelar-caja" type="button" class="btn btn-round btn-lg w-100 mt-4 mb-0">Cancelar</button>
                       </div>
                     </form>
                   </div>
@@ -94,17 +94,11 @@
 @push('js')
     <script>
         $('#example').DataTable({
-            columnDefs: [
-                { className: 'dt-center', targets: '_all' },
-            ],
-            language: idiomaDatatables,
-            
-        });
-
-        $('#btn-cancelar-caja').on('click', function () {
-          $('#modal-form').modal('toggle')
-        });
-
-
+    columnDefs: [
+        { className: 'dt-center', targets: '_all' },
+    ],
+    language: idiomaDatatables,
+    
+});
     </script>
 @endpush

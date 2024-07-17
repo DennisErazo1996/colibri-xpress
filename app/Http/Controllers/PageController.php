@@ -54,10 +54,33 @@ class PageController extends Controller
 
     public function cajas()
     {   
-        $dataCajas = DB::select("select 'BOX-' || LPAD(id::TEXT, 4, '0') AS numero_caja, fecha_envio, fecha_arribo from cx_cajas where deleted_at is null 
-        order by id desc
+        $dataCajas = DB::select("
+            select 
+                row_number() over(order by id desc) as numero, 
+                'BOX-' || LPAD(id::TEXT, 4, '0') AS numero_caja, 
+                fecha_envio, 
+                fecha_arribo 
+            from cx_cajas 
+            where deleted_at is null 
+            order by id desc
         ");
 
         return view("pages.cajas")->with('cajas', $dataCajas);
+    }
+
+    public function verPedidos()
+    {   
+        $dataCajas = DB::select("
+            select 
+                row_number() over(order by id desc) as numero, 
+                'BOX-' || LPAD(id::TEXT, 4, '0') AS numero_caja, 
+                fecha_envio, 
+                fecha_arribo 
+            from cx_cajas 
+            where deleted_at is null 
+            order by id desc
+        ");
+
+        return view("pages.pedidos")->with('cajas', $dataCajas);
     }
 }

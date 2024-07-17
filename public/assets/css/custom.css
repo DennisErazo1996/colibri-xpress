@@ -2,6 +2,8 @@
 @import url("https://cdn-uicons.flaticon.com/2.4.2/uicons-solid-rounded/css/uicons-solid-rounded.css");
 @import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
+@import url('https://cdn-uicons.flaticon.com/2.4.2/uicons-solid-rounded/css/uicons-solid-rounded.css');
+
 
 body,
 p,
@@ -17,7 +19,7 @@ div {
         90deg,
         rgba(54, 9, 121, 1) 0%,
         rgba(31, 9, 121, 1) 26%,
-        rgba(0, 159, 255, 1) 100%
+        #009fff 100%
     );
 }
 
@@ -66,10 +68,13 @@ img#logo-colibri-xpress-small {
     max-height: fit-content;
 }
 
-div.card {
-    padding: 15px !important;
-}
+/* div.card {
+    padding: 50px !important;
+} */
 
+table {
+    font-size: 14px;
+}
 .page-item.active .page-link {
     background-color: rgba(31, 9, 121, 1) !important;
     border: none !important;
@@ -137,6 +142,10 @@ footer {
     font-size: 14px;
     /* background-color: #111fa4; */
     color: #404040;
+}
+
+a:hover{
+    color: #009fff !important;
 }
 
 @media (min-width: 992px) {
