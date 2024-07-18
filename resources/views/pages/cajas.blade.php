@@ -33,10 +33,10 @@
                                         <td>{{$bxs->fecha_envio}}</td>
                                         <td>{{$bxs->fecha_arribo}}</td>
                                         <td>
-                                          <a class="btn btn-1 m-0" href="" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver caja" data-container="body" data-animation="true"><i class="fi fi-sr-eye"></i></a>
-                                          <a class="btn btn-1 m-0" href="" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar caja" data-container="body" data-animation="true"><i class="fi fi-sr-edit"></i></a>
-                                          <a class="btn btn-1 m-0" href="" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar caja" data-container="body" data-animation="true"><i class="fi fi-sr-trash"></i></a>
-                                          <a class="btn btn-1 btn-success m-0" href="" data-bs-toggle="tooltip" data-bs-placement="top" title="Agregar pedido" data-container="body" data-animation="true"><i class="fi fi-ss-order-history"></i></a>
+                                          <a class="btn btn-1 m-0" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver caja" data-container="body" data-animation="true"><i class="fi fi-sr-eye"></i></a>
+                                          <a class="btn btn-1 m-0" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar caja" data-container="body" data-animation="true"><i class="fi fi-sr-edit"></i></a>
+                                          <a class="btn btn-1 m-0" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar caja" data-container="body" data-animation="true"><i class="fi fi-sr-trash"></i></a>
+                                          <a class="btn btn-1 btn-success m-0" href="{{url("/caja/$bxs->numero/pedidos")}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Agregar pedido" data-container="body" data-animation="true"><i class="fi fi-ss-order-history"></i></a>
                                         </td>
                                     </tr>    
                                     @endforeach

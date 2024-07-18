@@ -57,6 +57,7 @@ class PageController extends Controller
         $dataCajas = DB::select("
             select 
                 row_number() over(order by id desc) as numero, 
+                id,
                 'BOX-' || LPAD(id::TEXT, 4, '0') AS numero_caja, 
                 fecha_envio, 
                 fecha_arribo 
@@ -68,19 +69,18 @@ class PageController extends Controller
         return view("pages.cajas")->with('cajas', $dataCajas);
     }
 
-    public function verPedidos()
-    {   
-        $dataCajas = DB::select("
+    public function pedidos($id)
+    {  
+        $clientes = DB::select("
             select 
-                row_number() over(order by id desc) as numero, 
-                'BOX-' || LPAD(id::TEXT, 4, '0') AS numero_caja, 
-                fecha_envio, 
-                fecha_arribo 
-            from cx_cajas 
-            where deleted_at is null 
-            order by id desc
+                id,
+                'CX-' || LPAD(id::TEXT, 4, '10') AS locker_number,
+                firstname || ' ' || lastname as nombre
+            from users
         ");
 
-        return view("pages.pedidos")->with('cajas', $dataCajas);
+        return view("pages.pedidos")
+        ->with('usuarios', $clientes)
+        ->with('idCaja', $id);
     }
 }

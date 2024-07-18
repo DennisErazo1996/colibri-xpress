@@ -16,7 +16,11 @@ class CajasController extends Controller
         ['fechaenvio' => $fechaEnvio, 'fechaarribo' => $fechaArribo]
         );
 
-    return redirect()->back();
+        return redirect()->back();
 
+    }
+
+    public function agregarPedido(){
+        return;
     }
 }

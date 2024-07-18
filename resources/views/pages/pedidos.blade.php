@@ -26,21 +26,13 @@
                                     </tr>
                                 </thead>
                                 <tbody class="text-center">
-                                    @foreach ($cajas as $bxs)
                                     <tr>
-                                        <td>{{$bxs->numero}}</td>
-                                        <td>{{$bxs->numero_caja}}</td>
-                                        <td>{{$bxs->fecha_envio}}</td>
-                                        <td>{{$bxs->fecha_arribo}}</td>
-                                        <td>
-                                          {{-- <a class="btn btn-default" href="" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver pedidos" data-container="body" data-animation="true"><i class="fi fi-sr-eye"></i></a> --}}
-                                          <button class="btn btn-icon btn-sm btn-success m-0" type="button">
-                                            <span class="btn-inner--icon"><i class="fi fi-sr-eye"></i></span>
-                                            <span class="btn-inner--text">Ver pedidos</span>
-                                          </button>
-                                        </td>
-                                    </tr>    
-                                    @endforeach
+                                      <td></td>
+                                      <td></td>
+                                      <td></td>
+                                      <td></td>
+                                      <td></td>
+                                    </tr>
                                     
                                 </tbody>
                             </table>
@@ -58,28 +50,70 @@
     <div class="col-md-4">
         
         <div class="modal fade" id="modal-form" tabindex="-1" role="dialog" aria-labelledby="modal-form" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+          <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
               <div class="modal-body p-0">
                 <div class="card card-plain">
                   <div class="card-header pb-0 text-left">
-                    <h3 class="font-weight-bolder text-info text-gradient">Agregar nueva caja</h3>
+                    <h3 class="font-weight-bolder text-default">Agregar nuevo pedido</h3>
                     {{-- <p class="mb-0">Enter your email and password to sign in</p> --}}
                   </div>
                   <div class="card-body">
                     <form role="form text-left" method="POST" action="{{route('crear-caja')}}">
                         @csrf
-                      <label>Fecha de envío</label>
-                      <div class="input-group mb-3">
-                        <input type="date" name="fechaEnvio" class="form-control" placeholder="Selecciona la fecha" aria-label="Date">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group">
+                              <label for="ice-cream-choice">Cliente<span style="color: red">*</span></label>
+                              <input list="ice-cream-flavors" placeholder="Seleccione el cliente" class="form-control" id="ice-cream-choice" name="ice-cream-choice" />
+                          <datalist id="ice-cream-flavors">
+                            @foreach ($usuarios as $usr)
+                              <option value="{{$usr->id}}">{{'('.$usr->locker_number.') '}}{{$usr->nombre}}</option>                    
+                            @endforeach
+                          </datalist></div>     
+                            </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-4">
+                          <div class="form-group">
+                              <label for="department">Nombre producto<span style="color: red">*</span></label>
+                              <input type="text" name="identity" class="form-control" placeholder="Ingresa el nombre del producto" aria-label="Producto" required>
+                             
+                          </div>
                       </div>
-                      <label>Fecha estimada de llegada</label>
-                      <div class="input-group mb-3">
-                        <input type="date" name="fechaArribo" class="form-control" placeholder="Ingresa la fecha de llegada" aria-label="Date">
+                      <div class="col-md-2 col-4">
+                          <div class="form-group">
+                              <label for="FormControlSelect1">Cantidad<span style="color: red">*</span></label>
+                              <input type="number" name="cantidad" class="form-control" max="8" placeholder="" aria-label="Phone" required>
+                               
+                          </div>
                       </div>
-                      <div class="text-center">
-                        <button id="btn-crear-caja" type="submit" class="btn btn-round bg-gradient-info btn-lg w-100 mt-4 mb-0">Crear</button>
+                      <div class="col-md-2 col-4">
+                          <div class="form-group">
+                              <label for="FormControlSelect1">Precio<span style="color: red">*</span></label>
+                              <input type="number" name="cantidad" class="form-control" max="8" placeholder="" aria-label="Phone" required>
+                               
+                          </div>
                       </div>
+                      <div class="col-md-2 col-4">
+                          <div class="form-group">
+                              <label for="FormControlSelect1">Ganancia<span style="color: red">*</span></label>
+                              <input type="number" name="cantidad" class="form-control"  placeholder="" aria-label="Phone" required>
+                               
+                          </div>
+                      </div>
+                      <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="department">Enlace del producto<span style="color: red">*</span></label>
+                            <textarea type="email" name="email" class="form-control" placeholder="Ingresa el enlace" rows="5" aria-label="Enlace" required></textarea>
+                  
+                        </div>
+                    </div>
+                        </div>
+                        <div class="text-center d-flex flex-row justify-content-end">
+                          <button id="btn-crear-pedido" type="submit" class="btn  bg-gradient-secondary btn-3 w-30 mt-4 mb-0">Crear</button>
+                          <button id="btn-cancelar-pedido" type="button" class="btn btn-3 w-30 mt-4 mb-0 ml-50">Cancelar</button>
+                        </div>
                     </form>
                   </div>
                   
@@ -94,11 +128,16 @@
 @push('js')
     <script>
         $('#example').DataTable({
-    columnDefs: [
-        { className: 'dt-center', targets: '_all' },
-    ],
-    language: idiomaDatatables,
-    
-});
+            columnDefs: [
+                { className: 'dt-center', targets: '_all' },
+            ],
+            language: idiomaDatatables,
+            
+        });
+
+        $('#btn-cancelar-pedido').on('click', function () {
+          $('#modal-form').modal('toggle')
+        });
+
     </script>
 @endpush
