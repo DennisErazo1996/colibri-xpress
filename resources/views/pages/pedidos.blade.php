@@ -10,9 +10,9 @@
                         {{-- <h6>Authors table</h6> --}}
                       </div>
                       <div class="align-items-center text-center">
-                        <button type="button" class="btn btn-primary btn-default mb-3" data-bs-toggle="modal" data-bs-target="#modal-form">Crear nueva caja</button>
+                        <button type="button" class="btn btn-primary btn-default mb-3" data-bs-toggle="modal" data-bs-target="#modal-form">Crear nuevo pedido</button>
                       </div>
-                      <div class="card-body px-2 pt-0 pb-2">
+                      <div class="card-body px-2 pt-0 pb-2"> 
                         <div class="table-responsive p-0">
                             <table id="example" class="table align-items-center table-striped" style="width:100%">
                                 <thead class="">
@@ -64,13 +64,14 @@
                         <div class="row">
                           <div class="col-md-12">
                             <div class="form-group">
-                              <label for="ice-cream-choice">Cliente<span style="color: red">*</span></label>
-                              <input list="ice-cream-flavors" placeholder="Seleccione el cliente" class="form-control" id="ice-cream-choice" name="ice-cream-choice" />
-                          <datalist id="ice-cream-flavors">
-                            @foreach ($usuarios as $usr)
-                              <option value="{{$usr->id}}">{{'('.$usr->locker_number.') '}}{{$usr->nombre}}</option>                    
-                            @endforeach
-                          </datalist></div>     
+                              <label for="nombre-cliente">Cliente<span style="color: red">*</span></label>
+                              <input list="ice-cream-flavors" placeholder="Seleccione el cliente" class="form-control" id="nombre-cliente" name="nombre-cliente" />
+                              <datalist id="ice-cream-flavors">
+                                @foreach ($usuarios as $usr)
+                                  <option value="{{'('.$usr->locker_number.') '}}{{$usr->nombre}}" data-id-usuario="{{$usr->id}}"></option>                    
+                                @endforeach
+                              </datalist>
+                            </div>     
                             </div>
                         </div>
                         <div class="row">
@@ -78,7 +79,6 @@
                           <div class="form-group">
                               <label for="department">Nombre producto<span style="color: red">*</span></label>
                               <input type="text" name="identity" class="form-control" placeholder="Ingresa el nombre del producto" aria-label="Producto" required>
-                             
                           </div>
                       </div>
                       <div class="col-md-2 col-4">
@@ -137,6 +137,24 @@
 
         $('#btn-cancelar-pedido').on('click', function () {
           $('#modal-form').modal('toggle')
+        });
+
+        $('#btn-crear-pedido').click(function (e) { 
+          e.preventDefault();
+              $.ajax({
+              type: "POST",
+              url: "url",
+              data: {
+                "_token": "{{ csrf_token() }}",
+                "id": id
+              },
+              success: function (response) {
+                
+              },
+              error: function (request, status, error) {
+                alert(request.responseText);
+              }
+            });
         });
 
     </script>
