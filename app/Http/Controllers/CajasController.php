@@ -20,7 +20,26 @@ class CajasController extends Controller
 
     }
 
-    public function agregarPedido(){
-        return;
+    public function agregarPedido(Request $request){
+
+        $idCaja = $request->idCaja;
+        $idCliente = $request->idCliente;
+        $nombreProducto = $request->nombreProducto;
+        $cantidad = $request->cantidad;
+        $precio = $request->precio;
+        $ganancia = $request->ganancia;
+        $enlaceProducto = $request->enlaceProducto;
+        $mensaje = "Se creo el pedido correctamente";
+
+        DB::select("insert into pedidos.cx_pedidos(
+                        id_caja, id_usuario, nombre_producto, url_producto, cantidad, precio, ganancia, created_at)
+                    values(:id_caja, :id_cliente, :nombre_producto, :enlace_producto, :cantidad, :precio, :ganancia, now())",
+                    
+                    ['id_caja'=>$idCaja, 'id_cliente'=>$idCliente, 'nombre_producto'=>$nombreProducto, 'cantidad'=>$cantidad, 'precio'=>$precio,
+                    'ganancia'=>$ganancia, 'enlace_producto'=>$enlaceProducto
+                ]);
+
+        return $mensaje;
+
     }
 }
