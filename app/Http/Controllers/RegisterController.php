@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 // use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Mail;
+use Auth;
 use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\DB;
 

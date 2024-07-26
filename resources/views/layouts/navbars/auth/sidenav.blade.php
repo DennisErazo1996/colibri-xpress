@@ -30,6 +30,7 @@
                     <span class="nav-link-text ms-1">Mis paquetes</span>
                 </a>
             </li>
+            @if (Auth::user()->role == 'super-admin' || Auth::user()->role == 'admin')
             <li class="nav-item">
                 <a class="nav-link {{ Route::currentRouteName() == 'cajas' ? 'active' : '' }}" href="{{ route('cajas') }}">
                     <div
@@ -39,7 +40,8 @@
                     <span class="nav-link-text ms-1">Cajas</span>
                 </a>
             </li>
-            <li class="nav-item">
+            @endif
+            {{-- <li class="nav-item">
                 <a class="nav-link {{ Route::currentRouteName() == 'pedidos' ? 'active' : '' }}" href="{{ route('pedidos') }}">
                     <div
                         class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -47,7 +49,7 @@
                     </div>
                     <span class="nav-link-text ms-1">Pedidos</span>
                 </a>
-            </li>
+            </li> --}}
             <li class="nav-item">
                 <a class="nav-link {{ Route::currentRouteName() == 'profile' ? 'active' : '' }}" href="{{ route('profile') }}">
                     <div

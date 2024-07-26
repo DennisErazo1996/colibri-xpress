@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Auth;
 
 class PageController extends Controller
 {
@@ -54,11 +55,14 @@ class PageController extends Controller
 
     public function cajas()
     {   
-        $dataCajas = DB::select("
+        if (Auth::user()->role != 'super-admin' && Auth::user()->role != 'admin'){
+            return;
+        }else{
+            $dataCajas = DB::select("
             select 
                 row_number() over(order by id desc) as numero, 
                 id,
-                'BOX-' || LPAD(id::TEXT, 4, '0') AS numero_caja, 
+                'BOX-' || LPAD(id::TEXT, 4, '0') AS numero_caja,  
                 fecha_envio, 
                 fecha_arribo 
             from cx_cajas 
@@ -67,6 +71,9 @@ class PageController extends Controller
         ");
 
         return view("pages.cajas")->with('cajas', $dataCajas);
+        }
+
+        
     }
 
     public function pedidos($id)
