@@ -63,8 +63,9 @@ class PageController extends Controller
                 row_number() over(order by id desc) as numero, 
                 id,
                 'BOX-' || LPAD(id::TEXT, 4, '0') AS numero_caja,  
-                fecha_envio, 
-                fecha_arribo 
+                to_char(fecha_envio, 'DD/MM/YYYY') as fecha_envio,
+                to_char(fecha_arribo, 'DD/MM/YYYY') as fecha_arribo,
+                to_char(created_at::date, 'DD/MM/YYYY') as fecha_registro
             from cx_cajas 
             where deleted_at is null 
             order by id desc
@@ -89,5 +90,15 @@ class PageController extends Controller
         return view("pages.pedidos")
         ->with('usuarios', $clientes)
         ->with('idCaja', $id);
+    }
+
+    public function pedidosCliente($id, $idCliente){
+
+        $infoCliente = DB::select("select * from users where id = :idUsuario", ['idUsuario'=>$idCliente]);
+
+        return view("pages.pedidos-cliente")
+        ->with('idCaja', $id)
+        ->with('dataCliente', $infoCliente)
+        ->with('idUsuario', $idCliente );
     }
 }

@@ -22,6 +22,7 @@
                                         <th>Nombre</th>
                                         <th>Fecha de envío</th>
                                         <th>Fecha estimada de recepción</th>
+                                        <th>Fecha de registro</th>
                                         <th>Opciones</th>
                                     </tr>
                                 </thead>
@@ -32,6 +33,7 @@
                                         <td>{{$bxs->numero_caja}}</td>
                                         <td>{{$bxs->fecha_envio}}</td>
                                         <td>{{$bxs->fecha_arribo}}</td>
+                                        <td>{{$bxs->fecha_registro}}</td>
                                         <td>
                                           <a class="btn btn-1 m-0" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver caja" data-container="body" data-animation="true"><i class="fi fi-sr-eye"></i></a>
                                           <a class="btn btn-1 m-0" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar caja" data-container="body" data-animation="true"><i class="fi fi-sr-edit"></i></a>

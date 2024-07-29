@@ -74,7 +74,7 @@ class CajasController extends Controller
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     //$url = "{{url('/caja/$row['id_cliente']/pedidos/cliente/'}}";
-                    $actions = "<a class='btn btn-1 m-0' onclick='verPedidosCliente($row->id_usuario)' data-bs-toggle='tooltip' data-bs-placement='top' title='Ver caja' data-container='body' data-animation='true'><i class='fi fi-sr-eye'></i></a>";
+                    $actions = "<a class='btn btn-1 m-0' onclick='verPedidosCliente($row->id_usuario)' data-bs-toggle='tooltip' data-bs-placement='top' title='Ver pedidos' data-container='body' data-animation='true'><i class='fi fi-sr-eye'></i></a>";
                     return $actions;
                 })
                 ->rawColumns(['opcion'])
@@ -83,4 +83,43 @@ class CajasController extends Controller
 
 
     }
+
+    public function verPedidosCliente(Request $request, $id, $idCliente){
+
+        if ($request->ajax()) {
+            DB::select("SET lc_monetary = 'es_HN';");
+            $data = DB::select("
+            select 
+                id,
+                row_number() over(order by created_at desc) as no,
+                nombre_producto,
+                url_producto,
+                cantidad,
+                precio::numeric::money,
+                ganancia::numeric::money,
+                (precio+ganancia)::numeric::money as sub_total,
+                ((precio+ganancia)*cantidad)::numeric::money as total,
+                to_char(created_at::date, 'DD/MM/YYYY') as fecha_registro 
+                from pedidos.cx_pedidos where deleted_at is null
+                and id_caja = :idCaja and id_usuario = :idUsuario
+                
+                ;  
+        ", ['idCaja'=> $id , 'idUsuario' =>$idCliente]);
+
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->addColumn('opcion', function($row){
+                    //$url = "{{url('/caja/$row['id_cliente']/pedidos/cliente/'}}";
+                    $actions = "<a class='btn btn-1 m-0' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar pedido' data-container='body' data-animation='true'><i class='fi fi-sr-edit'></i></a>
+                                          <a class='btn btn-1 m-0' data-bs-toggle='tooltip' data-bs-placement='top' title='Eliminar pedido' data-container='body' data-animation='true'><i class='fi fi-sr-trash'></i></a>
+                    ";
+                    return $actions;
+                })
+                ->rawColumns(['opcion'])
+                ->make(true);
+        }
+
+
+    }
+
 }

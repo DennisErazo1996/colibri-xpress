@@ -61,6 +61,7 @@
             display: none;
         }
     </style>
+    @stack('css')
 </head>
 
 <body class="{{ $class ?? '' }}">

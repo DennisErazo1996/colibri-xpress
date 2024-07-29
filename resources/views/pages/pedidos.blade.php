@@ -28,9 +28,9 @@
                                     </tr>
                                 </thead>
                                 <tbody class="text-center">
-                                  <tr>
+                                    <tr>
 
-                                  </tr>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -144,10 +144,8 @@
 @push('js')
     <script>
         var urlTable = "{{ route('ver-pedidos', ['id' => $idCaja]) }}";
+        var vrIdCaja = "{{ $idCaja }}";
 
-        $(document).ajaxSend(function() {
-            $("#overlay").fadeIn(300);
-        });
 
         $('#tbl-pedidos').DataTable({
             processing: true,
@@ -158,8 +156,8 @@
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}' // Agrega el token al encabezado
                 },
-                complete: function(){
-                  $("#overlay").fadeOut(300);
+                complete: function() {
+                    $("#overlay").fadeOut(300);
                 }
             },
             columns: [{
@@ -200,7 +198,14 @@
 
         $('#btn-cancelar-pedido').on('click', function() {
             $('div#mensaje').html('')
+            $('#inpNombreProducto').val('');
+            $('#inpCantidad').val('');
+            $('#inpPrecio').val('');
+            $('#inpGanancia').val('');
+            $('#inpEnlaceProducto').val('');
+            $('#nombre-cliente').val('');
             $('#modal-form').modal('toggle')
+
         });
 
         $('#btn-crear-pedido').click(function(e) {
@@ -212,7 +217,7 @@
             var vrPrecio = $('#inpPrecio').val();
             var vrGanancia = $('#inpGanancia').val();
             var vrEnlaceProducto = $('#inpEnlaceProducto').val();
-            var vrIdCaja = "{{ $idCaja }}";
+            //var vrIdCaja = "{{ $idCaja }}";
 
             var input = document.getElementById('nombre-cliente'); // Obtén el elemento input
             var selectedValue = input.value; // Obtiene el valor seleccionado
@@ -229,6 +234,13 @@
 
             if (typeof dataId != "undefined" && vrNombreProducto != '' && vrCantidad != '' && vrPrecio != '' &&
                 vrGanancia != '' && vrEnlaceProducto != '') {
+
+                $(document).ajaxSend(function() {
+                    $("#overlay").fadeIn(300);
+                });
+
+                $('#btn-crear-pedido').prop('disabled', true);
+
                 $.ajax({
                     type: "POST",
                     url: urlRest,
@@ -265,7 +277,14 @@
                         alert(request.responseText);
                     }
                 }).done(function() {
-                    $('#modal-form').modal('toggle')
+                    $('#modal-form').modal('toggle');
+                    $('#nombre-cliente').val('');
+                    $('#inpNombreProducto').val('');
+                    $('#inpCantidad').val('');
+                    $('#inpPrecio').val('');
+                    $('#inpGanancia').val('');
+                    $('#inpEnlaceProducto').val('');
+                    $('#btn-crear-pedido').prop('disabled', false);
                     setTimeout(function() {
                         $("#overlay").fadeOut(300);
                     }, 500);
@@ -275,8 +294,14 @@
             }
         });
 
-        function verPedidosCliente(idCliente){
-          alert(idCliente);
+        function verPedidosCliente(idCliente) {
+            var url = "{{ route('ver-pedidos-cliente', ['id' => ':vrIdCaja', 'idCliente' => ':idCliente']) }}"
+                .replace(':vrIdCaja', vrIdCaja)
+                .replace(':idCliente', idCliente);
+
+            window.location.href = url;
+
+            //alert(idCliente);
         }
     </script>
 @endpush

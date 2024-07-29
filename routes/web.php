@@ -56,6 +56,8 @@ Route::group(['middleware' => 'auth'], function () {
 	//Route::get('/caja/{id}/paquetes', [CajasController::class, 'paquetes'])->name('paquetes');
 	Route::get('/pedidos', [PageController::class, 'verPedidos'])->name('pedidos');
 	Route::post('/ver-pedidos/caja/{id}', [CajasController::class, 'pedidos'])->name('ver-pedidos');
+	Route::get('/ver-pedidos/caja/{id}/cliente/{idCliente}', [PageController::class, 'pedidosCliente'])->name('ver-pedidos-cliente');
+	Route::post('/pedidos-cliente/caja/{id}/cliente/{idCliente}', [CajasController::class, 'verPedidosCliente'])->name('pedidos-cliente');
 	Route::post('/crear-pedido', [CajasController::class, 'agregarPedido']);
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');
