@@ -30,7 +30,7 @@ class CajasController extends Controller
         $precio = $request->precio;
         $ganancia = $request->ganancia;
         $enlaceProducto = $request->enlaceProducto;
-        $mensaje = "Se creo el pedido correctamente";
+        $mensaje = "¡El pedido se agregó correctamente!";
 
         DB::select("insert into pedidos.cx_pedidos(
                         id_caja, id_usuario, nombre_producto, url_producto, cantidad, precio, ganancia, created_at)
@@ -110,8 +110,8 @@ class CajasController extends Controller
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     //$url = "{{url('/caja/$row['id_cliente']/pedidos/cliente/'}}";
-                    $actions = "<a class='btn btn-1 m-0' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar pedido' data-container='body' data-animation='true'><i class='fi fi-sr-edit'></i></a>
-                                          <a class='btn btn-1 m-0' data-bs-toggle='tooltip' data-bs-placement='top' title='Eliminar pedido' data-container='body' data-animation='true'><i class='fi fi-sr-trash'></i></a>
+                    $actions = "<a class='btn btn-1 m-0' data-bs-toggle='tooltip' onclick = 'editarPedido($row->id,  \"".$row->nombre_producto."\", \"".$row->url_producto."\", \"".$row->cantidad."\", \"".$row->precio."\", \"".$row->ganancia."\")'  data-bs-placement='top' title='Editar pedido' data-container='body' data-animation='true'><i class='fi fi-sr-edit'></i></a>
+                                          <a class='btn btn-danger btn-1 m-0' data-bs-toggle='tooltip' onclick = 'eliminarPedidoCliente($row->id)' data-bs-placement='top' title='Eliminar pedido' data-container='body' data-animation='true'><i class='fi fi-sr-trash'></i></a>
                     ";
                     return $actions;
                 })
@@ -122,4 +122,41 @@ class CajasController extends Controller
 
     }
 
+    public function eliminarPedido(Request $request, $idCaja, $idCliente){
+        $idPedido = $request->idPedido;
+        $mensaje = "¡El pedido se eliminó correctamente!";
+
+        DB::select('update pedidos.cx_pedidos set deleted_at = now() where id = :pedido and id_usuario = :idUsuario and id_caja = :caja',
+            ['pedido' => $idPedido, 'idUsuario' => $idCliente, 'caja' => $idCaja]
+        );
+
+        //$prueba = "El pedido:".$idPedido." del cliente:".$idCliente." y de la caja:".$idCaja." se borro correctamente";
+
+        return $mensaje;
+    }
+
+
+    public function editarPedido(Request $request){
+
+        $idPedido = $request->idPedido;
+        $idCaja = $request->idCaja;
+        $idCliente = $request->idCliente;
+        $nombreProducto = $request->nombreProducto;
+        $cantidad = $request->cantidad;
+        $precio = $request->precio;
+        $ganancia = $request->ganancia;
+        $enlaceProducto = $request->enlaceProducto;
+        $mensaje = "El pedido se editó correctamente";
+
+        DB::select("update pedidos.cx_pedidos set nombre_producto = :producto,
+                url_producto = :urlProducto,
+                cantidad = :cantidadProducto,
+                precio = :precioProducto,
+                ganancia = :gananciaProducto
+                where id = :pedido and id_caja = :caja and id_usuario = :usuario
+                ", ['producto'=>$nombreProducto, 'urlProducto'=>$enlaceProducto, 'cantidadProducto'=>$cantidad, 'precioProducto'=>$precio, 'gananciaProducto'=>$ganancia,
+                'pedido'=>$idPedido, 'caja'=>$idCaja, 'usuario'=>$idCliente]);
+
+        return $mensaje;
+    }
 }

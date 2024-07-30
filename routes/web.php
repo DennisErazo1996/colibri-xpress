@@ -49,16 +49,19 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/profile-static', [PageController::class, 'profile'])->name('profile-static'); 
 	Route::get('/sign-in-static', [PageController::class, 'signin'])->name('sign-in-static');
 	Route::get('/sign-up-static', [PageController::class, 'signup'])->name('sign-up-static'); 
+
 	Route::get('/paquetes', [PageController::class, 'paquetes'])->name('paquetes'); 
 	Route::get('/cajas', [PageController::class, 'cajas'])->name('cajas'); 
 	Route::post('/crear-caja', [CajasController::class, 'crearCaja'])->name('crear-caja');
 	Route::get('/caja/{id}/pedidos', [PageController::class, 'pedidos']);
-	//Route::get('/caja/{id}/paquetes', [CajasController::class, 'paquetes'])->name('paquetes');
 	Route::get('/pedidos', [PageController::class, 'verPedidos'])->name('pedidos');
 	Route::post('/ver-pedidos/caja/{id}', [CajasController::class, 'pedidos'])->name('ver-pedidos');
 	Route::get('/ver-pedidos/caja/{id}/cliente/{idCliente}', [PageController::class, 'pedidosCliente'])->name('ver-pedidos-cliente');
 	Route::post('/pedidos-cliente/caja/{id}/cliente/{idCliente}', [CajasController::class, 'verPedidosCliente'])->name('pedidos-cliente');
+	Route::post('/eliminar-pedido/caja/{idCaja}/cliente/{idCliente}', [CajasController::class, 'eliminarPedido'])->name('eliminar-pedido');
+	Route::post('/editar-pedido', [CajasController::class, 'editarPedido'])->name('editar-pedido');
 	Route::post('/crear-pedido', [CajasController::class, 'agregarPedido']);
+
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 });

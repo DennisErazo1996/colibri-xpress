@@ -96,8 +96,22 @@ class PageController extends Controller
 
         $infoCliente = DB::select("select * from users where id = :idUsuario", ['idUsuario'=>$idCliente]);
 
+        DB::select("SET lc_monetary = 'es_HN';");
+        $totales = DB::select("
+        select sum(x.total_ganancia)::numeric::money as total_ganancia, 
+            sum(x.total_precio)::numeric::money as total_precio, 
+            (sum(x.total_ganancia)+sum(x.total_precio))::numeric::money as total_pagar
+            from (select
+            cantidad, precio, ganancia,
+            (ganancia*cantidad)::numeric::money as total_ganancia,
+            (precio*cantidad)::numeric::money as total_precio
+            from pedidos.cx_pedidos where deleted_at is null
+            and id_caja = :idCaja and id_usuario = :idUsuario)x                                 
+        ", ['idUsuario'=>$idCliente, 'idCaja'=>$id]);
+
         return view("pages.pedidos-cliente")
         ->with('idCaja', $id)
+        ->with('totales', $totales)
         ->with('dataCliente', $infoCliente)
         ->with('idUsuario', $idCliente );
     }

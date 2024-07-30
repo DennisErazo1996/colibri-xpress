@@ -90,7 +90,7 @@
                                                 <label for="FormControlSelect1">Cantidad<span
                                                         style="color: red">*</span></label>
                                                 <input type="number" name="cantidad" class="form-control" max="8"
-                                                    id="inpCantidad" placeholder="" aria-label="Phone" required>
+                                                    id="inpCantidad" placeholder="0" aria-label="Phone" required>
 
                                             </div>
                                         </div>
@@ -99,7 +99,7 @@
                                                 <label for="FormControlSelect1">Precio<span
                                                         style="color: red">*</span></label>
                                                 <input type="number" name="cantidad" class="form-control" max="8"
-                                                    id="inpPrecio" placeholder="" aria-label="Phone" required>
+                                                    id="inpPrecio" placeholder="L 0.00" aria-label="Phone" required>
 
                                             </div>
                                         </div>
@@ -107,7 +107,7 @@
                                             <div class="form-group">
                                                 <label for="FormControlSelect1">Ganancia<span
                                                         style="color: red">*</span></label>
-                                                <input type="number" name="cantidad" class="form-control" placeholder=""
+                                                <input type="number" name="cantidad" class="form-control" placeholder="L 0.00"
                                                     id="inpGanancia" aria-label="Phone" required>
 
                                             </div>
@@ -230,7 +230,7 @@
                 console.log('No se encontró una opción seleccionada con ese valor.');
             }
 
-            console.log(dataId);
+            //console.log(dataId);
 
             if (typeof dataId != "undefined" && vrNombreProducto != '' && vrCantidad != '' && vrPrecio != '' &&
                 vrGanancia != '' && vrEnlaceProducto != '') {
