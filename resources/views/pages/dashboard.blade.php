@@ -3,7 +3,30 @@
 @section('content')
     @include('layouts.navbars.auth.topnav', ['title' => 'Dashboard'])
     <div class="container-fluid py-4">
-        <div class="row">
+        <div class="card" style="overflow: hidden">
+            <div id="carouselExampleAutoplaying" class="carousel slide " data-bs-ride="carousel">
+                <div class="carousel-inner ratio" style="--bs-aspect-ratio: 30%;" >
+                  <div class="carousel-item active">
+                    <img src="https://images.pexels.com/photos/6170458/pexels-photo-6170458.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" class="d-block w-100 " alt="...">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="https://images.pexels.com/photos/7203842/pexels-photo-7203842.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" class="d-block w-100 " alt="...">
+                  </div>
+                  {{-- <div class="carousel-item">
+                    <img src="https://images.pexels.com/photos/6994138/pexels-photo-6994138.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" class="d-block w-100 ratio ratio-21x9" alt="...">
+                  </div> --}}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+        </div>
+        {{-- <div class="row">
             <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
                 <div class="card">
                     <div class="card-body p-3">
@@ -103,7 +126,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
         {{-- <div class="row mt-4">
             <div class="col-lg-7 mb-lg-0 mb-4">
                 <div class="card z-index-2 h-100">
@@ -171,7 +194,7 @@
                 </div>
             </div>
         </div> --}}
-        <div class="row mt-4">
+        {{-- <div class="row mt-4">
             <div class="col-lg-7 mb-lg-0 mb-4">
                 <div class="card ">
                     <div class="card-header pb-0 p-3">
@@ -217,8 +240,8 @@
                         </table>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-5">
+            </div> --}}
+            {{-- <div class="col-lg-5">
                 <div class="card">
                     <div class="card-header pb-0 p-3">
                         <h6 class="mb-0">Nuestra dirección en Bradenton</h6>
@@ -227,7 +250,7 @@
                     <div class="card-body p-3">
                         <h4>CX {{Auth::user()->firstname.' '.Auth::user()->lastname}}</h4>
                         <p>2907 39th Ave W <br>Unit A <br>Bradenton, Fl 34205 <br> +1(813)8984017</p>
-                        {{-- <ul class="list-group">
+                        <ul class="list-group">
                             <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                                 <div class="d-flex align-items-center">
                                     <div class="icon icon-shape icon-sm me-3 bg-gradient-dark shadow text-center">
@@ -295,10 +318,10 @@
                                             class="ni ni-bold-right" aria-hidden="true"></i></button>
                                 </div>
                             </li>
-                        </ul> --}}
+                        </ul>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
         @include('layouts.footers.auth.footer')
     </div>

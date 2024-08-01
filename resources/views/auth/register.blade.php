@@ -125,7 +125,7 @@
                                         <div class="form-group">
                                             <label for="FormControlSelect1">Número de celular<span style="color: red">*</span></label>
                                             <input type="text" name="phone" class="form-control" max="8" oninput="formatPhone(this)" placeholder="Ingresa tu número de celular" aria-label="Phone" required>
-                                             @error('password') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
+                                             {{-- @error('password') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror --}}
                                         </div>
                                     </div>
                                     <div class="col-md-4 form-group">
@@ -161,7 +161,7 @@
                                         <div class="form-group">
                                             <label for="FormControlSelect1">Dirección<span style="color: red">*</span></label>
                                             <textarea name="address" placeholder="Ingresa tu dirección" class="form-control" rows="1" required></textarea>
-                                            @error('address') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror
+                                            {{-- @error('address') <p class='text-danger text-xs pt-1'> {{ $message }} </p> @enderror --}}
                                           </div>
                                     </div>
                                    
