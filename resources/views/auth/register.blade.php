@@ -137,9 +137,9 @@
                                     <div class="col-md-4 form-group">
                                         <label for="department">Departamento<span style="color: red">*</span></label>
                                         <select name="department" class="form-control" required>
-                                          <option selected disabled>Selecciona el departamento</option>                                          
-                                          <option>Olancho</option>                                          
-                                          <option>Francisco Morazan</option>                                          
+                                          {{-- <option selected disabled>Selecciona el departamento</option>                                           --}}
+                                          <option selected>Olancho</option>                                          
+                                          {{-- <option>Francisco Morazan</option>                                           --}}
                                         </select>
                                     </div>
                                     
