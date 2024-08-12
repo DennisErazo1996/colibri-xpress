@@ -37,9 +37,9 @@
                                         <td>
                                           <a class="btn btn-1 m-0" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver caja" data-container="body" data-animation="true"><i class="fi fi-sr-eye"></i></a>
                                           <a class="btn btn-1 m-0" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar caja" data-container="body" data-animation="true"><i class="fi fi-sr-edit"></i></a>
-                                          <a class="btn btn-1 m-0" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar caja" data-container="body" data-animation="true"><i class="fi fi-sr-trash"></i></a>
+                                          <a class="btn btn-1 btn-danger m-0" onclick="eliminarCaja({{$bxs->id}});" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar caja" data-container="body" data-animation="true"><i class="fi fi-sr-trash"></i></a>
                                           @if (Auth::user()->role == 'super-admin')
-                                          <a class="btn btn-1 btn-success m-0" href="{{url("/caja/$bxs->numero/pedidos")}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Agregar pedido" data-container="body" data-animation="true"><i class="fi fi-ss-order-history"></i></a>    
+                                          <a class="btn btn-1 btn-success m-0" href="{{url("/caja/$bxs->id/pedidos")}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Agregar pedido" data-container="body" data-animation="true"><i class="fi fi-ss-order-history"></i></a>    
                                           @endif
                                         </td>
                                     </tr>    
@@ -109,6 +109,72 @@
           $('#modal-form').modal('toggle')
         });
 
+        function eliminarCaja(idCaja){
+          
+          
+          var urlRest = "{{ route('eliminar-caja', ['idCaja' => ':idCaja']) }}"
+          .replace(':idCaja', idCaja);
+
+            $.confirm({
+                type: 'red',
+                animation: 'scale',
+                title: 'Eliminar Caja',
+                content: 'Seguro que quiere eliminar esta caja?',
+                buttons: {
+                    confirm: {
+                        text: 'Confirmar',
+                        btnClass: 'btn-red',
+                        action: function() {
+
+                            $(document).ajaxSend(function() {
+                                $("#overlay").fadeIn(300);
+                            });
+
+                            $.ajax({
+                                type: "POST",
+                                url: urlRest,
+                                data: {
+                                    "_token": "{{ csrf_token() }}",
+                                    //"idPedido": idPedido,
+                                },
+                                success: function(response) {
+                                    //alert(response)
+                                    const Toast = Swal.mixin({
+                                        toast: true,
+                                        position: "top-end",
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        didOpen: (toast) => {
+                                            toast.onmouseenter = Swal.stopTimer;
+                                            toast.onmouseleave = Swal.resumeTimer;
+                                        }
+                                    });
+                                    Toast.fire({
+                                        icon: "success",
+                                        title: response
+                                    });
+
+                                    location.reload();
+                                    //$('#tbl-pedidos').DataTable().ajax.reload();
+                                },
+                                error: function(request, status, error) {
+                                    alert(request.responseText);
+                                }
+                            }).done(function() {
+                                setTimeout(function() {
+                                    $("#overlay").fadeOut(300);
+                                }, 500);
+                            });
+                        }
+                    },
+                    cancelar: function() {
+                        //$.alert('Canceled!');
+                    },
+
+                }
+            });
+        };
 
     </script>
 @endpush

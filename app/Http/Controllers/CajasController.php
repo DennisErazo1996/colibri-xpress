@@ -159,4 +159,13 @@ class CajasController extends Controller
 
         return $mensaje;
     }
+
+    public function eliminarCaja($idCaja){
+
+        $mensaje = "Se elimino correctamente la caja: ".$idCaja;
+
+        DB::select("update cx_cajas set deleted_at = now() where id = :id ", ['id' => $idCaja]);
+
+        return $mensaje;
+    }
 }

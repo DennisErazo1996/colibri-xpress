@@ -19838,7 +19838,7 @@ textarea.form-control-lg {
   .dropdown:not(.dropdown-hover) .dropdown-menu {
     margin-top: 40px !important;
   }
-  .dropdown .dropdown-menu:before {
+  /*.dropdown .dropdown-menu:before {
     font-family: "FontAwesome";
     content: "\f0d8";
     position: absolute;
@@ -19848,7 +19848,7 @@ textarea.form-control-lg {
     font-size: 22px;
     color: #fff;
     transition: top 0.35s ease;
-  }
+  }*/
   .dropdown .dropdown-item .arrow {
     transform: rotate(-90deg);
   }

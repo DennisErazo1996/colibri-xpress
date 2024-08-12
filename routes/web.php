@@ -61,6 +61,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('/eliminar-pedido/caja/{idCaja}/cliente/{idCliente}', [CajasController::class, 'eliminarPedido'])->name('eliminar-pedido');
 	Route::post('/editar-pedido', [CajasController::class, 'editarPedido'])->name('editar-pedido');
 	Route::post('/crear-pedido', [CajasController::class, 'agregarPedido']);
+	Route::post('/eliminar-caja/{idCaja}', [CajasController::class, 'eliminarCaja'])->name('eliminar-caja');
 
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');
