@@ -64,7 +64,7 @@ img#logo-colibri-xpress-small {
 }
 
 .sidenav .navbar-brand img {
-    width: 80px !important;
+    width: 120px !important;
     max-height: fit-content;
 }
 
@@ -144,9 +144,9 @@ footer {
     color: #404040;
 }
 
-a:hover{
+/*a:hover{
     color: #f3faff !important;
-}
+}*/
 
 @media (min-width: 992px) {
     :not(.main-content) .navbar .dropdown .dropdown-menu {

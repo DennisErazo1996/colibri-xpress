@@ -9,6 +9,7 @@
             {{-- <span class="ms-1 font-weight-bold">Colibri Xpress</span> --}}
         </a>
     </div>
+    <br>
     <hr class="horizontal dark mt-0">
     <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
         <ul class="navbar-nav">
@@ -21,7 +22,7 @@
                     <span class="nav-link-text ms-1">Panel</span>
                 </a>
             </li>
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link {{ Route::currentRouteName() == 'paquetes' ? 'active' : '' }}" href="{{ route('paquetes') }}">
                     <div
                         class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -29,7 +30,7 @@
                     </div>
                     <span class="nav-link-text ms-1">Mis paquetes</span>
                 </a>
-            </li>
+            </li> --}}
             @if (Auth::user()->role == 'super-admin' || Auth::user()->role == 'admin')
             <li class="nav-item">
                 <a class="nav-link {{ Route::currentRouteName() == 'cajas' ? 'active' : '' }}" href="{{ route('cajas') }}">
@@ -50,7 +51,7 @@
                     <span class="nav-link-text ms-1">Pedidos</span>
                 </a>
             </li> --}}
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link {{ Route::currentRouteName() == 'profile' ? 'active' : '' }}" href="{{ route('profile') }}">
                     <div
                         class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -58,7 +59,7 @@
                     </div>
                     <span class="nav-link-text ms-1">Mi perfil</span>
                 </a>
-            </li>
+            </li> --}}
            
             {{-- <li class="nav-item mt-3 d-flex align-items-center">
                 <div class="ps-4">

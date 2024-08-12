@@ -48,9 +48,20 @@ class PageController extends Controller
         return view("pages.sign-up-static");
     }
 
-    public function paquetes()
-    {
-        return view("pages.paquetes");
+    public function paquetes($idCaja)
+    {   
+        $clientes = DB::select("
+            select 
+                id,
+                'CX-' || LPAD(id::TEXT, 4, '10') AS locker_number,
+                firstname || ' ' || lastname as nombre
+            from users where deleted_at is null
+        ");
+
+        return view("pages.paquetes")
+        ->with('usuarios', $clientes)
+        ->with('idCaja', $idCaja);
+        
     }
 
     public function cajas()
@@ -84,7 +95,7 @@ class PageController extends Controller
                 id,
                 'CX-' || LPAD(id::TEXT, 4, '10') AS locker_number,
                 firstname || ' ' || lastname as nombre
-            from users
+            from users where deleted_at is null
         ");
 
         return view("pages.pedidos")

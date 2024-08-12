@@ -168,4 +168,68 @@ class CajasController extends Controller
 
         return $mensaje;
     }
+
+    public function verPaquetes(Request $request, $id){
+
+        if ($request->ajax()) {
+            //DB::select("SET lc_monetary = 'es_HN';");
+            $data = DB::select("
+            Select
+                cxp.id,
+                row_number() over(order by max(cxp.created_at) desc) as no,
+                cxp.id_caja,
+                cxp.id_usuario,
+                'CX-' ||  LPAD(u.id::TEXT, 4, '10') AS casillero,
+                u.firstname || ' ' || u.lastname as nombre_cliente,
+                cxp.numero_tracking,
+                cxp.descripcion,
+                to_char(cxp.created_at::date, 'MM/DD/YYYY') AS fecha_registro,
+                to_char(cxp.created_at::time, 'HH24:MI:SS') as hora_registro
+                from cx_paquetes cxp
+                join users u on u.id = cxp.id_usuario
+                where cxp.deleted_at is null and cxp.id_caja = :idCaja
+                group by
+                cxp.id_usuario,
+                u.firstname,
+                u.id, cxp.id_caja,
+                cxp.id_usuario,
+                cxp.numero_tracking,
+                cxp.descripcion,
+                cxp.created_at,
+                cxp.id
+                
+                ;  
+        ", ['idCaja'=> $id]);
+
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->addColumn('opcion', function($row){
+                    //$url = "{{url('/caja/$row['id_cliente']/pedidos/cliente/'}}";
+                    $actions = "<a class='btn btn-1 m-0' onclick='editarPaquete($row->id_usuario, $row->id)' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-sr-edit'></i></a>";
+                    return $actions;
+                })
+                ->rawColumns(['opcion'])
+                ->make(true);
+        }
+    }
+
+    public function registrarPaquete(Request $request){
+
+        $idCaja = $request->idCaja;
+        $idCliente = $request->idCliente;
+        $numeroTracking = $request->numeroTracking;
+        $descripcionPaquete = $request->descripcionPaquete;
+        $mensaje = "¡El paquete se registró correctamente!";
+
+
+        DB::Select("set timezone TO 'GMT-6';");
+        DB::select("insert into cx_paquetes(
+                        id_caja, id_usuario, numero_tracking, descripcion, created_at)
+                    values(:id_caja, :id_cliente, :numero_trackin, :descripcion_paquete, now())",
+                    
+                    ['id_caja'=>$idCaja, 'id_cliente'=>$idCliente, 'numero_trackin'=>$numeroTracking, 'descripcion_paquete'=>$descripcionPaquete]);
+
+        return $mensaje;
+
+    }
 }

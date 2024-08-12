@@ -50,7 +50,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/sign-in-static', [PageController::class, 'signin'])->name('sign-in-static');
 	Route::get('/sign-up-static', [PageController::class, 'signup'])->name('sign-up-static'); 
 
-	Route::get('/paquetes', [PageController::class, 'paquetes'])->name('paquetes'); 
+	Route::get('/caja/{idCaja}/paquetes', [PageController::class, 'paquetes']); 
 	Route::get('/cajas', [PageController::class, 'cajas'])->name('cajas'); 
 	Route::post('/crear-caja', [CajasController::class, 'crearCaja'])->name('crear-caja');
 	Route::get('/caja/{id}/pedidos', [PageController::class, 'pedidos']);
@@ -62,6 +62,8 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('/editar-pedido', [CajasController::class, 'editarPedido'])->name('editar-pedido');
 	Route::post('/crear-pedido', [CajasController::class, 'agregarPedido']);
 	Route::post('/eliminar-caja/{idCaja}', [CajasController::class, 'eliminarCaja'])->name('eliminar-caja');
+	Route::post('/ver-paquetes/caja/{id}', [CajasController::class, 'verPaquetes'])->name('ver-paquetes');
+	Route::post('/registrar-paquete', [CajasController::class, 'registrarPaquete']);
 
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');
