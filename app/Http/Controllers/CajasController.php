@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
+use Mail;
+use App\Mail\PackageMail;
 
 class CajasController extends Controller
 {
@@ -228,6 +230,27 @@ class CajasController extends Controller
                     values(:id_caja, :id_cliente, :numero_trackin, :descripcion_paquete, now())",
                     
                     ['id_caja'=>$idCaja, 'id_cliente'=>$idCliente, 'numero_trackin'=>$numeroTracking, 'descripcion_paquete'=>$descripcionPaquete]);
+        
+        
+        
+        $lockNum = DB::select("SELECT 'CX-' || LPAD(:id::TEXT, 4, '10') AS locker_number", ['id'=>$idCliente]);
+        foreach($lockNum as $ln){
+            $lockerNumber = $ln->locker_number;
+        }
+        
+        $fechaEnvio = DB::select("select to_char(created_at::date, 'DD/MM/YYYY') fecha_envio from cx_cajas where id = :id and deleted_at is null", ['id'=>$idCaja]);
+        foreach($fechaEnvio as $fe){
+            $envio = $fe->fecha_envio;
+        }
+
+        $user = DB::select("select * from users where id = :id_cliente and deleted_at is null", ['id_cliente' => $idCliente]);
+        foreach($user as $u){
+            $correo = $u->email;
+            $nombre = $u->firstname;
+        
+        }
+
+        Mail::to($correo)->send(new PackageMail($nombre, $lockerNumber, $envio, $numeroTracking));
 
         return $mensaje;
 

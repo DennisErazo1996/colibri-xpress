@@ -242,7 +242,7 @@ table.center-on-narrow {
           <!-- Email Footer : BEGIN -->
           <table cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width: 680px;">
             <tr>
-             <td style="padding: 40px 10px;width: 100%;font-size: 12px; font-family: sans-serif; mso-height-rule: exactly; line-height:18px; text-align: center; color: #888888;"><webversion style="color:#cccccc; text-decoration:none; font-weight: bold;">Este es un correo generado automáticamente, por favor, no repoderlo.</webversion>
+             <td style="padding: 40px 10px;width: 100%;font-size: 12px; font-family: sans-serif; mso-height-rule: exactly; line-height:18px; text-align: center; color: #888888;"><webversion style="color:#cccccc; text-decoration:none; font-weight: bold;">Este es un correo generado automáticamente, por favor, no responderlo.</webversion>
                 <br>
                 <br>
                 Colibrí Xpress<br>

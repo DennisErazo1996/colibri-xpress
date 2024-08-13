@@ -124,7 +124,7 @@ table.center-on-narrow {
     <td><center style="width: 100%;">
         
         <!-- Visually Hidden Preheader Text : BEGIN -->
-        <div style="display:none;font-size:1px;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;mso-hide:all;font-family: 'Nunito Sans', sans-serif;"> Hola, {{$user['firstname'].' '.$user['lastname']}} esta en la información de su casillero.  </div>
+        <div style="display:none;font-size:1px;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;mso-hide:all;font-family: 'Nunito Sans', sans-serif;"> Hola, {{$nombre}} hemos recibido un nuevo paquete.  </div>
         <!-- Visually Hidden Preheader Text : END -->
         
         <div style="max-width: 680px;"> 
@@ -156,9 +156,10 @@ table.center-on-narrow {
               <td><table cellspacing="0" cellpadding="0" border="0" width="100%">
                   <tr>
                     <td style="padding: 40px; text-align: center; font-family: 'Nunito Sans', sans-serif; font-size: 15px; mso-height-rule: exactly; line-height: 20px; color: #404040;">
-                        Hola Dennis, el usuario <strong>{{$user['firstname'].' '.$user['lastname']}}</strong>  se ha registrado en el sistema,
-                        su casillero es <strong>{{$lockerNumber}}</strong> <br>
-                        
+                        Hola, {{$nombre}} - {{$lockerNumber}}<br><br>
+                        Hemos recibido tu paquete con tracking <strong>{{$numeroTracking}}</strong> en nuestra dirección de Bradenton, Florida. <br> <br>
+                        Te recordamos que el próximo envío de paquetes es el <strong>{{$envio}}</strong>,
+                        muchas gracias por confiar en nuestros servicios
                         <br>
                       <br>
                       
@@ -179,7 +180,38 @@ table.center-on-narrow {
             <!-- 1 Column Text : BEGIN --> 
             
             <!-- Background Image with Text : BEGIN -->
-            
+            <tr>
+              <td background="https://innovastudiohn.com/banner-02-email-colibri-xpress.png" bgcolor="#222222" valign="middle" style="text-align: center; background-position: center center !important; background-size: cover !important;"><!--[if gte mso 9]>
+                        <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:680px;height:175px; background-position: center center !important;">
+                        <v:fill type="tile" src="assets/Hybrid/Image_680x230.png" color="#222222" />
+                        <v:textbox inset="0,0,0,0">
+                        <![endif]-->
+                
+                <div> 
+                  <!--[if mso]>
+                            <table border="0" cellspacing="0" cellpadding="0" align="center" width="500">
+                            <tr>
+                            <td align="center" valign="top" width="500">
+                            <![endif]-->
+                  <table border="0" cellpadding="0" cellspacing="0" align="center" width="100%" style="max-width:500px; margin: auto;">
+                    <tr>
+                      <td valign="middle" style="text-align: center; padding: 40px 20px; font-family: 'Nunito Sans', sans-serif; font-size: 15px; mso-height-rule: exactly; line-height: 20px; color: #ffffff;"> 
+                        <br><br><br><br><br><br><br><br>   
+                    </td>
+                    </tr>
+                  </table>
+                  <!--[if (gte mso 9)|(IE)]>
+                            </td>
+                            </tr>
+                            </table>
+                            <![endif]--> 
+                </div>
+                
+                <!--[if gte mso 9]>
+                        </v:textbox>
+                        </v:rect>
+                        <![endif]--></td>
+            </tr>
             <!-- Background Image with Text : END --> 
             
             <!-- Two Even Columns : BEGIN -->
