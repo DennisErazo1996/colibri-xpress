@@ -7,6 +7,7 @@ use App\Models\User;
 use Mail;
 use Auth;
 use App\Mail\WelcomeMail;
+use App\Mail\RegisterMail;
 use Illuminate\Support\Facades\DB;
 
 class RegisterController extends Controller
@@ -43,6 +44,7 @@ class RegisterController extends Controller
 
 
         Mail::to($user->email)->send(new WelcomeMail($user, $lockerNumber));
+        Mail::to('dennis.erazo@outlook.com')->send(new RegisterMail($user, $lockerNumber));
         //auth()->login($user);
                      
         
