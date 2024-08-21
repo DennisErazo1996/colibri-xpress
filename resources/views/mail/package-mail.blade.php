@@ -156,7 +156,7 @@ table.center-on-narrow {
               <td><table cellspacing="0" cellpadding="0" border="0" width="100%">
                   <tr>
                     <td style="padding: 40px; text-align: center; font-family: 'Nunito Sans', sans-serif; font-size: 15px; mso-height-rule: exactly; line-height: 20px; color: #404040;">
-                        Hola, {{$nombre}} - {{$lockerNumber}}<br><br>
+                        Hola, {{$nombre}} ({{$lockerNumber}})<br><br>
                         Hemos recibido tu paquete con tracking <strong>{{$numeroTracking}}</strong> en nuestra dirección de Bradenton, Florida. <br> <br>
                         Te recordamos que el próximo envío de paquetes es el <strong>{{$envio}}</strong>,
                         muchas gracias por confiar en nuestros servicios

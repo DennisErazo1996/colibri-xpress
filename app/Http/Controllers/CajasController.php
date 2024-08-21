@@ -238,7 +238,7 @@ class CajasController extends Controller
             $lockerNumber = $ln->locker_number;
         }
         
-        $fechaEnvio = DB::select("select to_char(created_at::date, 'DD/MM/YYYY') fecha_envio from cx_cajas where id = :id and deleted_at is null", ['id'=>$idCaja]);
+        $fechaEnvio = DB::select("select to_char(fecha_envio::date, 'DD/MM/YYYY') fecha_envio from cx_cajas where id = :id and deleted_at is null", ['id'=>$idCaja]);
         foreach($fechaEnvio as $fe){
             $envio = $fe->fecha_envio;
         }
