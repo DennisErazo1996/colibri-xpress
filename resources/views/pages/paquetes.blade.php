@@ -105,6 +105,63 @@
 
     </div>
     </div>
+
+    <div class="col-md-4">
+
+        <div class="modal fade" id="modal-form" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            role="dialog" aria-labelledby="modal-form" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-body p-0">
+                        <div class="card card-plain">
+                            <div class="card-header pb-0 text-left">
+                                <h3 class="font-weight-bolder text-default">Actualizar el pedido</h3>
+                                {{-- <p class="mb-0">Enter your email and password to sign in</p> --}}
+                            </div>
+                            <div class="card-body">
+                                <form role="form text-left">
+                                    <input type="text" class="form-control" id="inpIdPaquete" style="display: none">
+                                    <input type="text" class="form-control" id="inpIdCliente" style="display: none">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="department">Número de Tracking<span
+                                                        style="color: red">*</span></label>
+                                                <input type="text" name="identity" class="form-control"
+                                                    id="inpTracking" placeholder="Ingresa el numero de tracking"
+                                                    aria-label="Producto" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="department">Descripción del paquete<span
+                                                        style="color: red">*</span></label>
+                                                <textarea id="inpDescripcion" type="email" name="email" class="form-control" placeholder="Ingresa la descripcion del paquete"
+                                                    rows="5" aria-label="Enlace" required></textarea>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 text-center" id="mensaje"
+                                            style="color: red; font-size:12px"></div>
+                                    </div>
+                                    <div class="text-center d-flex flex-row justify-content-end">
+                                        <button id="btn-actualizar-paquete" type="submit"
+                                            class="btn  bg-gradient-secondary btn-3 w-30 mt-4 mb-0">Actualizar</button>
+                                        <button id="btn-cancelar-paquete" type="button"
+                                            class="btn btn-3 w-30 mt-4 mb-0 ml-50">Cancelar</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    
     @include('layouts.footers.auth.footer')
 @endsection
 @push('js')
@@ -170,14 +227,12 @@
 
         });
 
-        $('#btn-cancelar-pedido').on('click', function() {
+        $('#btn-cancelar-paquete').on('click', function() {
             $('div#mensaje').html('')
-            $('#inpNombreProducto').val('');
-            $('#inpCantidad').val('');
-            $('#inpPrecio').val('');
-            $('#inpGanancia').val('');
-            $('#inpEnlaceProducto').val('');
-            $('#nombre-cliente').val('');
+            $('#inpTracking').val('');
+            $('#inpDescripcion').val('');
+            $('#inpIdPaquete').val('');
+            $('#inpIdCliente').val('');
             $('#modal-form').modal('toggle')
 
         });
@@ -259,6 +314,90 @@
             }
         });
 
-        
+        function editarPaquete(idUsuario, idPaquete, numeroTracking, descripcionPaquete){
+
+            $('#inpTracking').val(numeroTracking);
+            $('#inpDescripcion').val(descripcionPaquete);
+            $('#inpIdPaquete').val(idPaquete);
+            $('#inpIdCliente').val(idUsuario);
+
+            $('#modal-form').modal('toggle');
+        }
+
+        $('#btn-actualizar-paquete').click(function(e) {
+            e.preventDefault();
+
+            var urlRest = "{{ route('editar-paquete') }}";
+            var vrNumeroTracking = $('#inpTracking').val();
+            var vrDescripcionPaquete = $('#inpDescripcion').val();
+            var vrIdPaquete = $('#inpIdPaquete').val();
+            var vrIdCliente = $('#inpIdCliente').val();
+            //var vrIdCaja = "{{ $idCaja }}";
+
+            //alert(vrIdPedido)
+            //console.log(dataId);
+
+            if (vrNumeroTracking != '' && vrDescripcionPaquete != '') {
+
+                $(document).ajaxSend(function() {
+                    $("#overlay").fadeIn(300);
+                });
+
+                $('#btn-actualizar-paquete').prop('disabled', true);
+
+                $.ajax({
+                    type: "POST",
+                    url: urlRest,
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "numeroTracking": vrNumeroTracking,
+                        "descripcionPaquete": vrDescripcionPaquete,
+                        "idPaquete": vrIdPaquete,
+                        "idCliente": vrIdCliente,
+                        "idCaja": vrIdCaja,
+                    },
+                    success: function(response) {
+                        //alert(response)
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: "top-end",
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.onmouseenter = Swal.stopTimer;
+                                toast.onmouseleave = Swal.resumeTimer;
+                            }
+                        });
+                        Toast.fire({
+                            icon: "success",
+                            title: response
+                        });
+
+                        //window.location.reload();
+                        $('#tbl-paquetes').DataTable().ajax.reload();
+                    },
+                    error: function(request, status, error) {
+                        alert(request.responseText);
+                    }
+                }).done(function() {
+
+                    $('#modal-form').modal('toggle');
+                    $('div#mensaje').html('')
+                    $('#inpTracking').val('');
+                    $('#inpDescripcion').val('');
+                    $('#inpIdPaquete').val('');
+                    $('#inpIdCliente').val('');
+                    $('#btn-actualizar-paquete').prop('disabled', false);
+
+                    setTimeout(function() {
+                        $("#overlay").fadeOut(300);
+                    }, 500);
+                });
+            } else {
+                $('div#mensaje').html('Llena todos los campos')
+            }
+        });
+
     </script>
 @endpush

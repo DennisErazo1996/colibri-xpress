@@ -186,7 +186,7 @@ class CajasController extends Controller
                 cxp.numero_tracking,
                 cxp.descripcion,
                 to_char(cxp.created_at::date, 'MM/DD/YYYY') AS fecha_registro,
-                to_char(cxp.created_at::time, 'HH24:MI:SS') as hora_registro
+                to_char(cxp.created_at::time, 'HH12:MI:SS PM') as hora_registro
                 from cx_paquetes cxp
                 join users u on u.id = cxp.id_usuario
                 where cxp.deleted_at is null and cxp.id_caja = :idCaja
@@ -207,7 +207,7 @@ class CajasController extends Controller
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     //$url = "{{url('/caja/$row['id_cliente']/pedidos/cliente/'}}";
-                    $actions = "<a class='btn btn-1 m-0' onclick='editarPaquete($row->id_usuario, $row->id)' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-sr-edit'></i></a>";
+                    $actions = "<a class='btn btn-1 m-0' onclick='editarPaquete($row->id_usuario, $row->id, \"".$row->numero_tracking."\", \"".$row->descripcion."\")' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-sr-edit'></i></a>";
                     return $actions;
                 })
                 ->rawColumns(['opcion'])
@@ -224,7 +224,7 @@ class CajasController extends Controller
         $mensaje = "¡El paquete se registró correctamente!";
 
 
-        DB::Select("set timezone TO 'GMT-6';");
+        DB::Select("SET timezone TO 'America/Tegucigalpa';");
         DB::select("insert into cx_paquetes(
                         id_caja, id_usuario, numero_tracking, descripcion, created_at)
                     values(:id_caja, :id_cliente, :numero_trackin, :descripcion_paquete, now())",
@@ -254,5 +254,24 @@ class CajasController extends Controller
 
         return $mensaje;
 
+    }
+
+    public function editarPaquete(Request $request){
+
+        $idCaja = $request->idCaja;
+        $idPaquete = $request->idPaquete;
+        $idCliente = $request->idCliente;
+        $numeroTracking = $request->numeroTracking;
+        $descripcionPaquete = $request->descripcionPaquete;
+        
+        $mensaje = "El paquete se editó correctamente";
+
+        DB::select("update cx_paquetes set numero_tracking = :tracking,
+                descripcion = :descripcion
+                where id = :paquete and id_caja = :caja and id_usuario = :usuario
+            ", ['tracking'=>$numeroTracking, 'descripcion'=>$descripcionPaquete, 
+                'paquete'=>$idPaquete, 'caja'=>$idCaja, 'usuario'=>$idCliente]);
+
+        return $mensaje;
     }
 }
