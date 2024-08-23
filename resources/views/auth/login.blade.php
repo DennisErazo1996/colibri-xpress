@@ -21,8 +21,8 @@
                                 </div>
                                 <div class="card-body">
                                     <form role="form" method="POST" action="{{ route('login.perform') }}">
-                                        @csrf
-                                        @method('post')
+                                        @csrf <!-- {{ csrf_field() }} -->
+                                        {{-- @method('post') --}}
                                         <div class="flex flex-col mb-3">
                                             <input type="email" name="email" class="form-control form-control-lg"  aria-label="Email" placeholder="Ingrese su correo electrónico"> 
                                             @error('email') <p class="text-danger text-xs pt-1"> {{$message}} </p>@enderror

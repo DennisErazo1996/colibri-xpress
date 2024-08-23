@@ -144,6 +144,14 @@ footer {
     color: #404040;
 }
 
+#lnk-list-paquetes, #lnk-list-enviados{
+    color: #303389 !important;
+}
+
+.active#lnk-list-paquetes, .active#lnk-list-enviados{
+    color: #404040 !important;
+}
+
 /*a:hover{
     color: #f3faff !important;
 }*/

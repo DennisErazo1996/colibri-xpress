@@ -207,7 +207,7 @@ class CajasController extends Controller
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     //$url = "{{url('/caja/$row['id_cliente']/pedidos/cliente/'}}";
-                    $actions = "<a class='btn btn-1 m-0' onclick='editarPaquete($row->id_usuario, $row->id, \"".$row->numero_tracking."\", \"".$row->descripcion."\")' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-sr-edit'></i></a>";
+                    $actions = "<a class='btn btn-1 m-0' onclick='editarPaquete($row->id_usuario, $row->id, \"".$row->numero_tracking."\", \"".$row->descripcion."\")' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>";
                     return $actions;
                 })
                 ->rawColumns(['opcion'])
@@ -271,6 +271,39 @@ class CajasController extends Controller
                 where id = :paquete and id_caja = :caja and id_usuario = :usuario
             ", ['tracking'=>$numeroTracking, 'descripcion'=>$descripcionPaquete, 
                 'paquete'=>$idPaquete, 'caja'=>$idCaja, 'usuario'=>$idCliente]);
+
+        return $mensaje;
+    }
+
+    public function enviarPaquetes(Request $request){
+
+        $idCaja = $request->idCaja;
+        $mensaje = null;
+        
+        $existe = DB::select("select id_caja from cx_envios where id_caja = :id_caja group by id_caja", ['id_caja' => $idCaja]);
+
+        if($existe != null){
+
+            $mensaje = "Los paquetes ya han sido enviados"; 
+            return $mensaje; 
+
+        }else{
+
+            $paquetes = DB::select("select * from cx_paquetes
+	                            where deleted_at is null and id_caja = :id_caja",
+            ['id_caja' => $idCaja]);
+
+            foreach($paquetes as $pq){
+
+                /*$paquete = $pq->id;
+                $caja = $pq->id_caja;*/
+
+                DB::select("insert into cx_envios (id_caja, id_paquete, created_at) values(:idCaja, :idPaquete, now())",
+                ['idCaja'=> $pq->id_caja, 'idPaquete' => $pq->id]);
+
+                $mensaje = "Se cambio el estado de los paquetes correctamente";
+            }
+        }
 
         return $mensaje;
     }

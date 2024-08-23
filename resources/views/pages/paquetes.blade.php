@@ -52,8 +52,9 @@
                                 <div class="col-md-12 text-center" id="mensaje" style="color: red; font-size:12px"></div>
                             </div>
                             <div class="text-center d-flex flex-row justify-content-end">
-                                <button id="btn-registrar-paquete" type="submit" class="btn  btn-success btn-1  mt-4 mb-0"><i
-                                        class="fi fi-sr-add"></i> Agregar paquete</button>
+                                <button id="btn-registrar-paquete" type="submit"
+                                    class="btn  btn-success btn-1  mt-4 mb-0"><i class="fi fi-sr-add"></i> Agregar
+                                    paquete</button>
                                 {{-- <button id="btn-cancelar-pedido" type="button"
                                     class="btn btn-3 w-30 mt-4 mb-0 ml-50">Cancelar</button> --}}
                             </div>
@@ -65,9 +66,41 @@
 
     </div>
     <div class="container-fluid py-4 mt-0">
+        {{-- <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" id="lnk-list-paquetes">Lista de paquetes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page"  id="lnk-list-enviados">Paquetes enviados</a>
+            </li>
+          </ul> --}}
+        {{-- <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" id="lnk-list-paquetes">Lista de paquetes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active"  id="lnk-list-enviados">Paquetes enviados</a>
+            </li>
+        </ul> --}}
+        <br>
         <div class="row">
             <div class="col-12">
-                <div class="card mb-0 p-2">
+
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" id="lnk-list-paquetes">Lista de paquetes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" id="lnk-list-enviados">Paquetes enviados</a>
+                    </li>
+                </ul>
+                <div class="card mb-0 p-2" id="card-list-paquetes">
+                    <div class="text-center d-flex flex-row justify-content-center">
+                        <button id="btn-enviar-paquetes" type="button" class="btn  btn-secondary btn-1  mt-4 mb-0"><i
+                                class="fi fi-ss-paper-plane"></i> Enviar Paquetes</button>
+                        {{-- <button id="btn-cancelar-pedido" type="button"
+                            class="btn btn-3 w-30 mt-4 mb-0 ml-50">Cancelar</button> --}}
+                    </div>
                     <div class="card-header pb-0 text-center">
                         {{-- <h6>Authors table</h6> --}}
                     </div>
@@ -82,6 +115,41 @@
                                     <tr>
 
                                         <th>No.</th>
+                                        <th>Casillero</th>
+                                        <th>Nombre del Cliente</th>
+                                        <th>Número de tracking</th>
+                                        <th>Descripción del paquete</th>
+                                        <th>Fecha de registro</th>
+                                        <th>Hora de registro</th>
+                                        <th>Opciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-0 p-2" id="card-list-enviados">
+                    <div class="card-header pb-0 text-center">
+                        {{-- <h6>Authors table</h6> --}}
+                    </div>
+                    {{-- <div class="align-items-center text-center">
+                        <button type="button" class="btn btn-primary btn-default mb-3" data-bs-toggle="modal"
+                            data-bs-target="#modal-form">Agregar nuevo pedido</button>
+                    </div> --}}
+                    <div class="card-body px-2 pt-0 pb-2">
+                        <div class="table-responsive p-0">
+                            <table id="tbl-paquetes-enviados" class="table align-items-center table-striped"
+                                style="width:100%">
+                                <thead class="">
+                                    <tr>
+
+                                        <th>Otra</th>
                                         <th>Casillero</th>
                                         <th>Nombre del Cliente</th>
                                         <th>Número de tracking</th>
@@ -136,8 +204,8 @@
                                             <div class="form-group">
                                                 <label for="department">Descripción del paquete<span
                                                         style="color: red">*</span></label>
-                                                <textarea id="inpDescripcion" type="email" name="email" class="form-control" placeholder="Ingresa la descripcion del paquete"
-                                                    rows="5" aria-label="Enlace" required></textarea>
+                                                <textarea id="inpDescripcion" type="email" name="email" class="form-control"
+                                                    placeholder="Ingresa la descripcion del paquete" rows="5" aria-label="Enlace" required></textarea>
 
                                             </div>
                                         </div>
@@ -161,14 +229,37 @@
     </div>
 
 
-    
+
     @include('layouts.footers.auth.footer')
 @endsection
 @push('js')
     <script>
         var urlTable = "{{ route('ver-paquetes', ['id' => $idCaja]) }}";
         var vrIdCaja = "{{ $idCaja }}";
+        var stateCookieEnviado = getCookie("stateListEnviados");
 
+        //alert(stateCookieEnviado)
+
+
+        if (stateCookieEnviado == null) {
+            $('#card-list-enviados').hide();
+            $('li.nav-item a#lnk-list-paquetes').addClass('active');
+            $('li.nav-item a#lnk-list-paquetes').attr('aria-current', 'page');
+        } else {
+            inicializarTablaEnvios()
+            $('li.nav-item a#lnk-list-enviados').addClass('active');
+            $('li.nav-item a#lnk-list-enviados').attr('aria-current', 'page');
+            $('#card-list-enviados').show();
+            $('#card-list-paquetes').hide();
+
+        }
+
+        $(document).ready(function() {
+
+            //$('#card-list-paquetes').show();
+            // $('#tbl-paquetes-enviados').hide();
+
+        });
 
         $('#tbl-paquetes').DataTable({
             processing: true,
@@ -226,6 +317,40 @@
             language: idiomaDatatables,
 
         });
+
+
+
+        $('#lnk-list-paquetes').click(function(e) {
+            e.preventDefault();
+
+            document.cookie = "stateListEnviados=active; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+            var cookieState = getCookie('stateListEnviados')
+            //console.log(cookieState)
+
+            $('li.nav-item a#lnk-list-paquetes').addClass('active');
+            $('li.nav-item a#lnk-list-enviados').removeClass('active');
+            $('li.nav-item a#lnk-list-paquetes').attr('aria-current', 'page');
+            $('#card-list-paquetes').show().fadeIn();
+            $('#card-list-enviados').hide().fadeOut();
+        });
+
+
+        $('#lnk-list-enviados').click(function(e) {
+            e.preventDefault();
+
+            document.cookie = "stateListEnviados=active";
+            var cookieState = getCookie('stateListEnviados')
+            //console.log(cookieState)
+
+            $('li.nav-item a#lnk-list-paquetes').removeClass('active');
+            $('li.nav-item a#lnk-list-enviados').addClass('active');
+            $('li.nav-item a#lnk-list-enviados').attr('aria-current', 'page');
+            $('#card-list-paquetes').hide().fadeOut();
+            $('#card-list-enviados').show().fadeIn();
+            inicializarTablaEnvios()
+        });
+
+
 
         $('#btn-cancelar-paquete').on('click', function() {
             $('div#mensaje').html('')
@@ -294,7 +419,7 @@
                             icon: "success",
                             title: response
                         });
-                        
+
                         $('#tbl-paquetes').DataTable().ajax.reload();
                     },
                     error: function(request, status, error) {
@@ -314,15 +439,6 @@
             }
         });
 
-        function editarPaquete(idUsuario, idPaquete, numeroTracking, descripcionPaquete){
-
-            $('#inpTracking').val(numeroTracking);
-            $('#inpDescripcion').val(descripcionPaquete);
-            $('#inpIdPaquete').val(idPaquete);
-            $('#inpIdCliente').val(idUsuario);
-
-            $('#modal-form').modal('toggle');
-        }
 
         $('#btn-actualizar-paquete').click(function(e) {
             e.preventDefault();
@@ -399,5 +515,157 @@
             }
         });
 
+
+        $('#btn-enviar-paquetes').on('click', function() {
+
+            var urlRest = "{{ route('enviar-paquetes') }}";
+
+            $.confirm({
+                title: 'Confirmar envio',
+                type: 'green',
+                content: 'Seguro que quiere cambiar el estado de los paquetes?',
+                buttons: {
+                    Confirmar: function() {
+
+                        $(document).ajaxSend(function() {
+                            $("#overlay").fadeIn(300);
+                        });
+
+                        $('#btn-enviar-paquetes').prop('disabled', true);
+
+                        $.ajax({
+                            type: "POST",
+                            url: urlRest,
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                                "idCaja": vrIdCaja,
+                            },
+                            success: function(response) {
+                                //alert(response)
+                                const Toast = Swal.mixin({
+                                    toast: true,
+                                    position: "top-end",
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    didOpen: (toast) => {
+                                        toast.onmouseenter = Swal.stopTimer;
+                                        toast.onmouseleave = Swal.resumeTimer;
+                                    }
+                                });
+                                Toast.fire({
+                                    icon: "success",
+                                    title: response
+                                });
+
+                                //window.location.reload();
+                                //$('#tbl-paquetes').DataTable().ajax.reload();
+                            },
+                            error: function(request, status, error) {
+                                alert(request.responseText);
+                            }
+                        }).done(function() {
+
+                            $('#btn-enviar-paquetes').prop('disabled', true);
+                            $('#btn-enviar-paquetes').html('')
+                            $('#btn-enviar-paquetes').html(
+                                '<i class="fi fi-ss-paper-plane"></i> Paquetes Enviados')
+
+                            setTimeout(function() {
+                                $("#overlay").fadeOut(300);
+                            }, 500);
+                        });
+                    },
+                    cancelar: function() {
+                       // $.alert('Canceled!');
+                    }
+                    
+                }
+            });
+
+
+        });
+
+        function getCookie(name) {
+            let cookieArr = document.cookie.split(";");
+            for (let i = 0; i < cookieArr.length; i++) {
+                let cookiePair = cookieArr[i].split("=");
+                if (name == cookiePair[0].trim()) {
+                    return decodeURIComponent(cookiePair[1]);
+                }
+            }
+            return null;
+        }
+
+        function editarPaquete(idUsuario, idPaquete, numeroTracking, descripcionPaquete) {
+
+            $('#inpTracking').val(numeroTracking);
+            $('#inpDescripcion').val(descripcionPaquete);
+            $('#inpIdPaquete').val(idPaquete);
+            $('#inpIdCliente').val(idUsuario);
+
+            $('#modal-form').modal('toggle');
+        }
+
+
+        function inicializarTablaEnvios() {
+            $('#tbl-paquetes-enviados').DataTable({
+                processing: true,
+                serverSide: true,
+                bDestroy: true,
+                ajax: {
+                    url: urlTable,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Agrega el token al encabezado
+                    },
+                    complete: function() {
+                        $("#overlay").fadeOut(300);
+                    }
+                },
+                columns: [{
+                        data: 'no',
+                        name: 'no'
+                    },
+                    {
+                        data: 'casillero',
+                        name: 'casillero'
+                    },
+                    {
+                        data: 'nombre_cliente',
+                        name: 'nombre_cliente'
+                    },
+                    {
+                        data: 'numero_tracking',
+                        name: 'numero_tracking'
+                    },
+                    {
+                        data: 'descripcion',
+                        name: 'descripcion'
+                    },
+                    {
+                        data: 'fecha_registro',
+                        name: 'fecha_registro'
+                    },
+                    {
+                        data: 'hora_registro',
+                        name: 'hora_registro'
+                    },
+                    {
+                        data: 'opcion',
+                        name: 'Opciones',
+                        orderable: true,
+                        searchable: true
+                    }
+
+                ],
+                columnDefs: [{
+                    className: 'dt-center',
+                    targets: '_all'
+                }, ],
+                language: idiomaDatatables,
+
+            });
+        }
     </script>
 @endpush
