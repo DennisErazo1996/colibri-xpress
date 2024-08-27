@@ -66,6 +66,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('/registrar-paquete', [CajasController::class, 'registrarPaquete']);
 	Route::post('/editar-paquete', [CajasController::class, 'editarPaquete'])->name('editar-paquete');
 	Route::post('/enviar-paquetes', [CajasController::class, 'enviarPaquetes'])->name('enviar-paquetes');
+	Route::post('/ver-paquetes-enviados/caja/{id}', [CajasController::class, 'verPaquetesEnviados'])->name('ver-paquetes-enviados');
 
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');

@@ -135,13 +135,13 @@
                                 <thead class="">
                                     <tr>
 
-                                        <th>Otra</th>
+                                        <th>No.</th>
                                         <th>Casillero</th>
                                         <th>Nombre del Cliente</th>
-                                        <th>Número de tracking</th>
-                                        <th>Descripción del paquete</th>
-                                        <th>Fecha de registro</th>
-                                        <th>Hora de registro</th>
+                                        <th>Número de paquetes</th>
+                                        <th>Peso de envío</th>
+                                        <th>Precio de envío</th>
+                                        <th>Estado de pago</th>
                                         <th>Opciones</th>
                                     </tr>
                                 </thead>
@@ -221,6 +221,7 @@
 @push('js')
     <script>
         var urlTable = "{{ route('ver-paquetes', ['id' => $idCaja]) }}";
+        var urlTableEnviados = "{{ route('ver-paquetes-enviados', ['id' => $idCaja]) }}";
         var vrIdCaja = "{{ $idCaja }}";
         var stateCookieEnviado = getCookie("stateListEnviados");
 
@@ -595,12 +596,13 @@
 
 
         function inicializarTablaEnvios() {
+
             $('#tbl-paquetes-enviados').DataTable({
                 processing: true,
                 serverSide: true,
                 bDestroy: true,
                 ajax: {
-                    url: urlTable,
+                    url: urlTableEnviados,
                     type: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}' // Agrega el token al encabezado
@@ -622,20 +624,20 @@
                         name: 'nombre_cliente'
                     },
                     {
-                        data: 'numero_tracking',
-                        name: 'numero_tracking'
+                        data: 'numero_paquetes',
+                        name: 'numero_paquetes'
                     },
                     {
-                        data: 'descripcion',
-                        name: 'descripcion'
+                        data: 'peso_envio',
+                        name: 'peso_envio'
                     },
                     {
-                        data: 'fecha_registro',
-                        name: 'fecha_registro'
+                        data: 'precio_envio',
+                        name: 'precio_envio'
                     },
                     {
-                        data: 'hora_registro',
-                        name: 'hora_registro'
+                        data: 'pagado',
+                        name: 'pagado'
                     },
                     {
                         data: 'opcion',

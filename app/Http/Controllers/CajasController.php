@@ -298,7 +298,7 @@ class CajasController extends Controller
                 /*$paquete = $pq->id;
                 $caja = $pq->id_caja;*/
 
-                DB::select("insert into cx_envios (id_caja, id_paquete, created_at) values(:idCaja, :idPaquete, now())",
+                DB::select("insert into cx_envios (id_caja, id_paquete, pagado, created_at) values(:idCaja, :idPaquete, false, now())",
                 ['idCaja'=> $pq->id_caja, 'idPaquete' => $pq->id]);
 
                 $mensaje = "Se cambio el estado de los paquetes correctamente";
@@ -306,5 +306,56 @@ class CajasController extends Controller
         }
 
         return $mensaje;
+    }
+
+    public function verPaquetesEnviados(Request $request, $id){
+        if ($request->ajax()) {
+            //DB::select("SET lc_monetary = 'es_HN';");
+            $data = DB::select("
+            with paquetes_enviados as (
+                select 
+                    env.id as id_envio, 
+                    env.id_paquete, env.id_caja, 
+                    paq.id_usuario,
+                    env.peso_envio,
+                    env.precio_envio,
+                    env.pagado
+                from cx_envios env
+                join cx_paquetes paq on paq.id = env.id_paquete 
+                where env.id_caja = :idCaja 
+                and env.deleted_at is null and paq.deleted_at is null
+                )
+            select row_number() over(order by u.firstname) as no,
+                pe.id_caja, pe.id_usuario,
+                'CX-' ||  LPAD(u.id::TEXT, 4, '10') AS casillero,
+                u.firstname || ' ' || u.lastname as nombre_cliente, 
+                count(*) as numero_paquetes,
+                pe.peso_envio,
+                pe.precio_envio,
+                case when pe.pagado = false then 'No pagado' else 'Pagado' end as pagado
+            from paquetes_enviados pe
+            join users u on u.id = pe.id_usuario
+            group by pe.id_usuario,
+                u.firstname,
+                u.lastname,
+                pe.id_caja,
+                u.id,
+                pe.peso_envio,
+                pe.precio_envio,
+                pe.pagado
+                
+                ;  
+        ", ['idCaja'=> $id]);
+
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->addColumn('opcion', function($row){
+                    //$url = "{{url('/caja/$row['id_cliente']/pedidos/cliente/'}}";
+                    $actions = "<a class='btn btn-1 m-0' onclick='' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>";
+                    return $actions;
+                })
+                ->rawColumns(['opcion'])
+                ->make(true);
+        }
     }
 }
