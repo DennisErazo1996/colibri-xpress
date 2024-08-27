@@ -58,8 +58,13 @@ class PageController extends Controller
             from users where deleted_at is null
         ");
 
+        $statusEnvio = DB::select("select id_caja from cx_envios where id_caja = :id_caja
+                    and deleted_at is null
+                    group by id_caja", ['id_caja' => $idCaja]);
+
         return view("pages.paquetes")
         ->with('usuarios', $clientes)
+        ->with('statusEnvio', $statusEnvio)
         ->with('idCaja', $idCaja);
         
     }

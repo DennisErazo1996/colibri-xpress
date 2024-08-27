@@ -66,23 +66,7 @@
 
     </div>
     <div class="container-fluid py-4 mt-0">
-        {{-- <ul class="nav nav-tabs">
-            <li class="nav-item">
-                <a class="nav-link" aria-current="page" id="lnk-list-paquetes">Lista de paquetes</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" aria-current="page"  id="lnk-list-enviados">Paquetes enviados</a>
-            </li>
-          </ul> --}}
-        {{-- <ul class="nav nav-pills">
-            <li class="nav-item">
-                <a class="nav-link active" aria-current="page" id="lnk-list-paquetes">Lista de paquetes</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active"  id="lnk-list-enviados">Paquetes enviados</a>
-            </li>
-        </ul> --}}
-        <br>
+        
         <div class="row">
             <div class="col-12">
 
@@ -94,12 +78,14 @@
                         <a class="nav-link" aria-current="page" id="lnk-list-enviados">Paquetes enviados</a>
                     </li>
                 </ul>
+
                 <div class="card mb-0 p-2" id="card-list-paquetes">
                     <div class="text-center d-flex flex-row justify-content-center">
-                        <button id="btn-enviar-paquetes" type="button" class="btn  btn-secondary btn-1  mt-4 mb-0"><i
-                                class="fi fi-ss-paper-plane"></i> Enviar Paquetes</button>
-                        {{-- <button id="btn-cancelar-pedido" type="button"
-                            class="btn btn-3 w-30 mt-4 mb-0 ml-50">Cancelar</button> --}}
+                        <button id="btn-enviar-paquetes" type="button" class="btn  btn-secondary btn-1  mt-4 mb-0" <?php if($statusEnvio != null){echo 'disabled';};    ?> >
+                             <?php if($statusEnvio != null){echo '<i class="fi fi-ss-paper-plane"></i> Paquetes Enviados';} else {
+                                echo '<i class="fi fi-ss-paper-plane"></i> Enviar Paquetes';
+                             };?></button>
+                       
                     </div>
                     <div class="card-header pb-0 text-center">
                         {{-- <h6>Authors table</h6> --}}
