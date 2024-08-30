@@ -312,7 +312,8 @@ class CajasController extends Controller
         if ($request->ajax()) {
             //DB::select("SET lc_monetary = 'es_HN';");
             $data = DB::select("
-            with paquetes_enviados as (
+
+                with paquetes_enviados as (
                 select 
                     env.id as id_envio, 
                     env.id_paquete, env.id_caja, 
@@ -322,20 +323,20 @@ class CajasController extends Controller
                     env.pagado
                 from cx_envios env
                 join cx_paquetes paq on paq.id = env.id_paquete 
-                where env.id_caja = :idCaja 
+                where env.id_caja = :idCaja
                 and env.deleted_at is null and paq.deleted_at is null
                 )
-            select row_number() over(order by u.firstname) as no,
+                select row_number() over(order by u.firstname) as no,
                 pe.id_caja, pe.id_usuario,
                 'CX-' ||  LPAD(u.id::TEXT, 4, '10') AS casillero,
                 u.firstname || ' ' || u.lastname as nombre_cliente, 
                 count(*) as numero_paquetes,
-                pe.peso_envio,
-                pe.precio_envio,
+                coalesce(pe.peso_envio::text, '0.00 lb') as peso_envio,
+                coalesce(pe.precio_envio::text, 'L 0.00') as precio_envio, 
                 case when pe.pagado = false then 'No pagado' else 'Pagado' end as pagado
-            from paquetes_enviados pe
-            join users u on u.id = pe.id_usuario
-            group by pe.id_usuario,
+                from paquetes_enviados pe
+                join users u on u.id = pe.id_usuario
+                group by pe.id_usuario,      
                 u.firstname,
                 u.lastname,
                 pe.id_caja,
@@ -351,7 +352,7 @@ class CajasController extends Controller
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     //$url = "{{url('/caja/$row['id_cliente']/pedidos/cliente/'}}";
-                    $actions = "<a class='btn btn-1 m-0' onclick='' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>";
+                    $actions = "<a class='btn btn-1 m-0' onclick='pesoPaquete()' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>";
                     return $actions;
                 })
                 ->rawColumns(['opcion'])

@@ -139,8 +139,8 @@
                                         <th>Casillero</th>
                                         <th>Nombre del Cliente</th>
                                         <th>Número de paquetes</th>
-                                        <th>Peso de envío</th>
-                                        <th>Precio de envío</th>
+                                        <th>Peso de envío (lb)</th>
+                                        <th>Precio de envío (L)</th>
                                         <th>Estado de pago</th>
                                         <th>Opciones</th>
                                     </tr>
@@ -594,6 +594,10 @@
             $('#modal-form').modal('toggle');
         }
 
+        function pesoPaquete(){
+            alert('paquete');
+        }
+
 
         function inicializarTablaEnvios() {
 
@@ -608,7 +612,7 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}' // Agrega el token al encabezado
                     },
                     complete: function() {
-                        $("#overlay").fadeOut(300);
+                        //$("#overlay").fadeOut(300);
                     }
                 },
                 columns: [{
