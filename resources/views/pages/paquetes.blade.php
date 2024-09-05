@@ -52,7 +52,7 @@
                                 <div class="col-md-12 text-center" id="mensaje" style="color: red; font-size:12px"></div>
                             </div>
                             <div class="text-center d-flex flex-row justify-content-end">
-                                <button id="btn-registrar-paquete" type="submit"
+                                <button id="btn-registrar-paquete" type="submit" <?php if($statusEnvio != null){echo 'disabled';};    ?>
                                     class="btn  btn-success btn-1  mt-4 mb-0"><i class="fi fi-sr-add"></i> Agregar
                                     paquete</button>
                                 {{-- <button id="btn-cancelar-pedido" type="button"
@@ -200,9 +200,79 @@
                                     </div>
                                     <div class="text-center d-flex flex-row justify-content-end">
                                         <button id="btn-actualizar-paquete" type="submit"
-                                            class="btn  bg-gradient-secondary btn-3 w-30 mt-4 mb-0">Actualizar</button>
+                                            class="btn  bg-gradient-secondary btn-3 mt-4 mb-0">Actualizar</button> &nbsp;&nbsp;
                                         <button id="btn-cancelar-paquete" type="button"
-                                            class="btn btn-3 w-30 mt-4 mb-0 ml-50">Cancelar</button>
+                                            class="btn btn-3 mt-4 mb-0 ml-50">Cancelar</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-4">
+
+        <div class="modal fade" id="modal-form-envio" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            role="dialog" aria-labelledby="modal-form" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-body p-0">
+                        <div class="card card-plain">
+                            <div class="card-header pb-0 text-left">
+                                <h3 class="font-weight-bolder text-default">Agregar datos del pedido</h3>
+                                {{-- <p class="mb-0">Enter your email and password to sign in</p> --}}
+                            </div>
+                            <div class="card-body">
+                                <form role="form text-left">
+                                    <input type="text" class="form-control" id="inpIdClienteEnvio" style="display: none">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="department">Nombre del Cliente</label>
+                                                <input type="text" name="name" class="form-control"
+                                                    id="inpNombreClienteEnvio" placeholder="Nombre del cliente"
+                                                    aria-label="Producto" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-4">
+                                            <div class="form-group">
+                                                <label for="FormControlSelect1">Peso del envío (lb)<span
+                                                        style="color: red">*</span></label>
+                                                <input type="number" name="cantidad" class="form-control" max="8"
+                                                    id="inpPesoEnvio" placeholder="0 lb" aria-label="Phone" >
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-4">
+                                            <div class="form-group">
+                                                <label for="FormControlSelect1">Precio del envío (L)<span
+                                                        style="color: red">*</span></label>
+                                                <input type="number" name="precio" class="form-control" max="8"
+                                                    id="inpPrecioEnvio" placeholder="L 0.00" aria-label="Phone" >
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-6 align-middle">
+                                            <div class="form-group">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="chkPago">
+                                                    <label class="form-check-label" for="chkPago">Estado de Pago</label>
+                                                  </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 text-center" id="mensaje"
+                                            style="color: red; font-size:12px"></div>
+                                    </div>
+                                    <div class="text-center d-flex flex-row justify-content-end">
+                                        <button id="btn-guardar-envio" type="submit"
+                                            class="btn  bg-gradient-secondary btn-3 mt-4 mb-0">Guardar</button> &nbsp;&nbsp;
+                                        <button id="btn-cancelar-envio" type="button"
+                                            class="btn btn-3 mt-4 mb-0 ml-50">Cancelar</button>
                                     </div>
                                 </form>
                             </div>
@@ -346,6 +416,13 @@
             $('#inpIdPaquete').val('');
             $('#inpIdCliente').val('');
             $('#modal-form').modal('toggle')
+
+        });
+        
+        $('#btn-cancelar-envio').on('click', function() {
+            $('div#mensaje').html('')
+            $('#inpNombreClienteEnvio').val('');
+            $('#modal-form-envio').modal('toggle')
 
         });
 
@@ -594,8 +671,13 @@
             $('#modal-form').modal('toggle');
         }
 
-        function pesoPaquete(){
-            alert('paquete');
+        function pesoPaquete(idCaja, idCliente, nombreCliente, pesoEnvio, precioEnvio){
+
+            $('#inpNombreClienteEnvio').val(nombreCliente);
+            $('#inpPrecioEnvio').val(precioEnvio);
+            $('#inpPesoEnvio').val(pesoEnvio);
+
+            $('#modal-form-envio').modal('toggle');
         }
 
 

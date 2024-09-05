@@ -333,7 +333,8 @@ class CajasController extends Controller
                 count(*) as numero_paquetes,
                 coalesce(pe.peso_envio::text, '0.00 lb') as peso_envio,
                 coalesce(pe.precio_envio::text, 'L 0.00') as precio_envio, 
-                case when pe.pagado = false then 'No pagado' else 'Pagado' end as pagado
+                case when pe.pagado = false then 'No pagado' else 'Pagado' end as pagado,
+                pe.pagado as estado_pago
                 from paquetes_enviados pe
                 join users u on u.id = pe.id_usuario
                 group by pe.id_usuario,      
@@ -352,11 +353,26 @@ class CajasController extends Controller
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     //$url = "{{url('/caja/$row['id_cliente']/pedidos/cliente/'}}";
-                    $actions = "<a class='btn btn-1 m-0' onclick='pesoPaquete()' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>";
+                    $actions = "<a class='btn btn-1 m-0' onclick='pesoPaquete($row->id_caja, $row->id_usuario,\"".$row->nombre_cliente."\", \"".$row->peso_envio."\", \"".$row->precio_envio."\")' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>";
                     return $actions;
                 })
                 ->rawColumns(['opcion'])
                 ->make(true);
         }
+    }
+
+    public function guardarDatosEnvios(Request $request){
+
+        DB::select("UPDATE cx_envios
+                    SET peso_envio = 20,
+                        pagado = true
+                    FROM (
+                        SELECT p.id_usuario, e.id_paquete, e.id_caja 
+                        from cx_envios e 
+                        join cx_paquetes p on p.id = e.id_paquete 
+                        where p.id_usuario = 1 and e.id_caja = 10
+                        ) AS x
+                    WHERE cx_envios.id_paquete=x.id_paquete;
+                    ");
     }
 }
