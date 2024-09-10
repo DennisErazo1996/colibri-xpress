@@ -361,18 +361,69 @@ class CajasController extends Controller
         }
     }
 
+
     public function guardarDatosEnvios(Request $request){
 
+        $idUsuario = $request->idCliente;
+        $precioEnvio = $request->precioEnvio;
+        $pesoEnvio = $request->pesoEnvio;
+        $idCaja = $request->idCaja;
+
+        $mensaje = "Los datos se han guardado correctamente";
+        
         DB::select("UPDATE cx_envios
-                    SET peso_envio = 20,
-                        pagado = true
+                    SET peso_envio = :peso_envio,
+                        --pagado = false
+                        precio_envio = :precio_envio
                     FROM (
                         SELECT p.id_usuario, e.id_paquete, e.id_caja 
                         from cx_envios e 
                         join cx_paquetes p on p.id = e.id_paquete 
-                        where p.id_usuario = 1 and e.id_caja = 10
+                        where p.id_usuario = :id_usuario and e.id_caja = :id_caja
                         ) AS x
                     WHERE cx_envios.id_paquete=x.id_paquete;
-                    ");
+                    ", ['id_caja' => $idCaja, 'id_usuario' => $idUsuario, 'precio_envio' => $precioEnvio, 'peso_envio' => $pesoEnvio]);
+        return $mensaje;
+    }
+
+    public function datosTotalesEnvio(Request $request){
+
+        $idCaja = $request->idCaja;
+
+        DB::select("SET lc_monetary = 'es_HN';");
+        $data = DB::select("
+                select 
+                    sum(x.peso_envio) as total_libras,
+                    sum(x.precio_envio)::numeric::money as total_precio_envio,
+                    (sum(x.precio_envio)/2)::numeric::money as mitad_ganancia
+                    from (with paquetes_enviados as (
+                        select 
+                            env.id as id_envio, 
+                            env.id_paquete, env.id_caja, 
+                            paq.id_usuario,
+                            env.peso_envio,
+                            env.precio_envio,
+                            env.pagado
+                        from cx_envios env
+                        join cx_paquetes paq on paq.id = env.id_paquete 
+                        where env.id_caja = :id_caja
+                        and env.deleted_at is null and paq.deleted_at is null
+                        )
+                        select 
+                        peso_envio,
+                        precio_envio
+                        from paquetes_enviados pe
+                        join users u on u.id = pe.id_usuario
+                        group by pe.id_usuario,      
+                        u.firstname,
+                        u.lastname,
+                        pe.id_caja,
+                        u.id,
+                        pe.peso_envio,
+                        pe.precio_envio,
+                        pe.pagado)x", ['id_caja' => $idCaja]);
+        return response()->json([
+            'data' => $data,
+        ]);
     }
 }

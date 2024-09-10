@@ -52,7 +52,9 @@
                                 <div class="col-md-12 text-center" id="mensaje" style="color: red; font-size:12px"></div>
                             </div>
                             <div class="text-center d-flex flex-row justify-content-end">
-                                <button id="btn-registrar-paquete" type="submit" <?php if($statusEnvio != null){echo 'disabled';};    ?>
+                                <button id="btn-registrar-paquete" type="submit" <?php if ($statusEnvio != null) {
+                                    echo 'disabled';
+                                } ?>
                                     class="btn  btn-success btn-1  mt-4 mb-0"><i class="fi fi-sr-add"></i> Agregar
                                     paquete</button>
                                 {{-- <button id="btn-cancelar-pedido" type="button"
@@ -66,7 +68,7 @@
 
     </div>
     <div class="container-fluid py-4 mt-0">
-        
+
         <div class="row">
             <div class="col-12">
 
@@ -81,11 +83,16 @@
 
                 <div class="card mb-0 p-2" id="card-list-paquetes">
                     <div class="text-center d-flex flex-row justify-content-center">
-                        <button id="btn-enviar-paquetes" type="button" class="btn  btn-secondary btn-1  mt-4 mb-0" <?php if($statusEnvio != null){echo 'disabled';};    ?> >
-                             <?php if($statusEnvio != null){echo '<i class="fi fi-ss-paper-plane"></i> Paquetes Enviados';} else {
+                        <button id="btn-enviar-paquetes" type="button" class="btn  btn-secondary btn-1  mt-4 mb-0"
+                            <?php if ($statusEnvio != null) {
+                                echo 'disabled';
+                            } ?>>
+                            <?php if ($statusEnvio != null) {
+                                echo '<i class="fi fi-ss-paper-plane"></i> Paquetes Enviados';
+                            } else {
                                 echo '<i class="fi fi-ss-paper-plane"></i> Enviar Paquetes';
-                             };?></button>
-                       
+                            } ?></button>
+
                     </div>
                     <div class="card-header pb-0 text-center">
                         {{-- <h6>Authors table</h6> --}}
@@ -129,6 +136,20 @@
                             data-bs-target="#modal-form">Agregar nuevo pedido</button>
                     </div> --}}
                     <div class="card-body px-2 pt-0 pb-2">
+                        <div class="container">
+                            <div id="total-envio" class="row text-center">
+                                <div class="col">
+                                    Total libras: <strong>50</strong>
+                                </div>
+                                <div class="col">
+                                    Total Pagado: <strong>500</strong>
+                                </div>
+                                <div class="col">
+                                    Mitad Ganancia: <strong>5000</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
                         <div class="table-responsive p-0">
                             <table id="tbl-paquetes-enviados" class="table align-items-center table-striped"
                                 style="width:100%">
@@ -200,7 +221,8 @@
                                     </div>
                                     <div class="text-center d-flex flex-row justify-content-end">
                                         <button id="btn-actualizar-paquete" type="submit"
-                                            class="btn  bg-gradient-secondary btn-3 mt-4 mb-0">Actualizar</button> &nbsp;&nbsp;
+                                            class="btn  bg-gradient-secondary btn-3 mt-4 mb-0">Actualizar</button>
+                                        &nbsp;&nbsp;
                                         <button id="btn-cancelar-paquete" type="button"
                                             class="btn btn-3 mt-4 mb-0 ml-50">Cancelar</button>
                                     </div>
@@ -229,7 +251,8 @@
                             </div>
                             <div class="card-body">
                                 <form role="form text-left">
-                                    <input type="text" class="form-control" id="inpIdClienteEnvio" style="display: none">
+                                    <input type="text" class="form-control" id="inpIdClienteEnvio"
+                                        style="display: none">
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-group">
@@ -243,8 +266,8 @@
                                             <div class="form-group">
                                                 <label for="FormControlSelect1">Peso del envío (lb)<span
                                                         style="color: red">*</span></label>
-                                                <input type="number" name="cantidad" class="form-control" max="8"
-                                                    id="inpPesoEnvio" placeholder="0 lb" aria-label="Phone" >
+                                                <input type="number" name="cantidad" class="form-control"
+                                                    id="inpPesoEnvio" placeholder="0 lb" aria-label="Phone">
 
                                             </div>
                                         </div>
@@ -252,25 +275,26 @@
                                             <div class="form-group">
                                                 <label for="FormControlSelect1">Precio del envío (L)<span
                                                         style="color: red">*</span></label>
-                                                <input type="number" name="precio" class="form-control" max="8"
-                                                    id="inpPrecioEnvio" placeholder="L 0.00" aria-label="Phone" >
+                                                <input type="number" name="precio" class="form-control"
+                                                    id="inpPrecioEnvio" placeholder="L 0.00" aria-label="Phone">
 
                                             </div>
                                         </div>
-                                        <div class="col-md-6 col-6 align-middle">
+                                        {{-- <div class="col-md-6 col-6 align-middle">
                                             <div class="form-group">
                                                 <div class="form-check form-switch">
                                                     <input class="form-check-input" type="checkbox" id="chkPago">
                                                     <label class="form-check-label" for="chkPago">Estado de Pago</label>
-                                                  </div>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                         <div class="col-md-12 text-center" id="mensaje"
                                             style="color: red; font-size:12px"></div>
                                     </div>
                                     <div class="text-center d-flex flex-row justify-content-end">
-                                        <button id="btn-guardar-envio" type="submit"
-                                            class="btn  bg-gradient-secondary btn-3 mt-4 mb-0">Guardar</button> &nbsp;&nbsp;
+                                        <button id="btn-guardar-envio" type="button"
+                                            class="btn  bg-gradient-secondary btn-3 mt-4 mb-0">Guardar</button>
+                                        &nbsp;&nbsp;
                                         <button id="btn-cancelar-envio" type="button"
                                             class="btn btn-3 mt-4 mb-0 ml-50">Cancelar</button>
                                     </div>
@@ -297,6 +321,7 @@
 
         //alert(stateCookieEnviado)
 
+        inicializarTotales();
 
         if (stateCookieEnviado == null) {
             $('#card-list-enviados').hide();
@@ -418,7 +443,7 @@
             $('#modal-form').modal('toggle')
 
         });
-        
+
         $('#btn-cancelar-envio').on('click', function() {
             $('div#mensaje').html('')
             $('#inpNombreClienteEnvio').val('');
@@ -641,13 +666,88 @@
                         });
                     },
                     cancelar: function() {
-                       // $.alert('Canceled!');
+                        // $.alert('Canceled!');
                     }
-                    
+
                 }
             });
 
+        });
 
+        $('#chkPago').on('change', function() {
+            console.log($(this).is(':checked'));
+        });
+
+        $('#btn-guardar-envio').on('click', function(e) {
+            //e.preventDefault();
+            //alert('hola')
+
+            var urlRest = "{{ route('guardar-envio') }}";
+            var vrIdCliente = $('#inpIdClienteEnvio').val();
+            var vrPrecioEnvio = $('#inpPrecioEnvio').val();
+            var vrPesoEnvio = $('#inpPesoEnvio').val();
+            // var vrChckPago = $('#chkPago').val();
+
+
+            if (vrIdCliente != '' && vrIdCaja != '') {
+
+                $(document).ajaxSend(function() {
+                    $("#overlay").fadeIn(300);
+                });
+
+                $('#btn-guardar-envio').prop('disabled', true);
+
+                $.ajax({
+                    type: "POST",
+                    url: urlRest,
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "idCliente": vrIdCliente,
+                        "precioEnvio": vrPrecioEnvio,
+                        "pesoEnvio": vrPesoEnvio,
+                        "idCaja": vrIdCaja,
+                    },
+                    success: function(response) {
+                        //alert(response)
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: "top-end",
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.onmouseenter = Swal.stopTimer;
+                                toast.onmouseleave = Swal.resumeTimer;
+                            }
+                        });
+                        Toast.fire({
+                            icon: "success",
+                            title: response
+                        });
+
+                        //window.location.reload();
+                        $('#tbl-paquetes-enviados').DataTable().ajax.reload();
+                    },
+                    error: function(request, status, error) {
+                        alert(request.responseText);
+                    }
+                }).done(function() {
+
+                    $('#inpNombreClienteEnvio').val('');
+                    $('#modal-form-envio').modal('toggle')
+                    $('div#mensaje').html('')
+                    $('#inpPrecioEnvio').val('');
+                    $('#inpPesoEnvio').val('');
+                    $('#inpIdClienteEnvio').val('');
+                    $('#btn-guardar-envio').prop('disabled', false);
+
+                    setTimeout(function() {
+                        $("#overlay").fadeOut(300);
+                    }, 500);
+                });
+            } else {
+                $('div#mensaje').html('Llena todos los campos')
+            }
         });
 
         function getCookie(name) {
@@ -671,8 +771,9 @@
             $('#modal-form').modal('toggle');
         }
 
-        function pesoPaquete(idCaja, idCliente, nombreCliente, pesoEnvio, precioEnvio){
+        function pesoPaquete(idCaja, idCliente, nombreCliente, pesoEnvio, precioEnvio) {
 
+            $('#inpIdClienteEnvio').val(idCliente);
             $('#inpNombreClienteEnvio').val(nombreCliente);
             $('#inpPrecioEnvio').val(precioEnvio);
             $('#inpPesoEnvio').val(pesoEnvio);
@@ -740,6 +841,28 @@
                 language: idiomaDatatables,
 
             });
+        }
+
+        function inicializarTotales(){
+            var urlRest = "{{ route('datos-envio') }}";
+            $.ajax({
+                    type: "POST",
+                    url: urlRest,
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "idCaja": vrIdCaja,
+                    },
+                    success: function(data) {
+                        alert(data)
+
+                     
+                        //$('#totales-envio').append(response.data);
+                        
+                    },
+                    error: function(request, status, error) {
+                        alert(request.responseText);
+                    }
+                });
         }
     </script>
 @endpush
