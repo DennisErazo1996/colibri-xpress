@@ -375,7 +375,11 @@
                 },
                 {
                     data: 'descripcion',
-                    name: 'descripcion'
+                    name: 'descripcion',
+                    render: function(data, type, row) {
+                        // Aquí se ajusta el texto largo para que no se desborde
+                        return '<div style="max-width: 300px !important;  white-space: normal !important; word-wrap: break-word !important;">' + data + '</div>';
+                    }
                 },
                 {
                     data: 'fecha_registro',
@@ -868,16 +872,20 @@
 
                         $('div#total-envio').html(
                             '<div class="col-12 col-sm-3">' +
-                            '<div class="item-total mt-2">Total libras: <strong style="color:#3ed06a">' + total_libras + '</strong></div>' +
+                            '<div class="item-total mt-2">Total libras: <strong style="color:#3ed06a">' +
+                            total_libras + '</strong></div>' +
                             '</div>' +
                             '<div class="col-12 col-sm-3">' +
-                            '<div class="item-total mt-2">Total Precio Envio: <strong style="color:#3ed06a">' + total_precio_envio +'</strong></div>' +
+                            '<div class="item-total mt-2">Total Precio Envio: <strong style="color:#3ed06a">' +
+                            total_precio_envio + '</strong></div>' +
                             '</div>' +
                             '<div class="col-12 col-sm-3">' +
-                            '<div class="item-total mt-2">Mitad Total: <strong style="color:#3ed06a">' + mitad_ganancia + '</strong></div>' +
+                            '<div class="item-total mt-2">Mitad Total: <strong style="color:#3ed06a">' +
+                            mitad_ganancia + '</strong></div>' +
                             '</div>' +
                             '<div class="col-12 col-sm-3">' +
-                            '<div class="item-total mt-2">Total Pagado: <strong style="color:#3ed06a">' + total_pagado + '</strong></div>' +
+                            '<div class="item-total mt-2">Total Pagado: <strong style="color:#3ed06a">' +
+                            total_pagado + '</strong></div>' +
                             '</div>'
 
                         );
@@ -909,7 +917,7 @@
                     "idCaja": vrIdCaja,
                 },
                 success: function(response) {
-                    
+
                     inicializarTotales()
 
                     const Toast = Swal.mixin({
