@@ -152,6 +152,22 @@ footer {
     color: #404040 !important;
 }
 
+.form-switch .form-check-input{
+    border: none !important;
+    height: 1.35em !important;
+}
+
+.form-switch .form-check-input:checked{
+    background-color: #3ed06a !important;
+}
+
+div.item-total{
+    background-color: whitesmoke;
+    border-radius: 8px;
+    align-content: center;
+    height: 50px;
+}
+
 /*a:hover{
     color: #f3faff !important;
 }*/

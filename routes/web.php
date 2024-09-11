@@ -69,6 +69,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('/ver-paquetes-enviados/caja/{id}', [CajasController::class, 'verPaquetesEnviados'])->name('ver-paquetes-enviados');
 	Route::post('/guardar-envio', [CajasController::class, 'guardarDatosEnvios'])->name('guardar-envio');
 	Route::post('/datos-envio', [CajasController::class, 'datosTotalesEnvio'])->name('datos-envio');
+	Route::post('/actualizar-estado-pago', [CajasController::class, 'actualizarEstadoPago'])->name('estado-pago');
 
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');

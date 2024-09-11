@@ -333,7 +333,7 @@ class CajasController extends Controller
                 count(*) as numero_paquetes,
                 coalesce(pe.peso_envio::text, '0.00 lb') as peso_envio,
                 coalesce(pe.precio_envio::text, 'L 0.00') as precio_envio, 
-                case when pe.pagado = false then 'No pagado' else 'Pagado' end as pagado,
+                pe.pagado as pagado,
                 pe.pagado as estado_pago
                 from paquetes_enviados pe
                 join users u on u.id = pe.id_usuario
@@ -356,7 +356,13 @@ class CajasController extends Controller
                     $actions = "<a class='btn btn-1 m-0' onclick='pesoPaquete($row->id_caja, $row->id_usuario,\"".$row->nombre_cliente."\", \"".$row->peso_envio."\", \"".$row->precio_envio."\")' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>";
                     return $actions;
                 })
-                ->rawColumns(['opcion'])
+                ->addColumn('estadoPago', function($row) {
+                    // Si el pago está realizado, marcar el checkbox como checked
+                    $checked = $row->pagado ? 'checked' : '';
+                    return "<div class='form-check form-switch justify-content-center'><input class='form-check-input' onchange='cambiarEstadoPago($row->id_usuario, this.checked)' type='checkbox' id='chkPago' $checked ></div>";
+                    //return "<input type='checkbox' class='estado-pago-checkbox' onchange='cambiarEstadoPago($row->id_caja, $row->id_usuario)' $checked />";
+                })
+                ->rawColumns(['opcion', 'estadoPago'])
                 ->make(true);
         }
     }
@@ -392,10 +398,11 @@ class CajasController extends Controller
 
         DB::select("SET lc_monetary = 'es_HN';");
         $data = DB::select("
-                select 
-                    sum(x.peso_envio) as total_libras,
-                    sum(x.precio_envio)::numeric::money as total_precio_envio,
-                    (sum(x.precio_envio)/2)::numeric::money as mitad_ganancia
+                 select 
+                    coalesce(sum(x.peso_envio), 0) as total_libras,
+                    coalesce(sum(x.precio_envio), 0)::numeric::money as total_precio_envio,
+                    coalesce((sum(x.precio_envio)/2),0)::numeric::money as mitad_ganancia,
+                    coalesce(sum(case when x.pagado = true then x.precio_envio end), 0)::numeric::money as total_pagado
                     from (with paquetes_enviados as (
                         select 
                             env.id as id_envio, 
@@ -411,7 +418,8 @@ class CajasController extends Controller
                         )
                         select 
                         peso_envio,
-                        precio_envio
+                        precio_envio,
+                        pe.pagado
                         from paquetes_enviados pe
                         join users u on u.id = pe.id_usuario
                         group by pe.id_usuario,      
@@ -425,5 +433,37 @@ class CajasController extends Controller
         return response()->json([
             'data' => $data,
         ]);
+    }
+
+    public function actualizarEstadoPago(Request $request){
+
+        $estadoPago = $request->estadoPago;
+        $idUsuario = $request->idCliente;
+        $idCaja = $request->idCaja;
+        $mensaje = "Estado del pago actualizado correctamente";
+        //$mensaje = $estadoPago.' '.$idUsuario.' '.$idCaja;
+        $estado = null;
+
+        if($estadoPago == 1){
+            $estado = true;
+        }else{
+            $estado = false;
+        }
+
+
+        DB::select("UPDATE cx_envios
+                    SET --peso_envio = :peso_envio,
+                        pagado = :estado_pago
+                        --precio_envio = :precio_envio
+                    FROM (
+                        SELECT p.id_usuario, e.id_paquete, e.id_caja 
+                        from cx_envios e 
+                        join cx_paquetes p on p.id = e.id_paquete 
+                        where p.id_usuario = :id_usuario and e.id_caja = :id_caja
+                        ) AS x
+                    WHERE cx_envios.id_paquete=x.id_paquete;
+                    ", ['id_caja' => $idCaja, 'id_usuario' => $idUsuario, 'estado_pago' => $estado]);
+       
+       return $mensaje;
     }
 }

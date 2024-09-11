@@ -138,7 +138,7 @@
                     <div class="card-body px-2 pt-0 pb-2">
                         <div class="container">
                             <div id="total-envio" class="row text-center">
-                                <div class="col">
+                                {{-- <div class="col">
                                     Total libras: <strong>50</strong>
                                 </div>
                                 <div class="col">
@@ -146,7 +146,7 @@
                                 </div>
                                 <div class="col">
                                     Mitad Ganancia: <strong>5000</strong>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                         <br>
@@ -321,7 +321,7 @@
 
         //alert(stateCookieEnviado)
 
-        inicializarTotales();
+
 
         if (stateCookieEnviado == null) {
             $('#card-list-enviados').hide();
@@ -338,6 +338,7 @@
 
         $(document).ready(function() {
 
+            inicializarTotales();
             //$('#card-list-paquetes').show();
             // $('#tbl-paquetes-enviados').hide();
 
@@ -733,6 +734,8 @@
                     }
                 }).done(function() {
 
+                    inicializarTotales()
+
                     $('#inpNombreClienteEnvio').val('');
                     $('#modal-form-envio').modal('toggle')
                     $('div#mensaje').html('')
@@ -823,8 +826,8 @@
                         name: 'precio_envio'
                     },
                     {
-                        data: 'pagado',
-                        name: 'pagado'
+                        data: 'estadoPago',
+                        name: 'estadoPago'
                     },
                     {
                         data: 'opcion',
@@ -843,26 +846,95 @@
             });
         }
 
-        function inicializarTotales(){
+        function inicializarTotales() {
+            //$('#total-envio').html('<p>Contenido de prueba</p>');
             var urlRest = "{{ route('datos-envio') }}";
             $.ajax({
-                    type: "POST",
-                    url: urlRest,
-                    data: {
-                        "_token": "{{ csrf_token() }}",
-                        "idCaja": vrIdCaja,
-                    },
-                    success: function(data) {
-                        alert(data)
+                type: "POST",
+                url: urlRest,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "idCaja": vrIdCaja,
+                },
+                success: function(response) {
 
-                     
-                        //$('#totales-envio').append(response.data);
-                        
-                    },
-                    error: function(request, status, error) {
-                        alert(request.responseText);
+                    if (response.data && response.data.length > 0) {
+
+                        var total_libras = response.data[0].total_libras;
+                        var total_precio_envio = response.data[0].total_precio_envio;
+                        var mitad_ganancia = response.data[0].mitad_ganancia;
+                        var total_pagado = response.data[0].total_pagado;
+
+
+                        $('div#total-envio').html(
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total libras: <strong style="color:#3ed06a">' + total_libras + '</strong></div>' +
+                            '</div>' +
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total Precio Envio: <strong style="color:#3ed06a">' + total_precio_envio +'</strong></div>' +
+                            '</div>' +
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Mitad Total: <strong style="color:#3ed06a">' + mitad_ganancia + '</strong></div>' +
+                            '</div>' +
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total Pagado: <strong style="color:#3ed06a">' + total_pagado + '</strong></div>' +
+                            '</div>'
+
+                        );
+                    } else {
+                        alert("No se encontraron datos.");
                     }
-                });
+
+
+                    //$('#totales-envio').append(response.data);
+
+                },
+                error: function(request, status, error) {
+                    alert(request.responseText);
+                }
+            });
+        }
+
+        function cambiarEstadoPago(idUsuario, estadoPago) {
+            //alert(idUsuario+' '+estadoPago)
+
+            var urlRest = "{{ route('estado-pago') }}";
+            $.ajax({
+                type: "POST",
+                url: urlRest,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "estadoPago": estadoPago ? 1 : 0,
+                    "idCliente": idUsuario,
+                    "idCaja": vrIdCaja,
+                },
+                success: function(response) {
+                    
+                    inicializarTotales()
+
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                    });
+                    Toast.fire({
+                        icon: "success",
+                        title: response
+                    });
+
+                    //$('#totales-envio').append(response.data);
+
+                },
+                error: function(request, status, error) {
+                    alert(request.responseText);
+                }
+            });
         }
     </script>
 @endpush
