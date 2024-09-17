@@ -70,6 +70,8 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('/guardar-envio', [CajasController::class, 'guardarDatosEnvios'])->name('guardar-envio');
 	Route::post('/datos-envio', [CajasController::class, 'datosTotalesEnvio'])->name('datos-envio');
 	Route::post('/actualizar-estado-pago', [CajasController::class, 'actualizarEstadoPago'])->name('estado-pago');
+	Route::get('/productos', [PageController::class, 'verProductos'])->name('productos');
+	Route::get('/clientes', [PageController::class, 'verClientes'])->name('clientes');
 
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');

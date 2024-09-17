@@ -131,4 +131,16 @@ class PageController extends Controller
         ->with('dataCliente', $infoCliente)
         ->with('idUsuario', $idCliente );
     }
+
+    public function verProductos()
+    {   
+
+        return view("pages.productos");
+    }
+
+    public function verClientes()
+    {   
+
+        return view("pages.clientes");
+    }
 }
