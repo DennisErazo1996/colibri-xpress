@@ -161,7 +161,7 @@ table.center-on-narrow {
                         A continuación te mostramos los datos de la dirección para empezar a enviar tus compras: <br> <br>
                         <strong>Nombre:</strong> {{$lockerNumber}}/ {{$user['firstname'].' '.$user['lastname']}} <br>
                         <strong>Dirección:</strong> 9545 SW 24th ST <br>
-                        <strong>Unidad:</strong> Apt B222 <br>
+                        <strong>Apartamento:</strong> Apt B222 <br>
                         <strong>Teléfono:</strong> +1(305)7634-272 <br>
                         <strong>Ciudad:</strong> Miami <br>
                         <strong>Estado:</strong> Florida <br>
