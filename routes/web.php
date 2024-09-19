@@ -29,6 +29,7 @@ use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\ResetPassword;
 use App\Http\Controllers\ChangePassword;            
 use App\Http\Controllers\CajasController;            
+use App\Http\Controllers\VentasController;            
             
 
 Route::get('/', function () {return redirect('/dashboard');})->middleware('auth');
@@ -71,7 +72,9 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('/datos-envio', [CajasController::class, 'datosTotalesEnvio'])->name('datos-envio');
 	Route::post('/actualizar-estado-pago', [CajasController::class, 'actualizarEstadoPago'])->name('estado-pago');
 	Route::get('/productos', [PageController::class, 'verProductos'])->name('productos');
-	Route::get('/clientes', [PageController::class, 'verClientes'])->name('clientes');
+	Route::get('/clientes', [PageController::class, 'clientes'])->name('clientes');
+	Route::post('/ver-clientes', [VentasController::class, 'verClientes'])->name('ver-clientes');
+	Route::post('/registrar-cliente', [VentasController::class, 'registrarCliente'])->name('registrar-cliente');
 
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');

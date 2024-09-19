@@ -19,12 +19,12 @@
 
                             <div class="row">
 
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="nombre-cliente">Cliente<span style="color: red">*</span></label>
-                                        <input list="clientes-list" placeholder="Seleccione el cliente" class="form-control"
-                                            id="nombre-cliente" name="nombre-cliente" />
-                                        <datalist id="clientes-list">
+                                        <label for="nombre-cliente">Caja de envío<span style="color: red">*</span></label>
+                                        <input list="cajas-list" placeholder="Seleccione la caja de envío" class="form-control"
+                                            id="inpCaja" name="nombre-cliente" />
+                                        <datalist id="cajas-list">
                                             {{-- @foreach ($usuarios as $usr)
                                                 <option value="{{ '(' . $usr->locker_number . ') ' }}{{ $usr->nombre }}"
                                                     data-idUsuario="{{ $usr->id }}"></option>
@@ -32,29 +32,42 @@
                                         </datalist>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="department">Número de tracking<span style="color: red">*</span></label>
-                                        <input type="text" name="identity" class="form-control" id="inpNumeroTracking"
-                                            placeholder="Escanea el tracking" aria-label="Producto" required>
+                                        <label for="producto">Nombre del producto<span style="color: red">*</span></label>
+                                        <input type="text" name="nombre-producto" class="form-control" id="inpNombreProducto"
+                                            placeholder="Ingresa el nombre del producto" aria-label="producto" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="form-group">
+                                        <label for="precio-normal">Precio normal<span style="color: red">*</span></label>
+                                        <input type="text" name="precio-normal" class="form-control" id="inpPrecioNormal"
+                                            placeholder="$ 0.00" aria-label="precio-normal" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="form-group">
+                                        <label for="precio-compra">Precio Compra<span style="color: red">*</span></label>
+                                        <input type="text" name="precio-compre" class="form-control" id="inpPrecioCompra"
+                                            placeholder="$ 0.00" aria-label="precio-compra" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="form-group">
+                                        <label for="precio-venta">Precio Venta<span style="color: red">*</span></label>
+                                        <input type="text" name="precio-compre" class="form-control" id="inpPrecioVenta"
+                                            placeholder="L 0.00" aria-label="precio-venta" required>
                                     </div>
                                 </div>
 
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="department">Descripción del paquete<span
-                                                style="color: red">*</span></label>
-                                        <textarea id="inpDescripcionPaquete" type="text" name="descripcion" class="form-control"
-                                            placeholder="Ingresa la descripción del paquete" rows="5" aria-label="Enlace" required></textarea>
-
-                                    </div>
-                                </div>
+                                
                                 <div class="col-md-12 text-center" id="mensaje" style="color: red; font-size:12px"></div>
                             </div>
-                            <div class="text-center d-flex flex-row justify-content-end">
+                            <div class="text-center d-flex flex-row justify-content-center">
                                 <button id="btn-registrar-paquete" type="submit"
                                     class="btn  btn-success btn-1  mt-4 mb-0"><i class="fi fi-sr-add"></i> Agregar
-                                    paquete</button>
+                                    producto</button>
                                 {{-- <button id="btn-cancelar-pedido" type="button"
                                     class="btn btn-3 w-30 mt-4 mb-0 ml-50">Cancelar</button> --}}
                             </div>

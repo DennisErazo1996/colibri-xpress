@@ -138,9 +138,8 @@ class PageController extends Controller
         return view("pages.productos");
     }
 
-    public function verClientes()
+    public function clientes()
     {   
-
         return view("pages.clientes");
     }
 }

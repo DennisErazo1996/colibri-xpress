@@ -44,7 +44,7 @@
             @endif
             @if (Auth::user()->role == 'super-admin' || Auth::user()->role == 'admin')
             <li class="nav-item">
-                <a class="nav-link {{ Route::currentRouteName() == 'cajas' ? 'active' : '' }}" href="{{ route('productos') }}">
+                <a class="nav-link {{ Route::currentRouteName() == 'productos' ? 'active' : '' }}" href="{{ route('productos') }}">
                     <div
                         class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                         <i class="ni ni-bag-17 text-dark text-sm opacity-10"></i>
@@ -55,7 +55,7 @@
             @endif
             @if (Auth::user()->role == 'super-admin' || Auth::user()->role == 'admin')
             <li class="nav-item">
-                <a class="nav-link {{ Route::currentRouteName() == 'cajas' ? 'active' : '' }}" href="{{ route('clientes') }}">
+                <a class="nav-link {{ Route::currentRouteName() == 'clientes' ? 'active' : '' }}" href="{{ route('clientes') }}">
                     <div
                         class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                         <i class="ni ni-circle-08 text-dark text-sm opacity-10"></i>
