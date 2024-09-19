@@ -85,7 +85,7 @@
 
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" id="lnk-list-paquetes">Lista de paquetes</a>
+                        <a class="nav-link" aria-current="page" id="lnk-list-paquetes">Lista de productos</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" aria-current="page" id="lnk-list-enviados">Paquetes enviados</a>
@@ -106,17 +106,17 @@
                     </div> --}}
                     <div class="card-body px-2 pt-0 pb-2">
                         <div class="table-responsive p-0">
-                            <table id="tbl-paquetes" class="table align-items-center table-striped" style="width:100%">
+                            <table id="tbl-productos" class="table align-items-center table-striped" style="width:100%">
                                 <thead class="">
                                     <tr>
 
                                         <th>No.</th>
-                                        <th>Casillero</th>
-                                        <th>Nombre del Cliente</th>
-                                        <th>Número de tracking</th>
-                                        <th>Descripción del paquete</th>
-                                        <th>Fecha de registro</th>
-                                        <th>Hora de registro</th>
+                                        <th>Nombre Producto</th>
+                                        <th>Cantidad</th>
+                                        <th>Precio Normal ($)</th>
+                                        <th>Precio Compra ($)</th>
+                                        <th>Precio de Venta (L)</th>
+                                        <th>Vender</th>
                                         <th>Opciones</th>
                                     </tr>
                                 </thead>
@@ -154,18 +154,18 @@
                         </div>
                         <br>
                         <div class="table-responsive p-0">
-                            <table id="tbl-paquetes-enviados" class="table align-items-center table-striped"
+                            <table id="tbl-productos" class="table align-items-center table-striped"
                                 style="width:100%">
                                 <thead class="">
                                     <tr>
 
                                         <th>No.</th>
-                                        <th>Casillero</th>
-                                        <th>Nombre del Cliente</th>
-                                        <th>Número de paquetes</th>
-                                        <th>Peso de envío (lb)</th>
-                                        <th>Precio de envío (L)</th>
-                                        <th>Estado de pago</th>
+                                        <th>Nombre Producto</th>
+                                        <th>Cantidad</th>
+                                        <th>Precio Normal ($)</th>
+                                        <th>Precio Compra ($)</th>
+                                        <th>Precio de Venta (L)</th>
+                                        <th>Vender</th>
                                         <th>Opciones</th>
                                     </tr>
                                 </thead>
@@ -195,6 +195,7 @@
     <script>
       
         var stateCookieEnviado = getCookie("stateListEnviados");
+        var urlTableProductos = "{{route('ver-productos')}}";
 
         //alert(stateCookieEnviado)
 
@@ -215,11 +216,67 @@
 
         $(document).ready(function() {
 
-            
-            //$('#card-list-paquetes').show();
-            // $('#tbl-paquetes-enviados').hide();
+           
 
         });
+
+        $('#tbl-productos').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: urlTableProductos,
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Agrega el token al encabezado
+                },
+                complete: function() {
+                    $("#overlay").fadeOut(300);
+                }
+            },
+            columns: [{
+                    data: 'no',
+                    name: 'no'
+                },
+                {
+                    data: 'nombre',
+                    name: 'nombre'
+                },
+                {
+                    data: 'cantidad',
+                    name: 'cantidad'
+                },
+                {
+                    data: 'precio_normal',
+                    name: 'precio_normal'
+                },
+                {
+                    data: 'precio_compra',
+                    name: 'precio_compra'
+                },
+                {
+                    data: 'precio_venta',
+                    name: 'precio_venta'
+                },
+                {
+                    data: 'estadoVenta',
+                    name: 'estadoVenta'
+                },
+                {
+                    data: 'opcion',
+                    name: 'Opciones',
+                    orderable: true,
+                    searchable: true
+                }
+
+            ],
+            columnDefs: [{
+                className: 'dt-center',
+                targets: '_all'
+            }, ],
+            language: idiomaDatatables,
+
+        });
+
 
         $('#lnk-list-paquetes').click(function(e) {
             e.preventDefault();
@@ -263,6 +320,8 @@
             }
             return null;
         }
+
+
 
         
     </script>

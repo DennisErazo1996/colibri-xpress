@@ -75,6 +75,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/clientes', [PageController::class, 'clientes'])->name('clientes');
 	Route::post('/ver-clientes', [VentasController::class, 'verClientes'])->name('ver-clientes');
 	Route::post('/registrar-cliente', [VentasController::class, 'registrarCliente'])->name('registrar-cliente');
+	Route::post('/ver-productos', [VentasController::class, 'verProductos'])->name('ver-productos');
 
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');
