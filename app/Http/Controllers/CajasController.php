@@ -356,13 +356,13 @@ class CajasController extends Controller
                     $actions = "<a class='btn btn-1 m-0' onclick='pesoPaquete($row->id_caja, $row->id_usuario,\"".$row->nombre_cliente."\", \"".$row->peso_envio."\", \"".$row->precio_envio."\")' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>";
                     return $actions;
                 })
-                ->addColumn('estadoVenta', function($row) {
+                ->addColumn('estadoPago', function($row) {
                     // Si el pago está realizado, marcar el checkbox como checked
                     $checked = $row->pagado ? 'checked' : '';
                     return "<div class='form-check form-switch justify-content-center'><input class='form-check-input' onchange='cambiarEstadoPago($row->id_usuario, this.checked)' type='checkbox' id='chkPago' $checked ></div>";
                     //return "<input type='checkbox' class='estado-pago-checkbox' onchange='cambiarEstadoPago($row->id_caja, $row->id_usuario)' $checked />";
                 })
-                ->rawColumns(['opcion', 'estadoVenta'])
+                ->rawColumns(['opcion', 'estadoPago'])
                 ->make(true);
         }
     }
