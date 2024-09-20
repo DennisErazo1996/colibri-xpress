@@ -134,8 +134,14 @@ class PageController extends Controller
 
     public function verProductos()
     {   
+        $cajas = DB::select("select id,
+                    'BOX-' || LPAD(id::TEXT, 4, '0') AS numero_caja,
+                    to_char(fecha_envio, 'DD/MM/YYYY') as fecha_envio
+                    from cx_cajas
+                where deleted_at is null
+                order by id desc");
 
-        return view("pages.productos");
+        return view("pages.productos")->with('cajas', $cajas);
     }
 
     public function clientes()

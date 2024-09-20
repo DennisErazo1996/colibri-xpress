@@ -21,51 +21,59 @@
 
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="nombre-cliente">Caja de envío<span style="color: red">*</span></label>
-                                        <input list="cajas-list" placeholder="Seleccione la caja de envío" class="form-control"
-                                            id="inpCaja" name="nombre-cliente" />
+                                        <label for="caja-envio">Caja de envío<span style="color: red">*</span></label>
+                                        <input list="cajas-list" placeholder="Seleccione la caja de envío"
+                                            class="form-control" id="inpCaja" name="caja-envio" />
                                         <datalist id="cajas-list">
-                                            {{-- @foreach ($usuarios as $usr)
-                                                <option value="{{ '(' . $usr->locker_number . ') ' }}{{ $usr->nombre }}"
-                                                    data-idUsuario="{{ $usr->id }}"></option>
-                                            @endforeach --}}
+                                            @foreach ($cajas as $bx)
+                                                <option value="{{ $bx->numero_caja }}{{ ' (' . $bx->fecha_envio . ')' }}"
+                                                    data-idCaja="{{ $bx->id }}"></option>
+                                            @endforeach
                                         </datalist>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="producto">Nombre del producto<span style="color: red">*</span></label>
-                                        <input type="text" name="nombre-producto" class="form-control" id="inpNombreProducto"
-                                            placeholder="Ingresa el nombre del producto" aria-label="producto" required>
+                                        <input type="text" name="nombre-producto" class="form-control"
+                                            id="inpNombreProducto" placeholder="Ingresa el nombre del producto"
+                                            aria-label="producto" required>
                                     </div>
                                 </div>
-                                <div class="col-md-1">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="cantidad">Cantidad<span style="color: red">*</span></label>
+                                        <input type="number" name="precio-normal" class="form-control" id="inpCantidad"
+                                            placeholder="0" aria-label="cantidad" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="precio-normal">Precio normal<span style="color: red">*</span></label>
-                                        <input type="text" name="precio-normal" class="form-control" id="inpPrecioNormal"
+                                        <input type="number" name="precio-normal" class="form-control" id="inpPrecioNormal"
                                             placeholder="$ 0.00" aria-label="precio-normal" required>
                                     </div>
                                 </div>
-                                <div class="col-md-1">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="precio-compra">Precio Compra<span style="color: red">*</span></label>
-                                        <input type="text" name="precio-compre" class="form-control" id="inpPrecioCompra"
+                                        <input type="number" name="precio-compre" class="form-control" id="inpPrecioCompra"
                                             placeholder="$ 0.00" aria-label="precio-compra" required>
                                     </div>
                                 </div>
-                                <div class="col-md-1">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="precio-venta">Precio Venta<span style="color: red">*</span></label>
-                                        <input type="text" name="precio-compre" class="form-control" id="inpPrecioVenta"
+                                        <input type="number" name="precio-compre" class="form-control" id="inpPrecioVenta"
                                             placeholder="L 0.00" aria-label="precio-venta" required>
                                     </div>
                                 </div>
 
-                                
+
                                 <div class="col-md-12 text-center" id="mensaje" style="color: red; font-size:12px"></div>
                             </div>
                             <div class="text-center d-flex flex-row justify-content-center">
-                                <button id="btn-registrar-paquete" type="submit"
+                                <button id="btn-registrar-producto" type="submit"
                                     class="btn  btn-success btn-1  mt-4 mb-0"><i class="fi fi-sr-add"></i> Agregar
                                     producto</button>
                                 {{-- <button id="btn-cancelar-pedido" type="button"
@@ -88,13 +96,16 @@
                         <a class="nav-link" aria-current="page" id="lnk-list-paquetes">Lista de productos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" id="lnk-list-enviados">Paquetes enviados</a>
+                        <a class="nav-link" aria-current="page" id="lnk-list-enviados">Productos vendidos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" id="lnk-list-creditos">Lista de crédito</a>
                     </li>
                 </ul>
 
                 <div class="card mb-0 p-2" id="card-list-paquetes">
                     <div class="text-center d-flex flex-row justify-content-center">
-                       
+
 
                     </div>
                     <div class="card-header pb-0 text-center">
@@ -154,8 +165,7 @@
                         </div>
                         <br>
                         <div class="table-responsive p-0">
-                            <table id="tbl-productos" class="table align-items-center table-striped"
-                                style="width:100%">
+                            <table id="tbl-productos" class="table align-items-center table-striped" style="width:100%">
                                 <thead class="">
                                     <tr>
 
@@ -184,7 +194,7 @@
     </div>
     </div>
 
-    
+
 
 
 
@@ -193,9 +203,8 @@
 @endsection
 @push('js')
     <script>
-      
         var stateCookieEnviado = getCookie("stateListEnviados");
-        var urlTableProductos = "{{route('ver-productos')}}";
+        var urlTableProductos = "{{ route('ver-productos') }}";
 
         //alert(stateCookieEnviado)
 
@@ -216,7 +225,7 @@
 
         $(document).ready(function() {
 
-           
+
 
         });
 
@@ -258,8 +267,8 @@
                     name: 'precio_venta'
                 },
                 {
-                    data: 'estadoVenta',
-                    name: 'estadoVenta'
+                    data: 'estadoPago',
+                    name: 'estadoPago'
                 },
                 {
                     data: 'opcion',
@@ -307,8 +316,97 @@
             inicializarTablaEnvios()
         });
 
+        $('#btn-registrar-producto').on('click', function() {
+
+            var urlRest = "{{ route('registrar-producto') }}";
+            var vrNombreProducto = $('#inpNombreProducto').val();
+            var vrCantidad = $('#inpCantidad').val();
+            var vrPrecioNormal = $('#inpPrecioNormal').val();
+            var vrPrecioCompra = $('#inpPrecioCompra').val();
+            var vrPrecioVenta = $('#inpPrecioVenta').val();
+
+            var input = document.getElementById('inpCaja'); 
+            var selectedValue = input.value; 
+            
+            var selectedOption = $('#cajas-list option[value="' + selectedValue + '"]');
+            if (selectedOption.length > 0) {
+                var dataId = selectedOption.attr('data-idCaja'); 
+                //console.log('Valor de data-idCaja:', dataId);
+                //$('#inpNombreProducto').focus();
+            } else {
+                console.log('No se encontró una opción seleccionada con ese valor.');
+            }
+
+            //console.log(dataId);
+
+            if (typeof dataId != "undefined" && vrNombreProducto != '' && vrCantidad != '' && vrPrecioNormal != '' && vrPrecioCompra != '' && vrPrecioVenta != '') {
+
+                $(document).ajaxSend(function() {
+                    $("#overlay").fadeIn(300);
+                });
+
+                $('#btn-registrar-producto').prop('disabled', true);
+
+                $.ajax({
+                    type: "POST",
+                    url: urlRest,
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "idCaja": dataId,
+                        "nombreProducto": vrNombreProducto,
+                        "cantidad": vrCantidad,
+                        "precioNormal": vrPrecioNormal,
+                        "precioCompra": vrPrecioCompra,
+                        "precioVenta": vrPrecioVenta,
+                    },
+                    success: function(response) {
+                        //alert(response)
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: "top-end",
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.onmouseenter = Swal.stopTimer;
+                                toast.onmouseleave = Swal.resumeTimer;
+                            }
+                        });
+                        Toast.fire({
+                            icon: "success",
+                            title: response
+                        });
+
+                        $('#tbl-productos').DataTable().ajax.reload();
+                    },
+                    error: function(request, status, error) {
+                        alert(request.responseText);
+                    }
+                }).done(function() {
+                    $('div#mensaje').html('')
+                    $('#inpCaja').val('');
+                    $('#inpNombreProducto').val('');
+                    $('#inpCantidad').val('');
+                    $('#inpPrecioNormal').val('');
+                    $('#inpPrecioCompra').val('');
+                    $('#inpPrecioVenta').val('');
+                    $('#btn-registrar-producto').prop('disabled', false);
+                    setTimeout(function() {
+                        $("#overlay").fadeOut(300);
+                    }, 500);
+                });
+            } else {
+                $('div#mensaje').html('Llena todos los campos, por favor')
+            }
+        });
 
         
+        function cambiarEstadoVenta(idProducto, estadoVenta){
+            alert(idProducto)
+        }
+
+
+
 
         function getCookie(name) {
             let cookieArr = document.cookie.split(";");
@@ -320,9 +418,5 @@
             }
             return null;
         }
-
-
-
-        
     </script>
 @endpush

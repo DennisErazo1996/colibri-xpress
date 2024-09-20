@@ -64,13 +64,33 @@ class VentasController extends Controller
                     $actions = "<a class='btn btn-1 m-0' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>";
                     return $actions;
                 })->addColumn('estadoPago', function($row) {
-                    //$checked = $row->pagado ? 'checked' : '';
-                    return "<div class='form-check form-switch justify-content-center'><input class='form-check-input' type='checkbox' id='chkPago'></div>";
+                    // Si el pago está realizado, marcar el checkbox como checked
+                    //$checked = $row->id ? 'checked' : '';
+                    return "<div class='form-check form-switch justify-content-center'><input class='form-check-input' onchange='cambiarEstadoVenta($row->id, this.checked)' type='checkbox' id='chkPago' ></div>";
                     //return "<input type='checkbox' class='estado-pago-checkbox' onchange='cambiarEstadoPago($row->id_caja, $row->id_usuario)' $checked />";
                 })
-                ->rawColumns(['opcion'])
+                ->rawColumns(['opcion', 'estadoPago'])
                 ->make(true);
         }
 
+    }
+
+    public function registrarProducto(Request $request){
+
+        $idCaja = $request->idCaja;
+        $nombreProducto = $request->nombreProducto;
+        $precioNormal = $request->precioNormal;
+        $precioCompra = $request->precioCompra;
+        $precioVenta = $request->precioVenta;
+        $cantidad = $request->cantidad;
+        $mensaje = "Producto registrado correctamente";
+
+        DB::select("insert into pedidos.cx_productos(nombre, precio_normal, precio_compra, precio_venta, created_at, id_caja, cantidad)
+                    values(:nombre_producto, :precio_normal, :precio_compra, :precio_venta, now(), :id_caja, :cantidad)", 
+                    ['nombre_producto' => $nombreProducto, 'precio_normal' => $precioNormal, 'precio_compra' => $precioCompra, 'precio_venta' => $precioVenta,
+                    'id_caja' => $idCaja, 'cantidad' => $cantidad]);
+
+
+        return $mensaje;
     }
 }
