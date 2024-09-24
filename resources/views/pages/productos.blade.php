@@ -206,6 +206,7 @@
         var stateCookieEnviado = getCookie("stateListEnviados");
         var urlTableProductos = "{{ route('ver-productos') }}";
 
+
         //alert(stateCookieEnviado)
 
 
@@ -325,12 +326,12 @@
             var vrPrecioCompra = $('#inpPrecioCompra').val();
             var vrPrecioVenta = $('#inpPrecioVenta').val();
 
-            var input = document.getElementById('inpCaja'); 
-            var selectedValue = input.value; 
-            
+            var input = document.getElementById('inpCaja');
+            var selectedValue = input.value;
+
             var selectedOption = $('#cajas-list option[value="' + selectedValue + '"]');
             if (selectedOption.length > 0) {
-                var dataId = selectedOption.attr('data-idCaja'); 
+                var dataId = selectedOption.attr('data-idCaja');
                 //console.log('Valor de data-idCaja:', dataId);
                 //$('#inpNombreProducto').focus();
             } else {
@@ -339,7 +340,8 @@
 
             //console.log(dataId);
 
-            if (typeof dataId != "undefined" && vrNombreProducto != '' && vrCantidad != '' && vrPrecioNormal != '' && vrPrecioCompra != '' && vrPrecioVenta != '') {
+            if (typeof dataId != "undefined" && vrNombreProducto != '' && vrCantidad != '' && vrPrecioNormal !=
+                '' && vrPrecioCompra != '' && vrPrecioVenta != '') {
 
                 $(document).ajaxSend(function() {
                     $("#overlay").fadeIn(300);
@@ -400,9 +402,49 @@
             }
         });
 
-        
-        function cambiarEstadoVenta(idProducto, estadoVenta){
-            alert(idProducto)
+
+        function cambiarEstadoVenta(idProducto, estadoVenta) {
+           
+            var clientes = {!! json_encode($clientes) !!};
+
+            $.confirm({
+                title: 'Cambio de Estado de Venta',
+                content: '' +
+                    '<form action="" class="formName">' +
+                    '<div class="form-group">' +
+                    '<label>Selecciona el producto</label>' +
+                    '<select class="producto form-control" required>' +
+                    clientes.map(cliente => `<option value="${cliente.id}">${cliente.nombre_cliente}</option>`).join('') +
+                    '</select>' +
+                    '</div>' +
+                    '</form>',
+                buttons: {
+                    formSubmit: {
+                        text: 'Submit',
+                        btnClass: 'btn-blue',
+                        action: function() {
+                            var productoSeleccionado = this.$content.find('.producto').val();
+                            if (!productoSeleccionado) {
+                                $.alert('Debes seleccionar un producto válido');
+                                return false;
+                            }
+                            $.alert('Has seleccionado el producto con ID ' + productoSeleccionado);
+                        }
+                    },
+                    cancel: function() {
+                        $('#chkPago').prop('checked', false);
+                    },
+                },
+                onContentReady: function() {
+                    // bind to events
+                    var jc = this;
+                    this.$content.find('form').on('submit', function(e) {
+                        // if the user submits the form by pressing enter in the field.
+                        e.preventDefault();
+                        jc.$$formSubmit.trigger('click'); // reference the button and click it
+                    });
+                }
+            });
         }
 
 

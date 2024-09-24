@@ -141,7 +141,14 @@ class PageController extends Controller
                 where deleted_at is null
                 order by id desc");
 
-        return view("pages.productos")->with('cajas', $cajas);
+        $metodosPago = DB::select("select * from pedidos.cx_metodos_pago where deleted_at is null");
+        
+        $clientes = DB::select("select * from pedidos.cx_clientes where deleted_at is null");
+
+        return view("pages.productos")
+        ->with('metodosPago', $metodosPago)
+        ->with('clientes', $clientes)
+        ->with('cajas', $cajas);
     }
 
     public function clientes()
