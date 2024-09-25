@@ -210,6 +210,11 @@
         //alert(stateCookieEnviado)
 
 
+        $('select.producto').select2({
+            theme: "bootstrap-5",
+            width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+            placeholder: $(this).data('placeholder'),
+        });
 
         if (stateCookieEnviado == null) {
             $('#card-list-enviados').hide();
@@ -404,42 +409,75 @@
 
 
         function cambiarEstadoVenta(idProducto, estadoVenta) {
-           
+
             var clientes = {!! json_encode($clientes) !!};
+            var metodosPago = {!! json_encode($metodosPago) !!};
+
 
             $.confirm({
-                title: 'Cambio de Estado de Venta',
+                title: 'Registrar venta',
                 content: '' +
                     '<form action="" class="formName">' +
                     '<div class="form-group">' +
-                    '<label>Selecciona el producto</label>' +
-                    '<select class="producto form-control" required>' +
-                    clientes.map(cliente => `<option value="${cliente.id}">${cliente.nombre_cliente}</option>`).join('') +
+                    '<label>Selecciona el comprador</label>' +
+                    '<input list="clientes" class="form-control cliente" placeholder="Buscar producto" required>' +
+                    '<datalist id="clientes">' +
+                    clientes.map(cliente => `<option value="${cliente.nombre_cliente}" data-id="${cliente.id}">`)
+                    .join('') +
+                    '</datalist>' +
+                    '<input type="hidden" id="clienteId">' + // Input oculto para guardar el ID del producto
+                    '</div>' +
+                    '<div class="form-group">' +
+                    '<label>Selecciona el metodo de pago</label>' +
+                    '<select class="metodo-pago form-control" required>' +
+                    '<option value="" selected disabled>Metodo de pago</option>'+
+                    metodosPago.map(metodo => `<option value="${metodo.id}">${metodo.descripcion}</option>`).join('') +
                     '</select>' +
                     '</div>' +
                     '</form>',
                 buttons: {
                     formSubmit: {
-                        text: 'Submit',
-                        btnClass: 'btn-blue',
+                        text: 'Vender',
+                        btnClass: 'btn-green',
                         action: function() {
-                            var productoSeleccionado = this.$content.find('.producto').val();
-                            if (!productoSeleccionado) {
-                                $.alert('Debes seleccionar un producto válido');
+
+                            var nombreCliente = this.$content.find('.cliente').val(); 
+                            var idCliente = this.$content.find('#clienteId').val();
+                            var metodoPago = this.$content.find('.metodo-pago').val();
+
+                            if (!idCliente) {
+                                $.alert('Debes seleccionar un cliente');
                                 return false;
                             }
-                            $.alert('Has seleccionado el producto con ID ' + productoSeleccionado);
+                            $.alert('Has seleccionado el cliente con ID ' + idCliente + ' y nombre ' +
+                                nombreCliente+ ' y pago con '+metodoPago);
                         }
                     },
-                    cancel: function() {
+                    cancelar: function() {
                         $('#chkPago').prop('checked', false);
                     },
                 },
                 onContentReady: function() {
-                    // bind to events
                     var jc = this;
+
+                    // Detectar cambios en el input de productos
+                    this.$content.find('.cliente').on('input', function() {
+                        var inputVal = $(this).val(); // El valor del nombre del producto
+                        var option = $('#clientes').find(
+                            `option[value="${inputVal}"]`); // Buscar la opción correspondiente
+
+                        if (option.length) {
+                            // Si existe la opción, obtener el ID y guardarlo en el campo oculto
+                            var idCliente = option.data('id');
+                            jc.$content.find('#clienteId').val(idCliente);
+                        } else {
+                            // Si no hay coincidencias, limpiar el ID del producto
+                            jc.$content.find('#clienteId').val('');
+                        }
+                    });
+
+                    // Bind to form submit
                     this.$content.find('form').on('submit', function(e) {
-                        // if the user submits the form by pressing enter in the field.
                         e.preventDefault();
                         jc.$$formSubmit.trigger('click'); // reference the button and click it
                     });
