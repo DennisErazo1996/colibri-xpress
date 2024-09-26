@@ -210,12 +210,6 @@
         //alert(stateCookieEnviado)
 
 
-        $('select.producto').select2({
-            theme: "bootstrap-5",
-            width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
-            placeholder: $(this).data('placeholder'),
-        });
-
         if (stateCookieEnviado == null) {
             $('#card-list-enviados').hide();
             $('li.nav-item a#lnk-list-paquetes').addClass('active');
@@ -408,11 +402,11 @@
         });
 
 
-        function cambiarEstadoVenta(idProducto, estadoVenta) {
+        function cambiarEstadoVenta(idProducto, precioVenta, estadoVenta) {
 
             var clientes = {!! json_encode($clientes) !!};
             var metodosPago = {!! json_encode($metodosPago) !!};
-
+            var urlRest = "{{ route('registrar-venta') }}";
 
             $.confirm({
                 title: 'Registrar venta',
@@ -420,7 +414,7 @@
                     '<form action="" class="formName">' +
                     '<div class="form-group">' +
                     '<label>Selecciona el comprador</label>' +
-                    '<input list="clientes" class="form-control cliente" placeholder="Buscar producto" required>' +
+                    '<input list="clientes" class="form-control cliente" placeholder="Buscar cliente" required>' +
                     '<datalist id="clientes">' +
                     clientes.map(cliente => `<option value="${cliente.nombre_cliente}" data-id="${cliente.id}">`)
                     .join('') +
@@ -428,11 +422,17 @@
                     '<input type="hidden" id="clienteId">' + // Input oculto para guardar el ID del producto
                     '</div>' +
                     '<div class="form-group">' +
-                    '<label>Selecciona el metodo de pago</label>' +
+                    '<label>Selecciona el método de pago</label>' +
                     '<select class="metodo-pago form-control" required>' +
-                    '<option value="" selected disabled>Metodo de pago</option>'+
-                    metodosPago.map(metodo => `<option value="${metodo.id}">${metodo.descripcion}</option>`).join('') +
+                    '<option value="" selected disabled>Metodo de pago</option>' +
+                    metodosPago.map(metodo => `<option value="${metodo.id}">${metodo.descripcion}</option>`).join(
+                        '') +
                     '</select>' +
+                    '</div>' +
+                    '<div class="form-group" id="cuotas-container" style="display:none;">' +
+                    // Input de cuotas inicialmente oculto
+                    '<label>Ingrese el número de cuotas</label>' +
+                    '<input type="number" id="cuotas" class="form-control" placeholder="Número de cuotas">' +
                     '</div>' +
                     '</form>',
                 buttons: {
@@ -440,17 +440,66 @@
                         text: 'Vender',
                         btnClass: 'btn-green',
                         action: function() {
-
-                            var nombreCliente = this.$content.find('.cliente').val(); 
+                            var nombreCliente = this.$content.find('.cliente').val();
                             var idCliente = this.$content.find('#clienteId').val();
                             var metodoPago = this.$content.find('.metodo-pago').val();
+                            var cuotas = this.$content.find('#cuotas').val();
 
-                            if (!idCliente) {
+                            $(document).ajaxSend(function() {
+                                $("#overlay").fadeIn(300);
+                            });
+
+                            $.ajax({
+                                type: "POST",
+                                url: urlRest,
+                                data: {
+                                    "_token": "{{ csrf_token() }}",
+                                    "idCliente": idCliente,
+                                    "cuotas": cuotas,
+                                    "metodoPago": metodoPago,
+                                    "precioVenta": precioVenta,
+                                    "idProducto": idProducto,
+
+                                },
+                                success: function(response) {
+                                    //alert(response)
+                                    const Toast = Swal.mixin({
+                                        toast: true,
+                                        position: "top-end",
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        didOpen: (toast) => {
+                                            toast.onmouseenter = Swal.stopTimer;
+                                            toast.onmouseleave = Swal.resumeTimer;
+                                        }
+                                    });
+                                    Toast.fire({
+                                        icon: "success",
+                                        title: response
+                                    });
+
+                                    // $('#tbl-productos').DataTable().ajax.reload();
+                                },
+                                error: function(request, status, error) {
+                                    alert(request.responseText);
+                                }
+                            }).done(function() {
+
+                                setTimeout(function() {
+                                    $("#overlay").fadeOut(300);
+                                }, 500);
+                            });
+
+
+                            /*if (!idCliente) {
                                 $.alert('Debes seleccionar un cliente');
                                 return false;
                             }
-                            $.alert('Has seleccionado el cliente con ID ' + idCliente + ' y nombre ' +
-                                nombreCliente+ ' y pago con '+metodoPago);
+                            $.alert('Has seleccionado el cliente con ID ' + idCliente + ', nombre ' + nombreCliente +
+                                ' y método de pago con ID ' + meto
+                                doPago + '. Cuotas: ' + cuotas + ' El precio venta: '+precioVenta+ ' el id producto: '+ idProducto);*/
+
                         }
                     },
                     cancelar: function() {
@@ -462,24 +511,34 @@
 
                     // Detectar cambios en el input de productos
                     this.$content.find('.cliente').on('input', function() {
-                        var inputVal = $(this).val(); // El valor del nombre del producto
+                        var inputVal = $(this).val();
                         var option = $('#clientes').find(
-                            `option[value="${inputVal}"]`); // Buscar la opción correspondiente
+                            `option[value="${inputVal}"]`);
 
                         if (option.length) {
-                            // Si existe la opción, obtener el ID y guardarlo en el campo oculto
                             var idCliente = option.data('id');
                             jc.$content.find('#clienteId').val(idCliente);
                         } else {
-                            // Si no hay coincidencias, limpiar el ID del producto
                             jc.$content.find('#clienteId').val('');
+                        }
+                    });
+
+                    // Mostrar/ocultar input de cuotas basado en el método de pago seleccionado
+                    this.$content.find('.metodo-pago').on('change', function() {
+                        var metodoSeleccionado = $(this).val();
+                        if (metodoSeleccionado == "2") {
+                            jc.$content.find('#cuotas-container').show();
+                        } else {
+                            jc.$content.find('#cuotas-container').hide();
+                            jc.$content.find('#cuotas').val(
+                                '');
                         }
                     });
 
                     // Bind to form submit
                     this.$content.find('form').on('submit', function(e) {
                         e.preventDefault();
-                        jc.$$formSubmit.trigger('click'); // reference the button and click it
+                        jc.$$formSubmit.trigger('click');
                     });
                 }
             });

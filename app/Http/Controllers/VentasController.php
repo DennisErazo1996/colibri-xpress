@@ -66,7 +66,7 @@ class VentasController extends Controller
                 })->addColumn('estadoPago', function($row) {
                     // Si el pago está realizado, marcar el checkbox como checked
                     //$checked = $row->id ? 'checked' : '';
-                    return "<div class='form-check form-switch justify-content-center'><input class='form-check-input' onchange='cambiarEstadoVenta($row->id, this.checked)' type='checkbox' id='chkPago' ></div>";
+                    return "<div class='form-check form-switch justify-content-center'><input class='form-check-input' onchange='cambiarEstadoVenta($row->id, $row->precio_venta, this.checked)' type='checkbox' id='chkPago' ></div>";
                     //return "<input type='checkbox' class='estado-pago-checkbox' onchange='cambiarEstadoPago($row->id_caja, $row->id_usuario)' $checked />";
                 })
                 ->rawColumns(['opcion', 'estadoPago'])
@@ -90,6 +90,30 @@ class VentasController extends Controller
                     ['nombre_producto' => $nombreProducto, 'precio_normal' => $precioNormal, 'precio_compra' => $precioCompra, 'precio_venta' => $precioVenta,
                     'id_caja' => $idCaja, 'cantidad' => $cantidad]);
 
+
+        return $mensaje;
+    }
+
+    public function registrarVenta(Request $request){
+
+        $idCliente = $request->idCliente;
+        $idProducto = $request->idProducto;
+        $metodoPago = $request->metodoPago;
+        $precioVenta = $request->precioVenta;
+        $cuotas = $request->cuotas;
+        $mensaje = "Venta registrada correctamente";
+
+        if($metodoPago == 2){
+            DB::select("insert into pedidos.cx_creditos(id_cliente, id_producto, monto_adeudado, cuotas, created_at)
+                    values(:id_cliente, :id_producto, :monto_adeudado, :cuotas_credito, now())", 
+                    ['id_cliente' => $idCliente, 'id_producto' => $idProducto, 'monto_adeudado' => $precioVenta,
+                    'cuotas_credito' => $cuotas]);
+        }else{
+            DB::select("insert into pedidos.cx_ventas(id_producto, id_metodo_pago, created_at, precio_venta, id_cliente)
+            values(:id_producto, :id_metodo_pago, now(), :precio_venta, :id_cliente)", 
+            ['id_producto' => $idProducto, 'id_metodo_pago' => $metodoPago, 'precio_venta' => $precioVenta,
+            'id_cliente' => $idCliente]);
+        }
 
         return $mensaje;
     }
