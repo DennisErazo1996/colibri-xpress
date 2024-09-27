@@ -93,17 +93,17 @@
 
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" id="lnk-list-paquetes">Lista de productos</a>
+                        <a class="nav-link" aria-current="page" id="lnk-list-productos">Lista de productos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" id="lnk-list-enviados">Productos vendidos</a>
+                        <a class="nav-link" aria-current="page" id="lnk-list-ventas">Productos vendidos</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" aria-current="page" id="lnk-list-creditos">Lista de crédito</a>
                     </li>
                 </ul>
 
-                <div class="card mb-0 p-2" id="card-list-paquetes">
+                <div class="card mb-0 p-2" id="card-list-productos">
                     <div class="text-center d-flex flex-row justify-content-center">
 
 
@@ -122,6 +122,7 @@
                                     <tr>
 
                                         <th>No.</th>
+                                        <th>Caja</th>
                                         <th>Nombre Producto</th>
                                         <th>Cantidad</th>
                                         <th>Precio Normal ($)</th>
@@ -141,7 +142,7 @@
                     </div>
                 </div>
 
-                <div class="card mb-0 p-2" id="card-list-enviados">
+                <div class="card mb-0 p-2" id="card-list-ventas">
                     <div class="card-header pb-0 text-center">
                         {{-- <h6>Authors table</h6> --}}
                     </div>
@@ -165,17 +166,62 @@
                         </div>
                         <br>
                         <div class="table-responsive p-0">
-                            <table id="tbl-productos" class="table align-items-center table-striped" style="width:100%">
+                            <table id="tbl-ventas" class="table align-items-center table-striped" style="width:100%">
                                 <thead class="">
                                     <tr>
 
                                         <th>No.</th>
-                                        <th>Nombre Producto</th>
-                                        <th>Cantidad</th>
-                                        <th>Precio Normal ($)</th>
-                                        <th>Precio Compra ($)</th>
-                                        <th>Precio de Venta (L)</th>
-                                        <th>Vender</th>
+                                        <th>Nombre producto</th>
+                                        <th>Precio de venta</th>
+                                        <th>Comprador</th>
+                                        <th>Método de pago</th>
+                                        <th>Fecha de compra</th>
+                                        <th>Opciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mb-0 p-2" id="card-list-creditos">
+                    <div class="card-header pb-0 text-center">
+                        {{-- <h6>Authors table</h6> --}}
+                    </div>
+                    {{-- <div class="align-items-center text-center">
+                        <button type="button" class="btn btn-primary btn-default mb-3" data-bs-toggle="modal"
+                            data-bs-target="#modal-form">Agregar nuevo pedido</button>
+                    </div> --}}
+                    <div class="card-body px-2 pt-0 pb-2">
+                        <div class="container">
+                            <div id="total-envio" class="row text-center">
+                                {{-- <div class="col">
+                                    Total libras: <strong>50</strong>
+                                </div>
+                                <div class="col">
+                                    Total Pagado: <strong>500</strong>
+                                </div>
+                                <div class="col">
+                                    Mitad Ganancia: <strong>5000</strong>
+                                </div> --}}
+                            </div>
+                        </div>
+                        <br>
+                        <div class="table-responsive p-0">
+                            <table id="tbl-ventas" class="table align-items-center table-striped" style="width:100%">
+                                <thead class="">
+                                    <tr>
+
+                                        <th>No.</th>
+                                        <th>Nombre producto</th>
+                                        <th>Precio de venta</th>
+                                        <th>Comprador</th>
+                                        <th>Método de pago</th>
+                                        <th>Fecha de compra</th>
                                         <th>Opciones</th>
                                     </tr>
                                 </thead>
@@ -211,15 +257,17 @@
 
 
         if (stateCookieEnviado == null) {
-            $('#card-list-enviados').hide();
-            $('li.nav-item a#lnk-list-paquetes').addClass('active');
-            $('li.nav-item a#lnk-list-paquetes').attr('aria-current', 'page');
+            $('#card-list-ventas').hide();
+            $('#card-list-creditos').hide();
+            $('li.nav-item a#lnk-list-productos').addClass('active');
+            $('li.nav-item a#lnk-list-productos').attr('aria-current', 'page');
         } else {
-            //inicializarTablaEnvios()
-            $('li.nav-item a#lnk-list-enviados').addClass('active');
-            $('li.nav-item a#lnk-list-enviados').attr('aria-current', 'page');
-            $('#card-list-enviados').show();
-            $('#card-list-paquetes').hide();
+            inicializarTablaVentas()
+            $('li.nav-item a#lnk-list-ventas').addClass('active');
+            $('li.nav-item a#lnk-list-ventas').attr('aria-current', 'page');
+            $('#card-list-ventas').show();
+            $('#card-list-productos').hide();
+            $('#card-list-creditos').hide();
 
         }
 
@@ -239,12 +287,16 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}' // Agrega el token al encabezado
                 },
                 complete: function() {
-                    $("#overlay").fadeOut(300);
+                    //$("#overlay").fadeOut(300);
                 }
             },
             columns: [{
                     data: 'no',
                     name: 'no'
+                },
+                {
+                    data: 'numero_caja',
+                    name: 'numero_caja'
                 },
                 {
                     data: 'nombre',
@@ -287,33 +339,49 @@
         });
 
 
-        $('#lnk-list-paquetes').click(function(e) {
+        $('#lnk-list-productos').click(function(e) {
             e.preventDefault();
 
             document.cookie = "stateListEnviados=active; expires=Thu, 01 Jan 1970 00:00:00 UTC";
             var cookieState = getCookie('stateListEnviados')
             //console.log(cookieState)
 
-            $('li.nav-item a#lnk-list-paquetes').addClass('active');
-            $('li.nav-item a#lnk-list-enviados').removeClass('active');
-            $('li.nav-item a#lnk-list-paquetes').attr('aria-current', 'page');
-            $('#card-list-paquetes').show().fadeIn();
-            $('#card-list-enviados').hide().fadeOut();
+            $('li.nav-item a#lnk-list-productos').addClass('active');
+            $('li.nav-item a#lnk-list-ventas').removeClass('active');
+            $('li.nav-item a#lnk-list-creditos').removeClass('active');
+            $('li.nav-item a#lnk-list-productos').attr('aria-current', 'page');
+            $('#card-list-productos').show().fadeIn();
+            $('#card-list-ventas').hide().fadeOut();
+            $('#card-list-creditos').hide().fadeOut();
         });
 
-        $('#lnk-list-enviados').click(function(e) {
+        $('#lnk-list-creditos').click(function(e) {
+            e.preventDefault();
+
+            $('li.nav-item a#lnk-list-creditos').addClass('active');
+            $('li.nav-item a#lnk-list-creditos').attr('aria-current', 'page');
+            $('li.nav-item a#lnk-list-ventas').removeClass('active');
+            $('li.nav-item a#lnk-list-productos').removeClass('active');
+            $('#card-list-creditos').show().fadeIn();
+            $('#card-list-ventas').hide().fadeOut();
+            $('#card-list-productos').hide().fadeOut();
+        });
+
+        $('#lnk-list-ventas').click(function(e) {
             e.preventDefault();
 
             document.cookie = "stateListEnviados=active";
             var cookieState = getCookie('stateListEnviados')
             //console.log(cookieState)
 
-            $('li.nav-item a#lnk-list-paquetes').removeClass('active');
-            $('li.nav-item a#lnk-list-enviados').addClass('active');
-            $('li.nav-item a#lnk-list-enviados').attr('aria-current', 'page');
-            $('#card-list-paquetes').hide().fadeOut();
-            $('#card-list-enviados').show().fadeIn();
-            inicializarTablaEnvios()
+            $('li.nav-item a#lnk-list-productos').removeClass('active');
+            $('li.nav-item a#lnk-list-creditos').removeClass('active');
+            $('li.nav-item a#lnk-list-ventas').addClass('active');
+            $('li.nav-item a#lnk-list-ventas').attr('aria-current', 'page');
+            $('#card-list-productos').hide().fadeOut();
+            $('#card-list-creditos').hide().fadeOut();
+            $('#card-list-ventas').show().fadeIn();
+            inicializarTablaVentas()
         });
 
         $('#btn-registrar-producto').on('click', function() {
@@ -416,7 +484,9 @@
                     '<label>Selecciona el comprador</label>' +
                     '<input list="clientes" class="form-control cliente" placeholder="Buscar cliente" required>' +
                     '<datalist id="clientes">' +
-                    clientes.map(cliente => `<option value="${cliente.nombre_cliente}" data-id="${cliente.id}">`)
+                    clientes.map(cliente =>
+                        `<option value="${cliente.nombre_cliente+' '+cliente.apellido_cliente}" data-id="${cliente.id}">`
+                        )
                     .join('') +
                     '</datalist>' +
                     '<input type="hidden" id="clienteId">' + // Input oculto para guardar el ID del producto
@@ -530,8 +600,7 @@
                             jc.$content.find('#cuotas-container').show();
                         } else {
                             jc.$content.find('#cuotas-container').hide();
-                            jc.$content.find('#cuotas').val(
-                                '');
+                            jc.$content.find('#cuotas').val('');
                         }
                     });
 
@@ -545,6 +614,69 @@
         }
 
 
+        function inicializarTablaVentas() {
+
+            var urlTableVentas = "{{ route('ver-ventas') }}";
+
+            $('#tbl-ventas').DataTable({
+                processing: true,
+                serverSide: true,
+                bDestroy: true,
+                ajax: {
+                    url: urlTableVentas,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Agrega el token al encabezado
+                    },
+                    error: function(xhr, status, error) {
+                        alert("Ocurrió un error: " + error);
+                    },
+                    complete: function() {
+                        //$("#overlay").fadeOut(300);
+                    }
+                },
+                columns: [{
+                        data: 'no',
+                        name: 'no'
+                    },
+                    {
+                        data: 'nombre',
+                        name: 'nombre'
+                    },
+                    {
+                        data: 'precio_venta',
+                        name: 'precio_venta'
+                    },
+                    {
+                        data: 'comprador',
+                        name: 'comprador'
+                    },
+                    {
+                        data: 'metodo_pago',
+                        name: 'metodo_pago'
+                    },
+                    {
+                        data: 'fecha_compra',
+                        name: 'fecha_compra'
+                    },
+
+                    {
+                        data: 'opcion',
+                        name: 'Opciones',
+                        orderable: true,
+                        searchable: true
+                    }
+
+                ],
+                columnDefs: [{
+                    className: 'dt-center',
+                    targets: '_all'
+                }, ],
+                language: idiomaDatatables,
+
+            });
+
+        }
 
 
         function getCookie(name) {

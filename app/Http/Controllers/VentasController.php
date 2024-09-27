@@ -48,14 +48,16 @@ class VentasController extends Controller
         if ($request->ajax()) {
             
             $data = DB::select("select 
-                            row_number() over(order by id) as no,
-                            id,
-                            id_caja,
-                            nombre,
-                            cantidad,
-                            precio_normal, precio_compra, precio_venta
-                        from pedidos.cx_productos
-                        where deleted_at is null");
+                                    row_number() over(order by p.id) as no,
+                                    p.id,
+                                    id_caja,
+                                    'BOX-' || LPAD(c.id::TEXT, 4, '0') AS numero_caja,
+                                    nombre,
+                                    cantidad,
+                                    precio_normal, precio_compra, precio_venta
+                                from pedidos.cx_productos p
+                                join cx_cajas c on p.id_caja = c.id and c.deleted_at is null
+                                where p.deleted_at is null");
 
             return Datatables::of($data)
                 ->addIndexColumn()
@@ -116,5 +118,32 @@ class VentasController extends Controller
         }
 
         return $mensaje;
+    }
+
+    public function verVentas(Request $request){
+        if ($request->ajax()) {
+            
+            $data = DB::select("select 
+                                    row_number() over(order by v.id desc) as no,
+                                    p.nombre,
+                                    v.precio_venta,
+                                    c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
+                                    initcap(lower(mp.descripcion)) as metodo_pago,
+                                    to_char(v.created_at::date, 'DD/MM/YYYY') as fecha_compra
+                                from pedidos.cx_ventas v
+                                join pedidos.cx_productos p on p.id = v.id_producto and p.deleted_at is null
+                                join pedidos.cx_clientes c on c.id = v.id_cliente and c.deleted_at is null
+                                join pedidos.cx_metodos_pago mp on mp.id = v.id_metodo_pago and mp.deleted_At is null");
+
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->addColumn('opcion', function($row){
+                    
+                    $actions = "<a class='btn btn-1 m-0' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar venta' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>";
+                    return $actions;
+                })
+                ->rawColumns(['opcion'])
+                ->make(true);
+        }
     }
 }

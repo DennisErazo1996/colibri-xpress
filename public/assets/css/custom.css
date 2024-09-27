@@ -144,11 +144,11 @@ footer {
     color: #404040;
 }
 
-#lnk-list-paquetes, #lnk-list-enviados{
+#lnk-list-paquetes, #lnk-list-enviados, #lnk-list-ventas, #lnk-list-productos, #lnk-list-creditos{
     color: #303389 !important;
 }
 
-.active#lnk-list-paquetes, .active#lnk-list-enviados{
+.active#lnk-list-paquetes, .active#lnk-list-enviados, .active#lnk-list-creditos, .active#lnk-list-ventas, .active#lnk-list-productos{
     color: #404040 !important;
 }
 
