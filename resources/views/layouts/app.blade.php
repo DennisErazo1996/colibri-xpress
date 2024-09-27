@@ -66,7 +66,7 @@
 
 <body class="{{ $class ?? '' }}">
 
-    <div id="overlay">
+    <div id="overlay" type="hidden">
         <div class="cv-spinner">
             <span class="spinner"></span>
         </div>

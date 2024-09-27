@@ -273,7 +273,7 @@
 
         $(document).ready(function() {
 
-
+            $("#overlay").fadeOut(300);
 
         });
 
@@ -470,7 +470,7 @@
         });
 
 
-        function cambiarEstadoVenta(idProducto, precioVenta, estadoVenta) {
+        function cambiarEstadoVenta(idProducto, precioVenta) {
 
             var clientes = {!! json_encode($clientes) !!};
             var metodosPago = {!! json_encode($metodosPago) !!};
@@ -617,6 +617,10 @@
         function inicializarTablaVentas() {
 
             var urlTableVentas = "{{ route('ver-ventas') }}";
+
+            $(document).ajaxSend(function() {
+                $("#overlay").hide();
+            })
 
             $('#tbl-ventas').DataTable({
                 processing: true,

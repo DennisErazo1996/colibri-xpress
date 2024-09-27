@@ -190,7 +190,7 @@
                     <div class="modal-body p-0">
                         <div class="card card-plain">
                             <div class="card-header pb-0 text-left">
-                                <h3 class="font-weight-bolder text-default">Actualizar el pedido</h3>
+                                <h3 class="font-weight-bolder text-default">Actualizar información de paquete</h3>
                                 {{-- <p class="mb-0">Enter your email and password to sign in</p> --}}
                             </div>
                             <div class="card-body">
@@ -791,6 +791,10 @@
 
         function inicializarTablaEnvios() {
 
+            $(document).ajaxSend(function() {
+                $("#overlay").hide();
+            })
+
             $('#tbl-paquetes-enviados').DataTable({
                 processing: true,
                 serverSide: true,
@@ -853,6 +857,7 @@
         function inicializarTotales() {
             //$('#total-envio').html('<p>Contenido de prueba</p>');
             var urlRest = "{{ route('datos-envio') }}";
+
             $.ajax({
                 type: "POST",
                 url: urlRest,

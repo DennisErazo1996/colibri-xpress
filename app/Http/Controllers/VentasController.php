@@ -68,7 +68,7 @@ class VentasController extends Controller
                 })->addColumn('estadoPago', function($row) {
                     // Si el pago está realizado, marcar el checkbox como checked
                     //$checked = $row->id ? 'checked' : '';
-                    return "<div class='form-check form-switch justify-content-center'><input class='form-check-input' onchange='cambiarEstadoVenta($row->id, $row->precio_venta, this.checked)' type='checkbox' id='chkPago' ></div>";
+                    return "<div class='form-check form-switch justify-content-center'><input class='form-check-input' onchange='cambiarEstadoVenta($row->id, $row->precio_venta)' type='checkbox' id='chkPago' ></div>";
                     //return "<input type='checkbox' class='estado-pago-checkbox' onchange='cambiarEstadoPago($row->id_caja, $row->id_usuario)' $checked />";
                 })
                 ->rawColumns(['opcion', 'estadoPago'])
