@@ -116,6 +116,19 @@
                             data-bs-target="#modal-form">Agregar nuevo pedido</button>
                     </div> --}}
                     <div class="card-body px-2 pt-0 pb-2">
+                        <div class="container">
+                            <div id="total-productos" class="row text-center justify-content-center">
+                                {{-- <div class="col">
+                                    Total libras: <strong>50</strong>
+                                </div>
+                                <div class="col">
+                                    Total Pagado: <strong>500</strong>
+                                </div>
+                                <div class="col">
+                                    Mitad Ganancia: <strong>5000</strong>
+                                </div> --}}
+                            </div>
+                        </div>
                         <div class="table-responsive p-0">
                             <table id="tbl-productos" class="table align-items-center table-striped" style="width:100%">
                                 <thead class="">
@@ -275,6 +288,7 @@
 
         $(document).ready(function() {
 
+            inicializarTotalesProductos()
             $("#overlay").fadeOut(300);
 
         });
@@ -289,6 +303,7 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}' // Agrega el token al encabezado
                 },
                 complete: function() {
+                    
                     //$("#overlay").fadeOut(300);
                 }
             },
@@ -455,6 +470,9 @@
                         alert(request.responseText);
                     }
                 }).done(function() {
+
+                    inicializarTotalesProductos()
+                    
                     $('div#mensaje').html('')
                     $('#inpCaja').val('');
                     $('#inpNombreProducto').val('');
@@ -552,16 +570,19 @@
                                         title: response
                                     });
 
-                                    // $('#tbl-productos').DataTable().ajax.reload();
+                                    $('#tbl-productos').DataTable().ajax.reload();
                                 },
                                 error: function(request, status, error) {
                                     alert(request.responseText);
                                 }
                             }).done(function() {
 
+                                inicializarTotalesProductos()
+
                                 setTimeout(function() {
                                     $("#overlay").fadeOut(300);
                                 }, 500);
+
                             });
 
 
@@ -639,7 +660,7 @@
                         alert("Ocurrió un error: " + error);
                     },
                     complete: function() {
-                        //$("#overlay").fadeOut(300);
+                        $("#overlay").fadeOut(300);
                     }
                 },
                 columns: [{
@@ -708,7 +729,8 @@
                         alert("Ocurrió un error: " + error);
                     },
                     complete: function() {
-                        //$("#overlay").fadeOut(300);
+                        //$("#overlay").hide();
+                        $("#overlay").fadeOut(300);
                     }
                 },
                 columns: [{
@@ -760,6 +782,60 @@
 
             });
 
+        }
+
+        function inicializarTotalesProductos() {
+            
+            var urlRest = "{{ route('total-productos') }}";
+
+            $.ajax({
+                type: "POST",
+                url: urlRest,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                   
+                },
+                success: function(response) {
+
+                    if (response.data && response.data.length > 0) {
+
+                        var total_productos = response.data[0].total_productos;
+                        var total_inversion = response.data[0].total_inversion;
+                        var total_venta = response.data[0].total_venta;
+                        //var total_pagado = response.data[0].total_pagado;
+
+
+                        $('div#total-productos').html(
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total productos: <strong style="color:#3ed06a">' +
+                            total_productos + '</strong></div>' +
+                            '</div>' +
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total inversión: <strong style="color:#3ed06a">' +
+                            total_inversion + '</strong></div>' +
+                            '</div>' +
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total venta: <strong style="color:#3ed06a">' +
+                            total_venta + '</strong></div>' +
+                            '</div>' /*+
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total Pagado: <strong style="color:#3ed06a">' +
+                            total_pagado + '</strong></div>' +
+                            '</div>'*/
+
+                        );
+                    } else {
+                        alert("No se encontraron datos.");
+                    }
+
+
+                    //$('#totales-envio').append(response.data);
+
+                },
+                error: function(request, status, error) {
+                    alert(request.responseText);
+                }
+            });
         }
 
 

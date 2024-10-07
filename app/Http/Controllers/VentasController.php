@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
+use Exception;
 
 class VentasController extends Controller
 {
@@ -48,16 +49,21 @@ class VentasController extends Controller
         if ($request->ajax()) {
             
             $data = DB::select("select 
-                                    row_number() over(order by p.id) as no,
-                                    p.id,
-                                    id_caja,
-                                    'BOX-' || LPAD(c.id::TEXT, 4, '0') AS numero_caja,
-                                    nombre,
-                                    cantidad,
-                                    precio_normal, precio_compra, precio_venta
-                                from pedidos.cx_productos p
-                                join cx_cajas c on p.id_caja = c.id and c.deleted_at is null
-                                where p.deleted_at is null");
+                                row_number() over(order by p.id desc) as no,
+                                p.id,
+                                id_caja,
+                                'BOX-' || LPAD(c.id::TEXT, 4, '0') AS numero_caja,
+                                nombre,
+                                cantidad,
+                                precio_normal, precio_compra, precio_venta
+                            from pedidos.cx_productos p
+                            join cx_cajas c on p.id_caja = c.id and c.deleted_at is null
+                            where p.deleted_at is null and p.id not in(
+                                select id_producto from pedidos.cx_ventas where deleted_At is null
+                            )
+                            AND p.id not in(
+                                select id_producto from pedidos.cx_creditos where deleted_At is null
+                            )");
 
             return Datatables::of($data)
                 ->addIndexColumn()
@@ -87,13 +93,24 @@ class VentasController extends Controller
         $cantidad = $request->cantidad;
         $mensaje = "Producto registrado correctamente";
 
-        DB::select("insert into pedidos.cx_productos(nombre, precio_normal, precio_compra, precio_venta, created_at, id_caja, cantidad)
+        try {
+            DB::beginTransaction();
+    
+            DB::select("insert into pedidos.cx_productos(nombre, precio_normal, precio_compra, precio_venta, created_at, id_caja, cantidad)
                     values(:nombre_producto, :precio_normal, :precio_compra, :precio_venta, now(), :id_caja, :cantidad)", 
                     ['nombre_producto' => $nombreProducto, 'precio_normal' => $precioNormal, 'precio_compra' => $precioCompra, 'precio_venta' => $precioVenta,
                     'id_caja' => $idCaja, 'cantidad' => $cantidad]);
+    
+            DB::commit();
 
+            return $mensaje;
 
-        return $mensaje;
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json(['mensaje' => $e->getMessage()], 500);
+        }
+       
     }
 
     public function registrarVenta(Request $request){
@@ -123,10 +140,11 @@ class VentasController extends Controller
     public function verVentas(Request $request){
         if ($request->ajax()) {
             
+            DB::select("SET lc_monetary = 'es_HN';");
             $data = DB::select("select 
                                     row_number() over(order by v.id desc) as no,
                                     p.nombre,
-                                    v.precio_venta,
+                                    v.precio_venta::numeric::money,
                                     c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
                                     initcap(lower(mp.descripcion)) as metodo_pago,
                                     to_char(v.created_at::date, 'DD/MM/YYYY') as fecha_compra
@@ -186,5 +204,39 @@ class VentasController extends Controller
                 ->rawColumns(['opcion'])
                 ->make(true);
         }
+    }
+
+    public function datosTotalesProductos(Request $request){
+
+        DB::select("SET lc_monetary = 'es_HN';");
+        $data = DB::select("
+                 with productos as (
+                            select 
+                            row_number() over(order by p.id desc) as no,   
+                            p.id,
+                            id_caja,
+                            'BOX-' || LPAD(c.id::TEXT, 4, '0') AS numero_caja,
+                            nombre,
+                            cantidad,
+                            precio_normal, precio_compra, precio_venta,
+                            precio_venta*cantidad as total_precio_producto,
+                            precio_compra*cantidad as total_precio_inversion
+                        from pedidos.cx_productos p
+                        join cx_cajas c on p.id_caja = c.id and c.deleted_at is null
+                        where p.deleted_at is null and p.id not in(
+                            select id_producto from pedidos.cx_ventas where deleted_At is null
+                        )
+                        AND p.id not in(
+                            select id_producto from pedidos.cx_creditos where deleted_At is null
+                        )
+                    )
+                    select 
+                        coalesce(sum(cantidad), 0) as total_productos,
+                        '$ ' || coalesce(sum(total_precio_inversion), 0) as total_inversion,
+                        coalesce(sum(total_precio_producto), 0)::numeric::money as total_venta
+                    from productos");
+        return response()->json([
+            'data' => $data,
+        ]);
     }
 }

@@ -80,6 +80,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('/registrar-venta', [VentasController::class, 'registrarVenta'])->name('registrar-venta');
 	Route::post('/ver-ventas', [VentasController::class, 'verVentas'])->name('ver-ventas');
 	Route::post('/ver-creditos', [VentasController::class, 'verCreditos'])->name('ver-creditos');
+	Route::post('/ver-total-productos', [VentasController::class, 'datosTotalesProductos'])->name('total-productos');
 
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');
