@@ -133,13 +133,54 @@ class VentasController extends Controller
                                 from pedidos.cx_ventas v
                                 join pedidos.cx_productos p on p.id = v.id_producto and p.deleted_at is null
                                 join pedidos.cx_clientes c on c.id = v.id_cliente and c.deleted_at is null
-                                join pedidos.cx_metodos_pago mp on mp.id = v.id_metodo_pago and mp.deleted_At is null");
+                                join pedidos.cx_metodos_pago mp on mp.id = v.id_metodo_pago and mp.deleted_At is null
+                                where v.deleted_at is null
+                                ");
 
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     
                     $actions = "<a class='btn btn-1 m-0' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar venta' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>";
+                    return $actions;
+                })
+                ->rawColumns(['opcion'])
+                ->make(true);
+        }
+    }
+
+    public function verCreditos(Request $request){
+        if ($request->ajax()) {
+            
+            DB::select("SET lc_monetary = 'es_HN';");
+            $data = DB::select("with cuotas as (select 
+                                    id_credito,
+                                    count(*) as cuotas_pagadas,
+                                    sum(monto_abonado) as monto_abonado
+                                from pedidos.cx_cuotas_credito
+                                where deleted_at is null
+                                group by id_credito)
+                                select 
+                                    row_number() over(order by cr.id desc) as no,
+                                    c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
+                                    p.nombre as nombre_producto,
+                                    cr.monto_adeudado::numeric::money,
+                                    cr.cuotas,
+                                    coalesce(cu.cuotas_pagadas, 0) as cuotas_pagadas,
+                                    coalesce(cu.monto_abonado, 0)::numeric::money as monto_abonado,
+                                    to_char(c.created_at::date, 'DD/MM/YYYY') as fecha_compra
+                                from pedidos.cx_creditos cr
+                                join pedidos.cx_productos p on p.id = cr.id_producto and p.deleted_at is null
+                                join pedidos.cx_clientes c on c.id = cr.id_cliente and c.deleted_at is null
+                                left join cuotas cu on cu.id_credito = cr.id	
+                                where cr.deleted_at is null
+                                ");
+
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->addColumn('opcion', function($row){
+                    
+                    $actions = "<a class='btn btn-success btn-1 m-0' data-bs-toggle='tooltip' data-bs-placement='top' title='Agregar pago' data-container='body' data-animation='true'><i class='fi fi-ss-money'></i></a>";
                     return $actions;
                 })
                 ->rawColumns(['opcion'])

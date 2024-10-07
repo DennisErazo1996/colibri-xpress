@@ -212,15 +212,17 @@
                         </div>
                         <br>
                         <div class="table-responsive p-0">
-                            <table id="tbl-ventas" class="table align-items-center table-striped" style="width:100%">
+                            <table id="tbl-creditos" class="table align-items-center table-striped" style="width:100%">
                                 <thead class="">
                                     <tr>
 
                                         <th>No.</th>
-                                        <th>Nombre producto</th>
-                                        <th>Precio de venta</th>
-                                        <th>Comprador</th>
-                                        <th>Método de pago</th>
+                                        <th>Cliente</th>
+                                        <th>Nombre del producto</th>
+                                        <th>Monto adeudado</th>
+                                        <th>Cuotas</th>
+                                        <th>Monto abonado</th>
+                                        <th>Cuotas pagadas</th>
                                         <th>Fecha de compra</th>
                                         <th>Opciones</th>
                                     </tr>
@@ -365,6 +367,7 @@
             $('#card-list-creditos').show().fadeIn();
             $('#card-list-ventas').hide().fadeOut();
             $('#card-list-productos').hide().fadeOut();
+            inicializarTablaCreditos()
         });
 
         $('#lnk-list-ventas').click(function(e) {
@@ -658,6 +661,83 @@
                     {
                         data: 'metodo_pago',
                         name: 'metodo_pago'
+                    },
+                    {
+                        data: 'fecha_compra',
+                        name: 'fecha_compra'
+                    },
+
+                    {
+                        data: 'opcion',
+                        name: 'Opciones',
+                        orderable: true,
+                        searchable: true
+                    }
+
+                ],
+                columnDefs: [{
+                    className: 'dt-center',
+                    targets: '_all'
+                }, ],
+                language: idiomaDatatables,
+
+            });
+
+        }
+
+
+        function inicializarTablaCreditos() {
+
+            var urlTableVentas = "{{ route('ver-creditos') }}";
+
+            $(document).ajaxSend(function() {
+                $("#overlay").hide();
+            })
+
+            $('#tbl-creditos').DataTable({
+                processing: true,
+                serverSide: true,
+                bDestroy: true,
+                ajax: {
+                    url: urlTableVentas,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Agrega el token al encabezado
+                    },
+                    error: function(xhr, status, error) {
+                        alert("Ocurrió un error: " + error);
+                    },
+                    complete: function() {
+                        //$("#overlay").fadeOut(300);
+                    }
+                },
+                columns: [{
+                        data: 'no',
+                        name: 'no'
+                    },
+                    {
+                        data: 'comprador',
+                        name: 'comprador'
+                    },
+                    {
+                        data: 'nombre_producto',
+                        name: 'nombre_producto'
+                    },
+                    {
+                        data: 'monto_adeudado',
+                        name: 'monto_adeudado'
+                    },
+                    {
+                        data: 'cuotas',
+                        name: 'cuotas'
+                    },
+                    {
+                        data: 'monto_abonado',
+                        name: 'monto_abonado'
+                    },
+                    {
+                        data: 'cuotas_pagadas',
+                        name: 'cuotas_pagadas'
                     },
                     {
                         data: 'fecha_compra',
