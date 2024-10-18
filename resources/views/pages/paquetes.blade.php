@@ -14,7 +14,7 @@
                             data-bs-target="#modal-form">Agregar nuevo pedido</button>
                     </div> --}}
                     <div class="card-body px-2 pt-0 pb-2">
-                        <form role="form text-left">
+                        <form id="form-paquete" role="form text-left">
 
 
                             <div class="row">
@@ -338,6 +338,16 @@
 
         $(document).ready(function() {
 
+            document.getElementById('form-paquete').addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevenir el envío automático del formulario
+            });
+
+            document.getElementById('inpNumeroTracking').addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); // Evita el submit cuando se presiona Enter
+                }
+            });
+
             inicializarTotales();
             //$('#card-list-paquetes').show();
             // $('#tbl-paquetes-enviados').hide();
@@ -378,7 +388,8 @@
                     name: 'descripcion',
                     render: function(data, type, row) {
                         // Aquí se ajusta el texto largo para que no se desborde
-                        return '<div style="max-width: 300px !important;  white-space: normal !important; word-wrap: break-word !important;">' + data + '</div>';
+                        return '<div style="max-width: 300px !important;  white-space: normal !important; word-wrap: break-word !important;">' +
+                            data + '</div>';
                     }
                 },
                 {
