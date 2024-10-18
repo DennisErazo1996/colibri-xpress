@@ -116,6 +116,19 @@
                             data-bs-target="#modal-form">Agregar nuevo pedido</button>
                     </div> --}}
                     <div class="card-body px-2 pt-0 pb-2">
+                        <div class="container">
+                            <div id="total-productos" class="row text-center justify-content-center">
+                                {{-- <div class="col">
+                                    Total libras: <strong>50</strong>
+                                </div>
+                                <div class="col">
+                                    Total Pagado: <strong>500</strong>
+                                </div>
+                                <div class="col">
+                                    Mitad Ganancia: <strong>5000</strong>
+                                </div> --}}
+                            </div>
+                        </div>
                         <div class="table-responsive p-0">
                             <table id="tbl-productos" class="table align-items-center table-striped" style="width:100%">
                                 <thead class="">
@@ -212,15 +225,17 @@
                         </div>
                         <br>
                         <div class="table-responsive p-0">
-                            <table id="tbl-ventas" class="table align-items-center table-striped" style="width:100%">
+                            <table id="tbl-creditos" class="table align-items-center table-striped" style="width:100%">
                                 <thead class="">
                                     <tr>
 
                                         <th>No.</th>
-                                        <th>Nombre producto</th>
-                                        <th>Precio de venta</th>
-                                        <th>Comprador</th>
-                                        <th>Método de pago</th>
+                                        <th>Cliente</th>
+                                        <th>Nombre del producto</th>
+                                        <th>Monto adeudado</th>
+                                        <th>Cuotas</th>
+                                        <th>Monto abonado</th>
+                                        <th>Cuotas pagadas</th>
                                         <th>Fecha de compra</th>
                                         <th>Opciones</th>
                                     </tr>
@@ -273,6 +288,7 @@
 
         $(document).ready(function() {
 
+            inicializarTotalesProductos()
             $("#overlay").fadeOut(300);
 
         });
@@ -287,6 +303,7 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}' // Agrega el token al encabezado
                 },
                 complete: function() {
+                    
                     //$("#overlay").fadeOut(300);
                 }
             },
@@ -365,6 +382,7 @@
             $('#card-list-creditos').show().fadeIn();
             $('#card-list-ventas').hide().fadeOut();
             $('#card-list-productos').hide().fadeOut();
+            inicializarTablaCreditos()
         });
 
         $('#lnk-list-ventas').click(function(e) {
@@ -452,6 +470,9 @@
                         alert(request.responseText);
                     }
                 }).done(function() {
+
+                    inicializarTotalesProductos()
+                    
                     $('div#mensaje').html('')
                     $('#inpCaja').val('');
                     $('#inpNombreProducto').val('');
@@ -549,16 +570,19 @@
                                         title: response
                                     });
 
-                                    // $('#tbl-productos').DataTable().ajax.reload();
+                                    $('#tbl-productos').DataTable().ajax.reload();
                                 },
                                 error: function(request, status, error) {
                                     alert(request.responseText);
                                 }
                             }).done(function() {
 
+                                inicializarTotalesProductos()
+
                                 setTimeout(function() {
                                     $("#overlay").fadeOut(300);
                                 }, 500);
+
                             });
 
 
@@ -636,7 +660,7 @@
                         alert("Ocurrió un error: " + error);
                     },
                     complete: function() {
-                        //$("#overlay").fadeOut(300);
+                        $("#overlay").fadeOut(300);
                     }
                 },
                 columns: [{
@@ -680,6 +704,138 @@
 
             });
 
+        }
+
+
+        function inicializarTablaCreditos() {
+
+            var urlTableVentas = "{{ route('ver-creditos') }}";
+
+            $(document).ajaxSend(function() {
+                $("#overlay").hide();
+            })
+
+            $('#tbl-creditos').DataTable({
+                processing: true,
+                serverSide: true,
+                bDestroy: true,
+                ajax: {
+                    url: urlTableVentas,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Agrega el token al encabezado
+                    },
+                    error: function(xhr, status, error) {
+                        alert("Ocurrió un error: " + error);
+                    },
+                    complete: function() {
+                        //$("#overlay").hide();
+                        $("#overlay").fadeOut(300);
+                    }
+                },
+                columns: [{
+                        data: 'no',
+                        name: 'no'
+                    },
+                    {
+                        data: 'comprador',
+                        name: 'comprador'
+                    },
+                    {
+                        data: 'nombre_producto',
+                        name: 'nombre_producto'
+                    },
+                    {
+                        data: 'monto_adeudado',
+                        name: 'monto_adeudado'
+                    },
+                    {
+                        data: 'cuotas',
+                        name: 'cuotas'
+                    },
+                    {
+                        data: 'monto_abonado',
+                        name: 'monto_abonado'
+                    },
+                    {
+                        data: 'cuotas_pagadas',
+                        name: 'cuotas_pagadas'
+                    },
+                    {
+                        data: 'fecha_compra',
+                        name: 'fecha_compra'
+                    },
+
+                    {
+                        data: 'opcion',
+                        name: 'Opciones',
+                        orderable: true,
+                        searchable: true
+                    }
+
+                ],
+                columnDefs: [{
+                    className: 'dt-center',
+                    targets: '_all'
+                }, ],
+                language: idiomaDatatables,
+
+            });
+
+        }
+
+        function inicializarTotalesProductos() {
+            
+            var urlRest = "{{ route('total-productos') }}";
+
+            $.ajax({
+                type: "POST",
+                url: urlRest,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                   
+                },
+                success: function(response) {
+
+                    if (response.data && response.data.length > 0) {
+
+                        var total_productos = response.data[0].total_productos;
+                        var total_inversion = response.data[0].total_inversion;
+                        var total_venta = response.data[0].total_venta;
+                        //var total_pagado = response.data[0].total_pagado;
+
+
+                        $('div#total-productos').html(
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total productos: <strong style="color:#3ed06a">' +
+                            total_productos + '</strong></div>' +
+                            '</div>' +
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total inversión: <strong style="color:#3ed06a">' +
+                            total_inversion + '</strong></div>' +
+                            '</div>' +
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total venta: <strong style="color:#3ed06a">' +
+                            total_venta + '</strong></div>' +
+                            '</div>' /*+
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total Pagado: <strong style="color:#3ed06a">' +
+                            total_pagado + '</strong></div>' +
+                            '</div>'*/
+
+                        );
+                    } else {
+                        alert("No se encontraron datos.");
+                    }
+
+
+                    //$('#totales-envio').append(response.data);
+
+                },
+                error: function(request, status, error) {
+                    alert(request.responseText);
+                }
+            });
         }
 
 

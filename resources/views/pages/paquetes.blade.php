@@ -661,6 +661,7 @@
                         }).done(function() {
 
                             $('#btn-enviar-paquetes').prop('disabled', true);
+                            $('#btn-registrar-paquete').prop('disabled', true);
                             $('#btn-enviar-paquetes').html('')
                             $('#btn-enviar-paquetes').html(
                                 '<i class="fi fi-ss-paper-plane"></i> Paquetes Enviados')
