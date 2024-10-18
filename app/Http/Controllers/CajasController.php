@@ -207,7 +207,12 @@ class CajasController extends Controller
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     //$url = "{{url('/caja/$row['id_cliente']/pedidos/cliente/'}}";
-                    $actions = "<a class='btn btn-1 m-0' onclick='editarPaquete($row->id_usuario, $row->id, \"".$row->numero_tracking."\", \"".$row->descripcion."\")' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>";
+                 
+                    $actions = "<a class='btn btn-1 m-0' 
+                        onclick='editarPaquete($row->id_usuario, $row->id, \"".htmlspecialchars($row->numero_tracking, ENT_QUOTES, 'UTF-8')."\", \"".htmlspecialchars($row->descripcion, ENT_QUOTES, 'UTF-8')."\")' 
+                        data-bs-toggle='tooltip' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'>
+                        <i class='fi fi-ss-customize-edit'></i>
+                    </a>";
                     return $actions;
                 })
                 ->rawColumns(['opcion'])
