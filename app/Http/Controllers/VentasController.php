@@ -69,7 +69,7 @@ class VentasController extends Controller
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     
-                    $actions = "<a class='btn btn-1 m-0' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>";
+                    $actions = "<a class='btn btn-1 m-0' data-bs-toggle='tooltip' onclick='editarProducto($row->id, \"".htmlspecialchars($row->nombre, ENT_QUOTES, 'UTF-8')."\", $row->cantidad, $row->precio_normal, $row->precio_compra, $row->precio_venta)' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>";
                     return $actions;
                 })->addColumn('estadoPago', function($row) {
                     // Si el pago está realizado, marcar el checkbox como checked
@@ -238,5 +238,39 @@ class VentasController extends Controller
         return response()->json([
             'data' => $data,
         ]);
+    }
+
+    public function editarProducto(Request $request){
+
+        $idProducto = $request->idProducto;
+        $nombreProducto = $request->nombreProducto;
+        $cantidadProducto = $request->cantidadProducto;
+        $precioNormal = $request->precioNormal;
+        $precioCompra = $request->precioCompra;
+        $precioVenta = $request->precioVenta;
+        $mensaje = "Producto editado correctamente";
+
+       try {
+            DB::beginTransaction();
+
+            DB::select("update pedidos.cx_productos set nombre = :nombre_producto,
+                cantidad = :cantidad_producto,
+                precio_normal = :precio_normal,
+                precio_compra = :precio_compra,
+                precio_venta = :precio_venta
+                where id = :id_producto
+                ", ['nombre_producto' => $request->nombreProducto, 'cantidad_producto' => $request->cantidadProducto,
+                'precio_normal' => $request->precioNormal, 'precio_compra' => $request->precioCompra,
+                'precio_venta' => $request->precioVenta, 'id_producto' => $request->idProducto]);
+
+            DB::commit();
+
+            return $mensaje;
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json(['mensaje' => $e->getMessage()], 500);
+        }       
     }
 }
