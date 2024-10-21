@@ -175,6 +175,10 @@ div.item-total{
     height: 50px;
 }
 
+.column-color {
+    background-color: rgb(239, 239, 239) !important;
+}
+
 
 
 /*a:hover{

@@ -85,6 +85,8 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('/editar-producto', [VentasController::class, 'editarProducto'])->name('editar-producto');
 	Route::post('/eliminar-venta', [VentasController::class, 'eliminarVenta'])->name('eliminar-venta');
 	Route::post('/eliminar-producto', [VentasController::class, 'eliminarProducto'])->name('eliminar-producto');
+	Route::post('/eliminar-credito', [VentasController::class, 'eliminarCredito'])->name('eliminar-credito');
+	Route::post('/ver-total-creditos', [VentasController::class, 'datosTotalesCreditos'])->name('total-creditos');
 
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');

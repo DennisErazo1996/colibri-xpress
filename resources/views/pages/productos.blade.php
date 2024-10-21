@@ -195,16 +195,8 @@
                     </div> --}}
                     <div class="card-body px-2 pt-0 pb-2">
                         <div class="container">
-                            <div id="total-envio" class="row text-center">
-                                {{-- <div class="col">
-                                    Total libras: <strong>50</strong>
-                                </div>
-                                <div class="col">
-                                    Total Pagado: <strong>500</strong>
-                                </div>
-                                <div class="col">
-                                    Mitad Ganancia: <strong>5000</strong>
-                                </div> --}}
+                            <div id="total-creditos" class="row text-center justify-content-center">
+                               
                             </div>
                         </div>
                         <br>
@@ -355,6 +347,7 @@
             inicializarTablaProductos()
             inicializarTotalesProductos()
             inicializarTotalesVentas()
+            inicializarTotalesCreditos()
             $("#overlay").fadeOut(300);
 
         });
@@ -387,7 +380,7 @@
             $('#card-list-ventas').hide().fadeOut();
             $('#card-list-creditos').hide().fadeOut();
             inicializarTablaProductos()
-
+            inicializarTotalesProductos()
         });
 
         $('#lnk-list-creditos').click(function(e) {
@@ -401,6 +394,7 @@
             $('#card-list-ventas').hide().fadeOut();
             $('#card-list-productos').hide().fadeOut();
             inicializarTablaCreditos()
+            inicializarTotalesCreditos()
         });
 
         $('#lnk-list-ventas').click(function(e) {
@@ -780,7 +774,8 @@
                     },
                     {
                         data: 'precio_venta',
-                        name: 'precio_venta'
+                        name: 'precio_venta',
+                        className: 'column-color'
                     },
                     {
                         data: 'estadoPago',
@@ -839,7 +834,8 @@
                     },
                     {
                         data: 'precio_venta',
-                        name: 'precio_venta'
+                        name: 'precio_venta',
+                        className: 'column-color'
                     },
                     {
                         data: 'comprador',
@@ -921,11 +917,13 @@
                     },
                     {
                         data: 'monto_abonado',
-                        name: 'monto_abonado'
+                        name: 'monto_abonado',
+                        className: 'column-color'
                     },
                     {
                         data: 'cuotas_pagadas',
-                        name: 'cuotas_pagadas'
+                        name: 'cuotas_pagadas',
+                        className: 'column-color'
                     },
                     {
                         data: 'fecha_compra',
@@ -1073,6 +1071,51 @@
             });
         }
 
+        function inicializarTotalesCreditos() {
+
+            var urlRest = "{{ route('total-creditos') }}";
+
+            $.ajax({
+                type: "POST",
+                url: urlRest,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+
+                },
+                success: function(response) {
+
+                    if (response.data && response.data.length > 0) {
+
+                        var total_inversion = response.data[0].total_inversion;
+                        var total_monto_adeudado = response.data[0].total_monto_adeudado;
+                        var total_monto_abonado = response.data[0].total_monto_abonado;
+
+
+                        $('div#total-creditos').html(
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total inversión: <strong style="color:#3ed06a">' +
+                            total_inversion + '</strong></div>' +
+                            '</div>' +
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total Adeudado: <strong style="color:#3ed06a">' +
+                            total_monto_adeudado + '</strong></div>' +
+                            '</div>' +
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total Abonado: <strong style="color:#3ed06a">' +
+                            total_monto_abonado + '</strong></div>' +
+                            '</div>'
+                        );
+                    } else {
+                        alert("No se encontraron datos.");
+                    }
+
+                },
+                error: function(request, status, error) {
+                    alert(request.responseText);
+                }
+            });
+        }
+
         function eliminarProducto(idProducto) {
 
             var urlRest = "{{ route('eliminar-producto') }}";
@@ -1211,6 +1254,64 @@
             });
 
 
+        }
+
+        function eliminarCredito(idCredito) {
+
+            var urlRest = "{{ route('eliminar-credito') }}";
+            var vrIdCredito = idCredito;
+
+            $.confirm({
+                type: 'red',
+                animation: 'scale',
+                title: 'Eliminar Credito',
+                content: 'Seguro que quiere eliminar este credito?',
+                buttons: {
+                    confirm: {
+                        text: 'Confirmar',
+                        btnClass: 'btn-red',
+                        action: function() {
+                            $(document).ajaxSend(function() {
+                                $("#overlay").fadeIn(300);
+                            });
+                            $.ajax({
+                                type: "POST",
+                                url: urlRest,
+                                data: {
+                                    "_token": "{{ csrf_token() }}",
+                                    "idCredito": vrIdCredito,
+                                },
+                                success: function(response) {
+                                    //alert(response)
+                                    const Toast = Swal.mixin({
+                                        toast: true,
+                                        position: "top-end",
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        didOpen: (toast) => {
+                                            toast.onmouseenter = Swal.stopTimer;
+                                            toast.onmouseleave = Swal.resumeTimer;
+                                        }
+                                    });
+                                    Toast.fire({
+                                        icon: "success",
+                                        title: response
+                                    });
+                                    $('#tbl-creditos').DataTable().ajax.reload();
+                                    inicializarTotalesCreditos()
+                                },
+                                error: function(request, status, error) {
+                                    alert(request.responseText);
+                                }
+                            })
+                        }
+                    },
+                    cancelar: function() {
+                        //$.alert('Canceled!');
+                    },
+                }
+            });
         }
 
 

@@ -181,6 +181,7 @@ class VentasController extends Controller
                                 where deleted_at is null
                                 group by id_credito)
                                 select 
+                                    cr.id,
                                     row_number() over(order by cr.id desc) as no,
                                     c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
                                     p.nombre as nombre_producto,
@@ -200,7 +201,8 @@ class VentasController extends Controller
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     
-                    $actions = "<a class='btn btn-success btn-1 m-0' data-bs-toggle='tooltip' data-bs-placement='top' title='Agregar pago' data-container='body' data-animation='true'><i class='fi fi-ss-money'></i></a>";
+                    $actions = "<a class='btn btn-success btn-1 m-0' data-bs-toggle='tooltip' data-bs-placement='top' title='Agregar pago' data-container='body' data-animation='true'><i class='fi fi-ss-money'></i></a>
+                    <a class='btn btn-danger btn-1 m-0' data-bs-toggle='tooltip' onclick='eliminarCredito($row->id)' data-bs-placement='top' title='Eliminar Credito' data-container='body' data-animation='true'><i class='fi fi-sr-trash'></i></a>";
                     return $actions;
                 })
                 ->rawColumns(['opcion'])
@@ -281,14 +283,14 @@ class VentasController extends Controller
         DB::select("SET lc_monetary = 'es_HN';");
         $data = DB::select("
                  select
-                    sum(case when v.id_metodo_pago = 1 then v.precio_venta else 0 end)::numeric::money as total_efectivo,
-                    sum(case when v.id_metodo_pago = 3 then v.precio_venta else 0 end)::numeric::money as total_bac,
-                    sum(case when v.id_metodo_pago = 4 then v.precio_venta else 0 end)::numeric::money as total_ficohsa,
-                    sum(case when v.id_metodo_pago = 5 then v.precio_venta else 0 end)::numeric::money as total_atlantida,
-                    sum(case when v.id_metodo_pago = 6 then v.precio_venta else 0 end)::numeric::money as total_banpais,
-                    sum(case when v.id_metodo_pago = 7 then v.precio_venta else 0 end)::numeric::money as total_occidente,
-                    sum(case when v.id_producto is not null then v.precio_venta end)::numeric::money as total_venta,
-                    '$ ' || sum(p.precio_compra) as total_inversion
+                    coalesce(sum(case when v.id_metodo_pago = 1 then v.precio_venta else 0 end), 0)::numeric::money as total_efectivo,
+                    coalesce(sum(case when v.id_metodo_pago = 3 then v.precio_venta else 0 end), 0)::numeric::money as total_bac,
+                    coalesce(sum(case when v.id_metodo_pago = 4 then v.precio_venta else 0 end), 0)::numeric::money as total_ficohsa,
+                    coalesce(sum(case when v.id_metodo_pago = 5 then v.precio_venta else 0 end), 0)::numeric::money as total_atlantida,
+                    coalesce(sum(case when v.id_metodo_pago = 6 then v.precio_venta else 0 end), 0)::numeric::money as total_banpais,
+                    coalesce(sum(case when v.id_metodo_pago = 7 then v.precio_venta else 0 end), 0)::numeric::money as total_occidente,
+                    coalesce(sum(case when v.id_producto is not null then v.precio_venta end), 0)::numeric::money as total_venta,
+                    '$ ' || coalesce(sum(p.precio_compra), 0) as total_inversion
                 from pedidos.cx_ventas v
                 join pedidos.cx_productos p on p.id = v.id_producto and p.deleted_at is null
                     where v.deleted_at is null");
@@ -334,4 +336,44 @@ class VentasController extends Controller
 
         return $mensaje;
     }
+
+    public function eliminarCredito(Request $request){
+
+        $idCredito = $request->idCredito;
+        $mensaje = "Credito eliminado correctamente";
+
+        try {
+            DB::beginTransaction();
+            DB::select("update pedidos.cx_creditos set deleted_at = now() where id = :idCredito", ['idCredito' => $idCredito]);
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json(['mensaje' => $e->getMessage()], 500);
+        }
+
+        return $mensaje;
+    }
+
+    public function datosTotalesCreditos(){
+
+        DB::select("SET lc_monetary = 'es_HN';");
+        
+        $data = DB::select("
+                select
+                    '$ ' || coalesce(sum(p.precio_compra), 0) as total_inversion, 
+                    coalesce(sum(cr.monto_adeudado), 0)::numeric::money as total_monto_adeudado,
+                    coalesce(sum(cu.monto_abonado), 0)::numeric::money as total_monto_abonado
+                from pedidos.cx_creditos cr
+                join pedidos.cx_productos p on p.id = cr.id_producto and p.deleted_at is null
+                left join pedidos.cx_cuotas_credito cu on cu.id_credito = cr.id and cu.deleted_at is null
+                    where cr.deleted_at is null");
+        
+        return response()->json([
+            'data' => $data,
+        ]);
+                
+    }
+
 }
