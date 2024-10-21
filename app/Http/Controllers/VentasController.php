@@ -69,7 +69,8 @@ class VentasController extends Controller
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     
-                    $actions = "<a class='btn btn-1 m-0' data-bs-toggle='tooltip' onclick='editarProducto($row->id, \"".htmlspecialchars($row->nombre, ENT_QUOTES, 'UTF-8')."\", $row->cantidad, $row->precio_normal, $row->precio_compra, $row->precio_venta)' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>";
+                    $actions = "<a class='btn btn-1 m-0' data-bs-toggle='tooltip' onclick='editarProducto($row->id, \"".htmlspecialchars($row->nombre, ENT_QUOTES, 'UTF-8')."\", $row->cantidad, $row->precio_normal, $row->precio_compra, $row->precio_venta)' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>
+                    <a class='btn btn-danger btn-1 m-0' data-bs-toggle='tooltip' onclick='eliminarProducto($row->id)' data-bs-placement='top' title='Eliminar Producto' data-container='body' data-animation='true'><i class='fi fi-sr-trash'></i></a>";
                     return $actions;
                 })->addColumn('estadoPago', function($row) {
                     // Si el pago está realizado, marcar el checkbox como checked
@@ -143,6 +144,7 @@ class VentasController extends Controller
             DB::select("SET lc_monetary = 'es_HN';");
             $data = DB::select("select 
                                     row_number() over(order by v.id desc) as no,
+                                    v.id,
                                     p.nombre,
                                     v.precio_venta::numeric::money,
                                     c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
@@ -159,7 +161,7 @@ class VentasController extends Controller
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     
-                    $actions = "<a class='btn btn-1 m-0' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar venta' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>";
+                    $actions = "<a class='btn btn-danger btn-1 m-0' data-bs-toggle='tooltip' onclick='eliminarVenta($row->id)' data-bs-placement='top' title='Eliminar venta' data-container='body' data-animation='true'><i class='fi fi-sr-trash'></i></a>";
                     return $actions;
                 })
                 ->rawColumns(['opcion'])
@@ -272,5 +274,64 @@ class VentasController extends Controller
 
             return response()->json(['mensaje' => $e->getMessage()], 500);
         }       
+    }
+
+    public function datosTotalesVentas(){
+
+        DB::select("SET lc_monetary = 'es_HN';");
+        $data = DB::select("
+                 select
+                    sum(case when v.id_metodo_pago = 1 then v.precio_venta else 0 end)::numeric::money as total_efectivo,
+                    sum(case when v.id_metodo_pago = 3 then v.precio_venta else 0 end)::numeric::money as total_bac,
+                    sum(case when v.id_metodo_pago = 4 then v.precio_venta else 0 end)::numeric::money as total_ficohsa,
+                    sum(case when v.id_metodo_pago = 5 then v.precio_venta else 0 end)::numeric::money as total_atlantida,
+                    sum(case when v.id_metodo_pago = 6 then v.precio_venta else 0 end)::numeric::money as total_banpais,
+                    sum(case when v.id_metodo_pago = 7 then v.precio_venta else 0 end)::numeric::money as total_occidente,
+                    sum(case when v.id_producto is not null then v.precio_venta end)::numeric::money as total_venta,
+                    '$ ' || sum(p.precio_compra) as total_inversion
+                from pedidos.cx_ventas v
+                join pedidos.cx_productos p on p.id = v.id_producto and p.deleted_at is null
+                    where v.deleted_at is null");
+        return response()->json([
+            'data' => $data,
+        ]);      
+    }
+
+    public function eliminarVenta(Request $request){
+
+        $idVenta = $request->idVenta;
+        $mensaje = "Venta eliminada correctamente";
+
+        try {
+            DB::beginTransaction();
+            DB::select("update pedidos.cx_ventas set deleted_at = now() where id = :idVenta", ['idVenta' => $idVenta]);
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json(['mensaje' => $e->getMessage()], 500);
+        }
+
+        return $mensaje;
+    }
+
+    public function eliminarProducto(Request $request){
+
+        $idProducto = $request->idProducto;
+        $mensaje = "Producto eliminado correctamente";
+
+        try {
+            DB::beginTransaction();
+            DB::select("update pedidos.cx_productos set deleted_at = now() where id = :idProducto", ['idProducto' => $idProducto]);
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json(['mensaje' => $e->getMessage()], 500);
+        }
+
+        return $mensaje;
     }
 }

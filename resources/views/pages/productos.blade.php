@@ -118,15 +118,7 @@
                     <div class="card-body px-2 pt-0 pb-2">
                         <div class="container">
                             <div id="total-productos" class="row text-center justify-content-center">
-                                {{-- <div class="col">
-                                    Total libras: <strong>50</strong>
-                                </div>
-                                <div class="col">
-                                    Total Pagado: <strong>500</strong>
-                                </div>
-                                <div class="col">
-                                    Mitad Ganancia: <strong>5000</strong>
-                                </div> --}}
+
                             </div>
                         </div>
                         <div class="table-responsive p-0">
@@ -165,16 +157,8 @@
                     </div> --}}
                     <div class="card-body px-2 pt-0 pb-2">
                         <div class="container">
-                            <div id="total-envio" class="row text-center">
-                                {{-- <div class="col">
-                                    Total libras: <strong>50</strong>
-                                </div>
-                                <div class="col">
-                                    Total Pagado: <strong>500</strong>
-                                </div>
-                                <div class="col">
-                                    Mitad Ganancia: <strong>5000</strong>
-                                </div> --}}
+                            <div id="total-ventas" class="row text-center justify-content-center">
+
                             </div>
                         </div>
                         <br>
@@ -274,38 +258,46 @@
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="producto">Nombre del producto<span style="color: red">*</span></label>
+                                                <label for="producto">Nombre del producto<span
+                                                        style="color: red">*</span></label>
                                                 <input type="text" name="nombre-producto" class="form-control"
-                                                    id="inpNombreProductoEdit" placeholder="Ingresa el nombre del producto"
-                                                    aria-label="producto" required>
+                                                    id="inpNombreProductoEdit"
+                                                    placeholder="Ingresa el nombre del producto" aria-label="producto"
+                                                    required>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="cantidad">Cantidad<span style="color: red">*</span></label>
-                                                <input type="number" name="precio-normal" class="form-control" id="inpCantidadEdit"
-                                                    placeholder="0" aria-label="cantidad" required>
+                                                <input type="number" name="precio-normal" class="form-control"
+                                                    id="inpCantidadEdit" placeholder="0" aria-label="cantidad" required>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="precio-normal">Precio normal<span style="color: red">*</span></label>
-                                                <input type="number" name="precio-normal" class="form-control" id="inpPrecioNormalEdit"
-                                                    placeholder="$ 0.00" aria-label="precio-normal" required>
+                                                <label for="precio-normal">Precio normal<span
+                                                        style="color: red">*</span></label>
+                                                <input type="number" name="precio-normal" class="form-control"
+                                                    id="inpPrecioNormalEdit" placeholder="$ 0.00"
+                                                    aria-label="precio-normal" required>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="precio-compra">Precio Compra<span style="color: red">*</span></label>
-                                                <input type="number" name="precio-compre" class="form-control" id="inpPrecioCompraEdit"
-                                                    placeholder="$ 0.00" aria-label="precio-compra" required>
+                                                <label for="precio-compra">Precio Compra<span
+                                                        style="color: red">*</span></label>
+                                                <input type="number" name="precio-compre" class="form-control"
+                                                    id="inpPrecioCompraEdit" placeholder="$ 0.00"
+                                                    aria-label="precio-compra" required>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="precio-venta">Precio Venta<span style="color: red">*</span></label>
-                                                <input type="number" name="precio-compre" class="form-control" id="inpPrecioVentaEdit"
-                                                    placeholder="L 0.00" aria-label="precio-venta" required>
+                                                <label for="precio-venta">Precio Venta<span
+                                                        style="color: red">*</span></label>
+                                                <input type="number" name="precio-compre" class="form-control"
+                                                    id="inpPrecioVentaEdit" placeholder="L 0.00"
+                                                    aria-label="precio-venta" required>
                                             </div>
                                         </div>
                                         <div class="col-md-12 text-center" id="mensaje"
@@ -359,8 +351,10 @@
         }
 
         $(document).ready(function() {
-
+            
+            inicializarTablaProductos()
             inicializarTotalesProductos()
+            inicializarTotalesVentas()
             $("#overlay").fadeOut(300);
 
         });
@@ -374,68 +368,6 @@
             $('#inpPrecioCompraEdit').val('');
             $('#inpPrecioVentaEdit').val('');
             $('#modal-form').modal('toggle');
-
-        });
-
-        $('#tbl-productos').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: urlTableProductos,
-                type: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Agrega el token al encabezado
-                },
-                complete: function() {
-
-                    //$("#overlay").fadeOut(300);
-                }
-            },
-            columns: [{
-                    data: 'no',
-                    name: 'no'
-                },
-                {
-                    data: 'numero_caja',
-                    name: 'numero_caja'
-                },
-                {
-                    data: 'nombre',
-                    name: 'nombre'
-                },
-                {
-                    data: 'cantidad',
-                    name: 'cantidad'
-                },
-                {
-                    data: 'precio_normal',
-                    name: 'precio_normal'
-                },
-                {
-                    data: 'precio_compra',
-                    name: 'precio_compra'
-                },
-                {
-                    data: 'precio_venta',
-                    name: 'precio_venta'
-                },
-                {
-                    data: 'estadoPago',
-                    name: 'estadoPago'
-                },
-                {
-                    data: 'opcion',
-                    name: 'Opciones',
-                    orderable: true,
-                    searchable: true
-                }
-
-            ],
-            columnDefs: [{
-                className: 'dt-center',
-                targets: '_all'
-            }, ],
-            language: idiomaDatatables,
 
         });
 
@@ -454,6 +386,8 @@
             $('#card-list-productos').show().fadeIn();
             $('#card-list-ventas').hide().fadeOut();
             $('#card-list-creditos').hide().fadeOut();
+            inicializarTablaProductos()
+
         });
 
         $('#lnk-list-creditos').click(function(e) {
@@ -484,6 +418,7 @@
             $('#card-list-creditos').hide().fadeOut();
             $('#card-list-ventas').show().fadeIn();
             inicializarTablaVentas()
+            inicializarTotalesVentas()
         });
 
         $('#btn-registrar-producto').on('click', function() {
@@ -575,10 +510,10 @@
         });
 
         $('#btn-actualizar-producto').on('click', function() {
-            
+
             //alert('hola')
             var urlRest = "{{ route('editar-producto') }}";
-            
+
             var vrIdProducto = $('#inpIdProducto').val();
             var vrNombreProducto = $('#inpNombreProductoEdit').val();
             var vrCantidad = $('#inpCantidadEdit').val();
@@ -586,14 +521,15 @@
             var vrPrecioCompra = $('#inpPrecioCompraEdit').val();
             var vrPrecioVenta = $('#inpPrecioVentaEdit').val();
             //var vrChckPago = $('#chkPago').val();
-            if (vrIdProducto != '' && vrNombreProducto != '' && vrCantidad != '' && vrPrecioNormal != '' && vrPrecioCompra != '' && vrPrecioVenta != '') {
-                
+            if (vrIdProducto != '' && vrNombreProducto != '' && vrCantidad != '' && vrPrecioNormal != '' &&
+                vrPrecioCompra != '' && vrPrecioVenta != '') {
+
                 $(document).ajaxSend(function() {
                     $("#overlay").fadeIn(300);
                 });
-                
+
                 $('#btn-actualizar-producto').prop('disabled', true);
-                
+
                 $.ajax({
                     type: "POST",
                     url: urlRest,
@@ -639,7 +575,7 @@
                     $('#inpPrecioNormalEdit').val('');
                     $('#inpPrecioCompraEdit').val('');
                     $('#inpPrecioVentaEdit').val('');
-                    
+
                     setTimeout(function() {
                         $("#overlay").fadeOut(300);
                     }, 500);
@@ -648,7 +584,7 @@
                 $('div#mensaje').html('Llena todos los campos')
             }
         });
-        
+
 
 
         function cambiarEstadoVenta(idProducto, precioVenta) {
@@ -794,6 +730,76 @@
                         jc.$$formSubmit.trigger('click');
                     });
                 }
+            });
+        }
+
+        function inicializarTablaProductos() {
+            
+            $(document).ajaxSend(function() {
+                $("#overlay").hide();
+            })
+
+            $('#tbl-productos').DataTable({
+                processing: true,
+                serverSide: true,
+                bDestroy: true,
+                ajax: {
+                    url: urlTableProductos,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Agrega el token al encabezado
+                    },
+                    complete: function() {
+
+                        $("#overlay").hide();
+                    }
+                },
+                columns: [{
+                        data: 'no',
+                        name: 'no'
+                    },
+                    {
+                        data: 'numero_caja',
+                        name: 'numero_caja'
+                    },
+                    {
+                        data: 'nombre',
+                        name: 'nombre'
+                    },
+                    {
+                        data: 'cantidad',
+                        name: 'cantidad'
+                    },
+                    {
+                        data: 'precio_normal',
+                        name: 'precio_normal'
+                    },
+                    {
+                        data: 'precio_compra',
+                        name: 'precio_compra'
+                    },
+                    {
+                        data: 'precio_venta',
+                        name: 'precio_venta'
+                    },
+                    {
+                        data: 'estadoPago',
+                        name: 'estadoPago'
+                    },
+                    {
+                        data: 'opcion',
+                        name: 'Opciones',
+                        orderable: true,
+                        searchable: true
+                    }
+
+                ],
+                columnDefs: [{
+                    className: 'dt-center',
+                    targets: '_all'
+                }, ],
+                language: idiomaDatatables,
+
             });
         }
 
@@ -978,12 +984,6 @@
                             '<div class="item-total mt-2">Total venta: <strong style="color:#3ed06a">' +
                             total_venta + '</strong></div>' +
                             '</div>'
-                            /*+
-                                                       '<div class="col-12 col-sm-3">' +
-                                                       '<div class="item-total mt-2">Total Pagado: <strong style="color:#3ed06a">' +
-                                                       total_pagado + '</strong></div>' +
-                                                       '</div>'*/
-
                         );
                     } else {
                         alert("No se encontraron datos.");
@@ -999,6 +999,143 @@
             });
         }
 
+        function inicializarTotalesVentas() {
+
+            var urlRest = "{{ route('total-ventas') }}";
+
+            $.ajax({
+                type: "POST",
+                url: urlRest,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+
+                },
+                success: function(response) {
+
+                    if (response.data && response.data.length > 0) {
+
+                        var total_efectivo = response.data[0].total_efectivo;
+                        var total_bac = response.data[0].total_bac;
+                        var total_ficohsa = response.data[0].total_ficohsa;
+                        var total_atlantida = response.data[0].total_atlantida;
+                        var total_banpais = response.data[0].total_banpais;
+                        var total_occidente = response.data[0].total_occidente;
+                        var total_venta = response.data[0].total_venta;
+                        var total_inversion = response.data[0].total_inversion;
+
+
+                        $('div#total-ventas').html(
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total efectivo: <strong style="color:#3ed06a">' +
+                            total_efectivo + '</strong></div>' +
+                            '</div>' +
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total BAC: <strong style="color:#3ed06a">' +
+                            total_bac + '</strong></div>' +
+                            '</div>' +
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total Ficohsa: <strong style="color:#3ed06a">' +
+                            total_ficohsa + '</strong></div>' +
+                            '</div>' +
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total Atlantida: <strong style="color:#3ed06a">' +
+                            total_atlantida + '</strong></div>' +
+                            '</div>' +
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total Banpais: <strong style="color:#3ed06a">' +
+                            total_banpais + '</strong></div>' +
+                            '</div>' +
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Total Ocidente: <strong style="color:#3ed06a">' +
+                            total_occidente + '</strong></div>' +
+                            '</div>' +
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total-focus mt-2" style="color:#fff">Total Venta: <strong style="color:#fff">' +
+                            total_venta + '</strong></div>' +
+                            '</div>' +
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total-focus mt-2" style="color:#fff">Total Inversión: <strong style="color:#fff">' +
+                            total_inversion + '</strong></div>' +
+                            '</div>')
+
+
+                    } else {
+                        alert("No se encontraron datos.");
+                    }
+
+
+                    //$('#totales-envio').append(response.data);
+
+                },
+                error: function(request, status, error) {
+                    alert(request.responseText);
+                }
+            });
+        }
+
+        function eliminarProducto(idProducto) {
+
+            var urlRest = "{{ route('eliminar-producto') }}";
+            var vrIdProducto = idProducto;
+
+            $.confirm({
+                type: 'red',
+                animation: 'scale',
+                title: 'Eliminar Producto',
+                content: 'Seguro que quiere eliminar este producto?',
+                buttons: {
+                    confirm: {
+                        text: 'Confirmar',
+                        btnClass: 'btn-red',
+                        action: function() {
+
+                            $(document).ajaxSend(function() {
+                                $("#overlay").fadeIn(300);
+                            });
+
+                            $.ajax({
+                                type: "POST",
+                                url: urlRest,
+                                data: {
+                                    "_token": "{{ csrf_token() }}",
+                                    "idProducto": vrIdProducto,
+                                },
+                                success: function(response) {
+                                    //alert(response)
+                                    const Toast = Swal.mixin({
+                                        toast: true,
+                                        position: "top-end",
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        didOpen: (toast) => {
+                                            toast.onmouseenter = Swal.stopTimer;
+                                            toast.onmouseleave = Swal.resumeTimer;
+                                        }
+                                    });
+                                    Toast.fire({
+                                        icon: "success",
+                                        title: response
+                                    });
+
+                                    $('#tbl-productos').DataTable().ajax.reload();
+                                    inicializarTotalesProductos()
+                                },
+                                error: function(request, status, error) {
+                                    alert(request.responseText);
+                                }
+                            })
+                        }
+                    },
+                    cancelar: function() {
+                        //$.alert('Canceled!');
+                    },
+
+                }
+            });
+
+        }                           
+
         function editarProducto(idProducto, nombreProducto, cantidad, precioNormal, precioCompra, precioVenta) {
 
             $('#inpIdProducto').val(idProducto);
@@ -1009,6 +1146,71 @@
             $('#inpPrecioVentaEdit').val(precioVenta);
 
             $('#modal-form').modal('toggle');
+        }
+
+        function eliminarVenta(idVenta) {
+
+            var urlRest = "{{ route('eliminar-venta') }}";
+            var vrIdVenta = idVenta;
+
+            $.confirm({
+                type: 'red',
+                animation: 'scale',
+                title: 'Eliminar Venta',
+                content: 'Seguro que quiere eliminar esta venta?',
+                buttons: {
+                    confirm: {
+                        text: 'Confirmar',
+                        btnClass: 'btn-red',
+                        action: function() {
+
+                            $(document).ajaxSend(function() {
+                                $("#overlay").fadeIn(300);
+                            });
+
+                            $.ajax({
+                                type: "POST",
+                                url: urlRest,
+                                data: {
+                                    "_token": "{{ csrf_token() }}",
+                                    "idVenta": vrIdVenta,
+                                },
+                                success: function(response) {
+                                    //alert(response)
+                                    const Toast = Swal.mixin({
+                                        toast: true,
+                                        position: "top-end",
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        didOpen: (toast) => {
+                                            toast.onmouseenter = Swal.stopTimer;
+                                            toast.onmouseleave = Swal.resumeTimer;
+                                        }
+                                    });
+                                    Toast.fire({
+                                        icon: "success",
+                                        title: response
+                                    });
+
+                                    $('#tbl-ventas').DataTable().ajax.reload();
+                                    $('#tbl-productos').DataTable().ajax.reload();
+                                    inicializarTotalesVentas()
+                                },
+                                error: function(request, status, error) {
+                                    alert(request.responseText);
+                                }
+                            })
+                        }
+                    },
+                    cancelar: function() {
+                        //$.alert('Canceled!');
+                    },
+
+                }
+            });
+
+
         }
 
 

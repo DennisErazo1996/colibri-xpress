@@ -168,6 +168,13 @@ div.item-total{
     height: 50px;
 }
 
+.item-total-focus{
+    background-color: #3ed06a;
+    border-radius: 8px;
+    align-content: center;
+    height: 50px;
+}
+
 
 
 /*a:hover{
