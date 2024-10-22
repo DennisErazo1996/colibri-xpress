@@ -196,7 +196,7 @@
                     <div class="card-body px-2 pt-0 pb-2">
                         <div class="container">
                             <div id="total-creditos" class="row text-center justify-content-center">
-                               
+
                             </div>
                         </div>
                         <br>
@@ -312,6 +312,92 @@
         </div>
     </div>
 
+    <div class="col-md-4">
+
+        <div class="modal fade" id="modal-form-cuotas" data-bs-backdrop="static" data-bs-keyboard="false"
+            tabindex="-1" role="dialog" aria-labelledby="modal-form" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-body p-0">
+                        <div class="card card-plain">
+                            <div class="card-header pb-0 text-left">
+                                <h3 class="font-weight-bolder text-default">Cuotas pagadas</h3>
+                                {{-- <p class="mb-0">Enter your email and password to sign in</p> --}}
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <input type="text" class="form-control" id="inpIdCredito" style="display: none">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="caja-envio">Metodo de pago<span
+                                                    style="color: red">*</span></label>
+                                            <select class="form-control" id="metodos-pago">
+                                                <option selected disabled>Seleccione el metodo de pago</option>
+                                                @foreach ($metodosPago as $mp)
+                                                    @if ($mp->id != 2)
+                                                        <option value="{{ $mp->id }}"
+                                                            data-idCaja="{{ $mp->id }}">{{ $mp->descripcion }}
+                                                        </option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="monto-abono">Monto abonado<span
+                                                    style="color: red">*</span></label>
+                                            <input type="number" name="monto-abono" class="form-control"
+                                                id="inpMontoAbono" placeholder="L 0.00" aria-label="monto-abono"
+                                                required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button id="btn-registrar-cuota" type="button"
+                                            class="btn btn-success mt-4 mb-0"><i class="fi fi-sr-add"></i></button>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="table-responsive p-0">
+                                    <table id="tbl-cuotas" class="table align-items-center mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th
+                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                    No.</th>
+                                                <th
+                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                    Cliente</th>
+                                                <th
+                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                    Metodo de pago</th>
+                                                <th
+                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                    Monto abonado</th>
+                                                <th
+                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                    Fecha de pago</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="text-center d-flex flex-row justify-content-end">
+        
+                                    <button id="btn-cerrar-cuotas" type="button"
+                                        class="btn btn-3 mt-4 mb-0 ml-50">Cerrar</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
 
@@ -343,7 +429,7 @@
         }
 
         $(document).ready(function() {
-            
+
             inicializarTablaProductos()
             inicializarTotalesProductos()
             inicializarTotalesVentas()
@@ -579,6 +665,76 @@
             }
         });
 
+        $('#btn-cerrar-cuotas').on('click', function(){
+            
+            $('#modal-form-cuotas').modal('toggle');
+            $('#inpMontoAbono').val('');
+            $('#metodos-pago').val('');
+            $('#inpIdCredito').val('');
+
+        })
+
+        $('#btn-registrar-cuota').on('click', function(){
+            
+            var urlRest = "{{ route('registrar-cuota') }}";
+            var vrIdCredito = $('#inpIdCredito').val();
+            var vrMontoAbono = $('#inpMontoAbono').val();
+            var vrIdMetodoPago = $('#metodos-pago').val();
+
+            if (vrIdCredito != '' && vrMontoAbono != '' && vrIdMetodoPago != '') {
+                
+                $(document).ajaxSend(function() {
+                    $("#overlay").fadeIn(300);
+                });
+
+
+                $.ajax({
+                    type: "POST",
+                    url: urlRest,
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "idCredito": vrIdCredito,
+                        "montoAbonado": vrMontoAbono,
+                        "idMetodoPago": vrIdMetodoPago,
+                    },
+                    success: function(response) {
+                        //alert(response)                        
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: "top-end",
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.onmouseenter = Swal.stopTimer;
+                                toast.onmouseleave = Swal.resumeTimer;
+                            }
+                        });
+                        Toast.fire({
+                            icon: "success",
+                            title: response
+                        });
+
+                        $('#tbl-cuotas').DataTable().ajax.reload();
+                    },
+                    error: function(request, status, error) {
+                        alert(request.responseText);
+                    }
+                }).done(function() {
+                    
+                    $('#tbl-creditos').DataTable().ajax.reload();
+                    inicializarTotalesCreditos()
+                    $('#inpMontoAbono').val('');
+                    $('#metodos-pago').val('');
+                    setTimeout(function() {
+                        $("#overlay").fadeOut(300);
+                    }, 500);
+                });
+            } else {
+                $('div#mensaje').html('Llena todos los campos')
+            }
+        });
+
 
 
         function cambiarEstadoVenta(idProducto, precioVenta) {
@@ -728,7 +884,7 @@
         }
 
         function inicializarTablaProductos() {
-            
+
             $(document).ajaxSend(function() {
                 $("#overlay").hide();
             })
@@ -1177,7 +1333,7 @@
                 }
             });
 
-        }                           
+        }
 
         function editarProducto(idProducto, nombreProducto, cantidad, precioNormal, precioCompra, precioVenta) {
 
@@ -1312,6 +1468,70 @@
                     },
                 }
             });
+        }
+
+        function agregarCuota(idCredito) {
+
+            $('#inpIdCredito').val(idCredito);
+
+            $('#modal-form-cuotas').modal('show');
+
+            var urlTableCuotas = "{{ route('ver-cuotas-credito') }}";
+
+            $('#tbl-cuotas').DataTable({
+                processing: true,
+                serverSide: true,
+                bDestroy: true,
+                dom: 'l',
+                ajax: {
+                    url: urlTableCuotas,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}', // Agrega el token al encabezado
+                    },
+                    data: {
+                        'idCredito': idCredito
+                    },
+                    error: function(xhr, status, error) {
+                        alert("Ocurrió un error: " + error);
+                    },
+                    complete: function() {
+                        $("#overlay").fadeOut(300);
+                    }
+                },
+                columns: [{
+                        data: 'no',
+                        name: 'no'
+                    },
+                    {
+                        data: 'nombre_cliente',
+                        name: 'nombre_cliente'
+                    },
+                    {
+                        data: 'metodo_pago',
+                        name: 'metodo_pago'
+                    },
+                    {
+                        data: 'monto_abonado',
+                        name: 'monto_abonado'
+                    },
+                    {
+                        data: 'fecha_pago',
+                        name: 'fecha_pago'
+                    }
+                ],
+                columnDefs: [{
+                        className: 'dt-center',
+                        targets: '_all'
+                    },
+                    {
+                        searchable: false,
+                        targets: '_all'
+                    } // Desactiva el filtrado para todas las columnas
+                ],
+                language: idiomaDatatables,
+            });
+
         }
 
 

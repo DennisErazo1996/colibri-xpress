@@ -201,7 +201,7 @@ class VentasController extends Controller
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     
-                    $actions = "<a class='btn btn-success btn-1 m-0' data-bs-toggle='tooltip' data-bs-placement='top' title='Agregar pago' data-container='body' data-animation='true'><i class='fi fi-ss-money'></i></a>
+                    $actions = "<a class='btn btn-success btn-1 m-0' data-bs-toggle='tooltip' onclick='agregarCuota($row->id)' data-bs-placement='top' title='Agregar pago' data-container='body' data-animation='true'><i class='fi fi-ss-money'></i></a>
                     <a class='btn btn-danger btn-1 m-0' data-bs-toggle='tooltip' onclick='eliminarCredito($row->id)' data-bs-placement='top' title='Eliminar Credito' data-container='body' data-animation='true'><i class='fi fi-sr-trash'></i></a>";
                     return $actions;
                 })
@@ -375,5 +375,59 @@ class VentasController extends Controller
         ]);
                 
     }
+
+    public function registrarCuota(Request $request){
+        
+        $idCredito = $request->idCredito;
+        $idMetodoPago = $request->idMetodoPago;
+        $montoAbonado = $request->montoAbonado;
+        $mensaje = "Cuota registrada exitosamente";
+
+        try {
+            DB::beginTransaction();
+            DB::select("insert into pedidos.cx_cuotas_credito (id_credito, id_metodo_pago, monto_abonado, created_at) values(:idCredito, :idMetodoPago, :montoAbonado, now())",
+            ['idCredito' => $idCredito, 'idMetodoPago' => $idMetodoPago, 'montoAbonado' => $montoAbonado]
+            );
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json(['mensaje' => $e->getMessage()], 500);
+        }
+
+        return $mensaje;
+
+    }
+
+
+    public function verCuotasCredito(Request $request){
+
+        $idCredito = $request->idCredito;
+
+        if ($request->ajax()) {
+            
+            $data = DB::select("select 
+                                row_number() over(order by cc.id desc) as no,
+                                cc.id_credito,
+                                cl.nombre_cliente || ' ' || cl.apellido_cliente as nombre_cliente,
+                                initcap(lower(mp.descripcion)) as metodo_pago,
+                                cc.monto_abonado,
+                                to_char(cc.created_at::date, 'DD/MM/YYYY') as fecha_pago
+                                from pedidos.cx_cuotas_credito cc
+                                join pedidos.cx_creditos c on c.id = cc.id_credito and c.deleted_at is null
+                                join pedidos.cx_clientes cl on cl.id = c.id_cliente and cl.deleted_At is null
+                                join pedidos.cx_metodos_pago mp on mp.id = cc.id_metodo_pago and mp.deleted_at is null
+                                where cc.deleted_at is null and cc.id_credito = :idCredito
+                                ", ['idCredito' => $idCredito]);
+
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->make(true);
+        }
+
+
+    }
+        
 
 }
