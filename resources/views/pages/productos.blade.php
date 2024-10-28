@@ -409,7 +409,7 @@
     <script>
         var stateCookieEnviado = getCookie("stateListEnviados");
         var urlTableProductos = "{{ route('ver-productos') }}";
-        const PORCENTAJE_TAXES = 0.07;
+        const PORCENTAJE_TAXES = 1.07;
 
 
         //alert(stateCookieEnviado)
@@ -427,7 +427,6 @@
             $('#card-list-ventas').show();
             $('#card-list-productos').hide();
             $('#card-list-creditos').hide();
-
         }
 
         $(document).ready(function() {
@@ -544,7 +543,7 @@
                         "nombreProducto": vrNombreProducto,
                         "cantidad": vrCantidad,
                         "precioNormal": vrPrecioNormal,
-                        "precioCompra": vrPrecioCompra,
+                        "precioCompra": vrPrecioCompra*PORCENTAJE_TAXES,
                         "precioVenta": vrPrecioVenta,
                     },
                     success: function(response) {
