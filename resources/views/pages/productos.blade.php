@@ -169,6 +169,7 @@
 
                                         <th>No.</th>
                                         <th>Nombre producto</th>
+                                        <th>Cantidad</th>
                                         <th>Precio de venta</th>
                                         <th>Comprador</th>
                                         <th>Método de pago</th>
@@ -408,6 +409,7 @@
     <script>
         var stateCookieEnviado = getCookie("stateListEnviados");
         var urlTableProductos = "{{ route('ver-productos') }}";
+        const PORCENTAJE_TAXES = 0.07;
 
 
         //alert(stateCookieEnviado)
@@ -736,20 +738,29 @@
         });
 
 
+        
 
-        function cambiarEstadoVenta(idProducto, precioVenta) {
+        function cambiarEstadoVenta(idProducto, precioVenta, cantidadProducto) {
 
             var clientes = {!! json_encode($clientes) !!};
             var metodosPago = {!! json_encode($metodosPago) !!};
             var urlRest = "{{ route('registrar-venta') }}";
+            var cantidad = null;
 
+            if(cantidadProducto > 1){
+               cantidad = null;
+            }else{
+                cantidad = cantidadProducto;
+            }
+
+        
             $.confirm({
                 title: 'Registrar venta',
                 content: '' +
                     '<form action="" class="formName">' +
-                    '<div class="form-group">' +
+                    '<div class="form-group" id="cantidad-container">' +
                     '<label>Ingrese la cantidad del producto a vender</label>' +
-                    '<input type="number" id="cantidad" class="form-control" placeholder="Cantidad de producto">' +
+                    '<input type="number" id="cantidad" value="'+cantidad+'" class="form-control" placeholder="Cantidad de producto">' +
                     '</div>' +
                     '<div class="form-group">' +
                     '<label>Selecciona el comprador</label>' +
@@ -786,6 +797,13 @@
                             var metodoPago = this.$content.find('.metodo-pago').val();
                             var cuotas = this.$content.find('#cuotas').val();
                             var cantidad = this.$content.find('#cantidad').val();
+
+                            
+                            if (cantidad > cantidadProducto) {
+                                $.alert('La cantidad no puede ser mayor a la cantidad de producto')
+                                $('#chkPago-'+idProducto).prop('checked', false);
+                                return;
+                            }
 
                             $(document).ajaxSend(function() {
                                 $("#overlay").fadeIn(300);
@@ -839,27 +857,21 @@
                                 });
                             }else{
                                 $.alert('Debes seleccionar un cliente, metodo de pago y cantidad')
-                                $('#chkPago').prop('checked', false);
+                                $('#chkPago-'+idProducto).prop('checked', false);
                             }
-
-                            /*if (!idCliente) {
-                                $.alert('Debes seleccionar un cliente');
-                                return false;
-                            }
-                            $.alert('Has seleccionado el cliente con ID ' + idCliente + ', nombre ' + nombreCliente +
-                                ' y método de pago con ID ' + meto
-                                doPago + '. Cuotas: ' + cuotas + ' El precio venta: '+precioVenta+ ' el id producto: '+ idProducto);*/
 
                         }
                     },
                     cancelar: function() {
-                        $('#chkPago').prop('checked', false);
+                        $('#chkPago-'+idProducto).prop('checked', false);
                     },
                 },
                 onContentReady: function() {
                     var jc = this;
 
-                    // Detectar cambios en el input de productos
+                    //jc.$content.find('#cantidad-container').hide();
+
+                    
                     this.$content.find('.cliente').on('input', function() {
                         var inputVal = $(this).val();
                         var option = $('#clientes').find(
@@ -997,6 +1009,10 @@
                     {
                         data: 'nombre',
                         name: 'nombre'
+                    },
+                    {
+                        data: 'cantidad',
+                        name: 'cantidad'
                     },
                     {
                         data: 'precio_venta',

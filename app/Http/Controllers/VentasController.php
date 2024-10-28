@@ -78,13 +78,13 @@ class VentasController extends Controller
                             LEFT JOIN cantidades_acreditadas ca ON ca.id_producto = p.id
                             WHERE p.deleted_at IS NULL 
                             AND (
-                                -- Condición general para productos con cantidad mayor a 1
+                               
                                 ((p.cantidad > 1) AND (
                                     (p.id NOT IN (SELECT id_producto FROM pedidos.cx_ventas WHERE deleted_at IS NULL)
                                     AND p.id NOT IN (SELECT id_producto FROM pedidos.cx_creditos WHERE deleted_at IS NULL))
                                     OR (COALESCE(cv.cantidad_vendida, 0) + COALESCE(ca.cantidad_acreditada, 0) < p.cantidad)
                                 ))
-                                -- Condición específica para productos con cantidad igual a 1
+                                
                                 OR (p.cantidad = 1 AND (
                                     (p.id NOT IN (SELECT id_producto FROM pedidos.cx_ventas WHERE deleted_at IS NULL)
                                     AND p.id NOT IN (SELECT id_producto FROM pedidos.cx_creditos WHERE deleted_at IS NULL))
@@ -102,7 +102,7 @@ class VentasController extends Controller
                 })->addColumn('estadoPago', function($row) {
                     // Si el pago está realizado, marcar el checkbox como checked
                     //$checked = $row->id ? 'checked' : '';
-                    return "<div class='form-check form-switch justify-content-center'><input class='form-check-input' onchange='cambiarEstadoVenta($row->id, $row->precio_venta)' type='checkbox' id='chkPago' ></div>";
+                    return "<div class='form-check form-switch justify-content-center'><input class='form-check-input' onchange='cambiarEstadoVenta($row->id, $row->precio_venta, $row->cantidad)' type='checkbox' id='chkPago-$row->id' ></div>";
                     //return "<input type='checkbox' class='estado-pago-checkbox' onchange='cambiarEstadoPago($row->id_caja, $row->id_usuario)' $checked />";
                 })
                 ->rawColumns(['opcion', 'estadoPago'])
@@ -183,18 +183,22 @@ class VentasController extends Controller
             
             DB::select("SET lc_monetary = 'es_HN';");
             $data = DB::select("select 
-                                    row_number() over(order by v.id desc) as no,
-                                    v.id,
-                                    p.nombre,
-                                    v.precio_venta::numeric::money,
+                                    count(*) as cantidad,
+                                    row_number() over(order by max(v.id) desc) as no,
+                                    max(v.id) as id,
+                                    max(p.nombre) as nombre,
+                                    sum(v.precio_venta)::numeric::money as precio_venta,
                                     c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
                                     initcap(lower(mp.descripcion)) as metodo_pago,
-                                    to_char(v.created_at::date, 'DD/MM/YYYY') as fecha_compra
+                                    to_char(max(v.created_at)::date, 'DD/MM/YYYY') as fecha_compra
                                 from pedidos.cx_ventas v
                                 join pedidos.cx_productos p on p.id = v.id_producto and p.deleted_at is null
                                 join pedidos.cx_clientes c on c.id = v.id_cliente and c.deleted_at is null
                                 join pedidos.cx_metodos_pago mp on mp.id = v.id_metodo_pago and mp.deleted_At is null
                                 where v.deleted_at is null
+                                group by v.id_producto,
+                                c.nombre_cliente, c.apellido_cliente,
+                                mp.descripcion
                                 ");
 
             return Datatables::of($data)
