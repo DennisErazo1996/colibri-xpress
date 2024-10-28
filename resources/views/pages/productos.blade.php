@@ -385,7 +385,7 @@
                                     </table>
                                 </div>
                                 <div class="text-center d-flex flex-row justify-content-end">
-        
+
                                     <button id="btn-cerrar-cuotas" type="button"
                                         class="btn btn-3 mt-4 mb-0 ml-50">Cerrar</button>
                                 </div>
@@ -525,7 +525,7 @@
             //console.log(dataId);
 
             if (typeof dataId != "undefined" && vrNombreProducto != '' && vrCantidad != '' && vrPrecioNormal !=
-                '' && vrPrecioCompra != '' && vrPrecioVenta != '') {
+                '' && vrPrecioCompra != '') {
 
                 $(document).ajaxSend(function() {
                     $("#overlay").fadeIn(300);
@@ -665,8 +665,8 @@
             }
         });
 
-        $('#btn-cerrar-cuotas').on('click', function(){
-            
+        $('#btn-cerrar-cuotas').on('click', function() {
+
             $('#modal-form-cuotas').modal('toggle');
             $('#inpMontoAbono').val('');
             $('#metodos-pago').val('');
@@ -674,15 +674,15 @@
 
         })
 
-        $('#btn-registrar-cuota').on('click', function(){
-            
+        $('#btn-registrar-cuota').on('click', function() {
+
             var urlRest = "{{ route('registrar-cuota') }}";
             var vrIdCredito = $('#inpIdCredito').val();
             var vrMontoAbono = $('#inpMontoAbono').val();
             var vrIdMetodoPago = $('#metodos-pago').val();
 
             if (vrIdCredito != '' && vrMontoAbono != '' && vrIdMetodoPago != '') {
-                
+
                 $(document).ajaxSend(function() {
                     $("#overlay").fadeIn(300);
                 });
@@ -721,7 +721,7 @@
                         alert(request.responseText);
                     }
                 }).done(function() {
-                    
+
                     $('#tbl-creditos').DataTable().ajax.reload();
                     inicializarTotalesCreditos()
                     $('#inpMontoAbono').val('');
@@ -748,8 +748,8 @@
                 content: '' +
                     '<form action="" class="formName">' +
                     '<div class="form-group">' +
-                        '<label>Ingrese la cantidad del producto</label>' +
-                        '<input type="number" id="cantidad" class="form-control" placeholder="Cantidad de producto">' +
+                    '<label>Ingrese la cantidad del producto</label>' +
+                    '<input type="number" id="cantidad" class="form-control" placeholder="Cantidad de producto">' +
                     '</div>' +
                     '<div class="form-group">' +
                     '<label>Selecciona el comprador</label>' +
@@ -791,52 +791,55 @@
                                 $("#overlay").fadeIn(300);
                             });
 
-                            $.ajax({
-                                type: "POST",
-                                url: urlRest,
-                                data: {
-                                    "_token": "{{ csrf_token() }}",
-                                    "idCliente": idCliente,
-                                    "cuotas": cuotas,
-                                    "metodoPago": metodoPago,
-                                    "precioVenta": precioVenta,
-                                    "idProducto": idProducto,
-                                    "cantidad": cantidad,
+                            if (idCliente != '' && metodoPago != '' && cantidad != '') {
+                                $.ajax({
+                                    type: "POST",
+                                    url: urlRest,
+                                    data: {
+                                        "_token": "{{ csrf_token() }}",
+                                        "idCliente": idCliente,
+                                        "cuotas": cuotas,
+                                        "metodoPago": metodoPago,
+                                        "precioVenta": precioVenta,
+                                        "idProducto": idProducto,
+                                        "cantidad": cantidad,
 
-                                },
-                                success: function(response) {
-                                    //alert(response)
-                                    const Toast = Swal.mixin({
-                                        toast: true,
-                                        position: "top-end",
-                                        showConfirmButton: false,
-                                        timer: 3000,
-                                        timerProgressBar: true,
-                                        didOpen: (toast) => {
-                                            toast.onmouseenter = Swal.stopTimer;
-                                            toast.onmouseleave = Swal.resumeTimer;
-                                        }
-                                    });
-                                    Toast.fire({
-                                        icon: "success",
-                                        title: response
-                                    });
+                                    },
+                                    success: function(response) {
+                                        //alert(response)
+                                        const Toast = Swal.mixin({
+                                            toast: true,
+                                            position: "top-end",
+                                            showConfirmButton: false,
+                                            timer: 3000,
+                                            timerProgressBar: true,
+                                            didOpen: (toast) => {
+                                                toast.onmouseenter = Swal.stopTimer;
+                                                toast.onmouseleave = Swal.resumeTimer;
+                                            }
+                                        });
+                                        Toast.fire({
+                                            icon: "success",
+                                            title: response
+                                        });
 
-                                    $('#tbl-productos').DataTable().ajax.reload();
-                                },
-                                error: function(request, status, error) {
-                                    alert(request.responseText);
-                                }
-                            }).done(function() {
+                                        $('#tbl-productos').DataTable().ajax.reload();
+                                    },
+                                    error: function(request, status, error) {
+                                        alert(request.responseText);
+                                    }
+                                }).done(function() {
 
-                                inicializarTotalesProductos()
+                                    inicializarTotalesProductos()
 
-                                setTimeout(function() {
-                                    $("#overlay").fadeOut(300);
-                                }, 500);
+                                    setTimeout(function() {
+                                        $("#overlay").fadeOut(300);
+                                    }, 500);
 
-                            });
-
+                                });
+                            }else{
+                                $.alert('Debes seleccionar un cliente, metodo de pago y cantidad')
+                            }
 
                             /*if (!idCliente) {
                                 $.alert('Debes seleccionar un cliente');
@@ -907,7 +910,7 @@
                     },
                     complete: function() {
 
-                       $("#overlay").fadeOut(300);
+                        $("#overlay").fadeOut(300);
                     }
                 },
                 columns: [{
