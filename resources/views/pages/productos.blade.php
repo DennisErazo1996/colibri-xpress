@@ -839,6 +839,7 @@
                                 });
                             }else{
                                 $.alert('Debes seleccionar un cliente, metodo de pago y cantidad')
+                                $('#chkPago').prop('checked', false);
                             }
 
                             /*if (!idCliente) {
