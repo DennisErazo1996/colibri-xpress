@@ -748,7 +748,7 @@
                 content: '' +
                     '<form action="" class="formName">' +
                     '<div class="form-group">' +
-                    '<label>Ingrese la cantidad del producto</label>' +
+                    '<label>Ingrese la cantidad del producto a vender</label>' +
                     '<input type="number" id="cantidad" class="form-control" placeholder="Cantidad de producto">' +
                     '</div>' +
                     '<div class="form-group">' +
