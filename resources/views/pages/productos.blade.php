@@ -748,6 +748,10 @@
                 content: '' +
                     '<form action="" class="formName">' +
                     '<div class="form-group">' +
+                        '<label>Ingrese la cantidad del producto</label>' +
+                        '<input type="number" id="cantidad" class="form-control" placeholder="Cantidad de producto">' +
+                    '</div>' +
+                    '<div class="form-group">' +
                     '<label>Selecciona el comprador</label>' +
                     '<input list="clientes" class="form-control cliente" placeholder="Buscar cliente" required>' +
                     '<datalist id="clientes">' +
@@ -781,6 +785,7 @@
                             var idCliente = this.$content.find('#clienteId').val();
                             var metodoPago = this.$content.find('.metodo-pago').val();
                             var cuotas = this.$content.find('#cuotas').val();
+                            var cantidad = this.$content.find('#cantidad').val();
 
                             $(document).ajaxSend(function() {
                                 $("#overlay").fadeIn(300);
@@ -796,6 +801,7 @@
                                     "metodoPago": metodoPago,
                                     "precioVenta": precioVenta,
                                     "idProducto": idProducto,
+                                    "cantidad": cantidad,
 
                                 },
                                 success: function(response) {

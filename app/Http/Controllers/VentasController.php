@@ -141,29 +141,42 @@ class VentasController extends Controller
        
     }
 
-    public function registrarVenta(Request $request){
+    public function registrarVenta(Request $request)
+{
+    $idCliente = $request->idCliente;
+    $idProducto = $request->idProducto;
+    $metodoPago = $request->metodoPago;
+    $precioVenta = $request->precioVenta;
+    $cuotas = $request->cuotas;
+    $cantidad = $request->cantidad;
+    $mensaje = "Venta registrada correctamente";
 
-        $idCliente = $request->idCliente;
-        $idProducto = $request->idProducto;
-        $metodoPago = $request->metodoPago;
-        $precioVenta = $request->precioVenta;
-        $cuotas = $request->cuotas;
-        $mensaje = "Venta registrada correctamente";
-
-        if($metodoPago == 2){
-            DB::select("insert into pedidos.cx_creditos(id_cliente, id_producto, monto_adeudado, cuotas, created_at)
-                    values(:id_cliente, :id_producto, :monto_adeudado, :cuotas_credito, now())", 
-                    ['id_cliente' => $idCliente, 'id_producto' => $idProducto, 'monto_adeudado' => $precioVenta,
-                    'cuotas_credito' => $cuotas]);
-        }else{
-            DB::select("insert into pedidos.cx_ventas(id_producto, id_metodo_pago, created_at, precio_venta, id_cliente)
-            values(:id_producto, :id_metodo_pago, now(), :precio_venta, :id_cliente)", 
-            ['id_producto' => $idProducto, 'id_metodo_pago' => $metodoPago, 'precio_venta' => $precioVenta,
-            'id_cliente' => $idCliente]);
+    if ($metodoPago == 2) { 
+        for ($i = 0; $i < $cantidad; $i++) {
+            DB::select("INSERT INTO pedidos.cx_creditos(id_cliente, id_producto, monto_adeudado, cuotas, created_at)
+                        VALUES (:id_cliente, :id_producto, :monto_adeudado, :cuotas_credito, now())", 
+                        [
+                            'id_cliente' => $idCliente,
+                            'id_producto' => $idProducto,
+                            'monto_adeudado' => $precioVenta,
+                            'cuotas_credito' => $cuotas
+                        ]);
         }
-
-        return $mensaje;
+    } else { 
+        for ($i = 0; $i < $cantidad; $i++) {
+            DB::select("INSERT INTO pedidos.cx_ventas(id_producto, id_metodo_pago, created_at, precio_venta, id_cliente)
+                        VALUES (:id_producto, :id_metodo_pago, now(), :precio_venta, :id_cliente)", 
+                        [
+                            'id_producto' => $idProducto,
+                            'id_metodo_pago' => $metodoPago,
+                            'precio_venta' => $precioVenta, 
+                            'id_cliente' => $idCliente
+                        ]);
+        }   
     }
+
+    return $mensaje;
+}
 
     public function verVentas(Request $request){
         if ($request->ajax()) {
