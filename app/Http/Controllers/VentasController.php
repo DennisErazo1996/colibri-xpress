@@ -48,22 +48,49 @@ class VentasController extends Controller
 
         if ($request->ajax()) {
             
-            $data = DB::select("select 
-                                row_number() over(order by p.id desc) as no,
+            $data = DB::select("WITH cantidades_vendidas AS (
+                                SELECT COUNT(*) AS cantidad_vendida, p.id AS id_producto, p.nombre
+                                FROM pedidos.cx_productos p 
+                                JOIN pedidos.cx_ventas v ON v.id_producto = p.id AND v.deleted_at IS NULL
+                                WHERE p.deleted_at IS NULL
+                                GROUP BY p.id, p.nombre
+                            ), 
+                            cantidades_acreditadas AS (
+                                SELECT COUNT(*) AS cantidad_acreditada, p.id AS id_producto, p.nombre
+                                FROM pedidos.cx_productos p 
+                                JOIN pedidos.cx_creditos c ON c.id_producto = p.id AND c.deleted_at IS NULL
+                                WHERE p.deleted_at IS NULL
+                                GROUP BY p.id, p.nombre
+                            )
+                            SELECT 
+                                ROW_NUMBER() OVER(ORDER BY p.id DESC) AS no,
                                 p.id,
                                 id_caja,
                                 'BOX-' || LPAD(c.id::TEXT, 4, '0') AS numero_caja,
-                                nombre,
-                                cantidad,
-                                precio_normal, precio_compra, precio_venta
-                            from pedidos.cx_productos p
-                            join cx_cajas c on p.id_caja = c.id and c.deleted_at is null
-                            where p.deleted_at is null and p.id not in(
-                                select id_producto from pedidos.cx_ventas where deleted_At is null
-                            )
-                            AND p.id not in(
-                                select id_producto from pedidos.cx_creditos where deleted_At is null
-                            )");
+                                p.nombre,
+                                COALESCE(p.cantidad - (COALESCE(cv.cantidad_vendida, 0) + COALESCE(ca.cantidad_acreditada, 0)), p.cantidad) AS cantidad,
+                                precio_normal, 
+                                precio_compra, 
+                                precio_venta
+                            FROM pedidos.cx_productos p
+                            JOIN cx_cajas c ON p.id_caja = c.id AND c.deleted_at IS NULL
+                            LEFT JOIN cantidades_vendidas cv ON cv.id_producto = p.id
+                            LEFT JOIN cantidades_acreditadas ca ON ca.id_producto = p.id
+                            WHERE p.deleted_at IS NULL 
+                            AND (
+                                -- Condición general para productos con cantidad mayor a 1
+                                ((p.cantidad > 1) AND (
+                                    (p.id NOT IN (SELECT id_producto FROM pedidos.cx_ventas WHERE deleted_at IS NULL)
+                                    AND p.id NOT IN (SELECT id_producto FROM pedidos.cx_creditos WHERE deleted_at IS NULL))
+                                    OR (COALESCE(cv.cantidad_vendida, 0) + COALESCE(ca.cantidad_acreditada, 0) < p.cantidad)
+                                ))
+                                -- Condición específica para productos con cantidad igual a 1
+                                OR (p.cantidad = 1 AND (
+                                    (p.id NOT IN (SELECT id_producto FROM pedidos.cx_ventas WHERE deleted_at IS NULL)
+                                    AND p.id NOT IN (SELECT id_producto FROM pedidos.cx_creditos WHERE deleted_at IS NULL))
+                                    
+                                ))
+                            );");
 
             return Datatables::of($data)
                 ->addIndexColumn()
@@ -214,31 +241,57 @@ class VentasController extends Controller
 
         DB::select("SET lc_monetary = 'es_HN';");
         $data = DB::select("
-                 with productos as (
-                            select 
-                            row_number() over(order by p.id desc) as no,   
-                            p.id,
-                            id_caja,
-                            'BOX-' || LPAD(c.id::TEXT, 4, '0') AS numero_caja,
-                            nombre,
-                            cantidad,
-                            precio_normal, precio_compra, precio_venta,
-                            precio_venta*cantidad as total_precio_producto,
-                            precio_compra*cantidad as total_precio_inversion
-                        from pedidos.cx_productos p
-                        join cx_cajas c on p.id_caja = c.id and c.deleted_at is null
-                        where p.deleted_at is null and p.id not in(
-                            select id_producto from pedidos.cx_ventas where deleted_At is null
-                        )
-                        AND p.id not in(
-                            select id_producto from pedidos.cx_creditos where deleted_At is null
-                        )
+                 WITH cantidades_vendidas AS (
+                    SELECT COUNT(*) AS cantidad_vendida, p.id AS id_producto, p.nombre
+                    FROM pedidos.cx_productos p 
+                    JOIN pedidos.cx_ventas v ON v.id_producto = p.id AND v.deleted_at IS NULL
+                    WHERE p.deleted_at IS NULL
+                    GROUP BY p.id, p.nombre
+                ), 
+                cantidades_acreditadas AS (
+                    SELECT COUNT(*) AS cantidad_acreditada, p.id AS id_producto, p.nombre
+                    FROM pedidos.cx_productos p 
+                    JOIN pedidos.cx_creditos c ON c.id_producto = p.id AND c.deleted_at IS NULL
+                    WHERE p.deleted_at IS NULL
+                    GROUP BY p.id, p.nombre
+                ), productos as (
+                    SELECT 
+                        ROW_NUMBER() OVER(ORDER BY p.id DESC) AS no,
+                        p.id,
+                        id_caja,
+                        'BOX-' || LPAD(c.id::TEXT, 4, '0') AS numero_caja,
+                        p.nombre,
+                        COALESCE(p.cantidad - (COALESCE(cv.cantidad_vendida, 0) + COALESCE(ca.cantidad_acreditada, 0)), p.cantidad) AS cantidad,
+                        precio_normal, 
+                        precio_compra, 
+                        precio_venta,
+                        precio_venta*COALESCE(p.cantidad - (COALESCE(cv.cantidad_vendida, 0) + COALESCE(ca.cantidad_acreditada, 0)), p.cantidad) as total_precio_producto,
+                        precio_compra*COALESCE(p.cantidad - (COALESCE(cv.cantidad_vendida, 0) + COALESCE(ca.cantidad_acreditada, 0)), p.cantidad) as total_precio_inversion
+                    FROM pedidos.cx_productos p
+                    JOIN cx_cajas c ON p.id_caja = c.id AND c.deleted_at IS NULL
+                    LEFT JOIN cantidades_vendidas cv ON cv.id_producto = p.id
+                    LEFT JOIN cantidades_acreditadas ca ON ca.id_producto = p.id
+                    WHERE p.deleted_at IS NULL 
+                    AND (
+                        -- Condición general para productos con cantidad mayor a 1
+                        ((p.cantidad > 1) AND (
+                            (p.id NOT IN (SELECT id_producto FROM pedidos.cx_ventas WHERE deleted_at IS NULL)
+                            AND p.id NOT IN (SELECT id_producto FROM pedidos.cx_creditos WHERE deleted_at IS NULL))
+                            OR (COALESCE(cv.cantidad_vendida, 0) + COALESCE(ca.cantidad_acreditada, 0) < p.cantidad)
+                        ))
+                        -- Condición específica para productos con cantidad igual a 1
+                        OR (p.cantidad = 1 AND (
+                            (p.id NOT IN (SELECT id_producto FROM pedidos.cx_ventas WHERE deleted_at IS NULL)
+                            AND p.id NOT IN (SELECT id_producto FROM pedidos.cx_creditos WHERE deleted_at IS NULL))
+
+                        ))
                     )
-                    select 
-                        coalesce(sum(cantidad), 0) as total_productos,
-                        '$ ' || coalesce(sum(total_precio_inversion), 0) as total_inversion,
-                        coalesce(sum(total_precio_producto), 0)::numeric::money as total_venta
-                    from productos");
+            )
+            select 
+                coalesce(sum(cantidad), 0) as total_productos,
+                '$ ' || coalesce(sum(total_precio_inversion), 0) as total_inversion,
+                coalesce(sum(total_precio_producto), 0)::numeric::money as total_venta
+            from productos");
         return response()->json([
             'data' => $data,
         ]);
@@ -345,6 +398,7 @@ class VentasController extends Controller
         try {
             DB::beginTransaction();
             DB::select("update pedidos.cx_creditos set deleted_at = now() where id = :idCredito", ['idCredito' => $idCredito]);
+            DB::select("update pedidos.cx_cuotas_credito set deleted_at = now() where id_credito = :idCredito", ['idCredito' => $idCredito]);
             DB::commit();
 
         } catch (\Exception $e) {

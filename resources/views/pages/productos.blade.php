@@ -901,7 +901,7 @@
                     },
                     complete: function() {
 
-                        $("#overlay").hide();
+                       $("#overlay").fadeOut(300);
                     }
                 },
                 columns: [{
