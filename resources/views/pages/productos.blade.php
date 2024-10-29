@@ -1095,7 +1095,7 @@
                     },
                     {
                         data: 'cantidad',
-                        name: 'cantidad'
+                        name: 'cantidad',
                     },
                     {
                         data: 'monto_adeudado',
@@ -1132,9 +1132,22 @@
                     }
                 ],
                 columnDefs: [{
-                    className: 'dt-center',
-                    targets: '_all'
-                }],
+                        className: 'dt-center',
+                        targets: '_all'
+                    },
+                    {
+                        width: '10px',
+                        targets: 0
+                    }, // Cambia el ancho de la columna 'comprador'
+                    {
+                        width: '10px',
+                        targets: 3
+                    },
+                    {
+                        width: '10px',
+                        targets: 7
+                    } // Cambia el ancho de la columna 'nombre_producto'
+                ],
                 createdRow: function(row, data, dataIndex) {
                     if (data.estado === "Pagado") {
                         $('td', row).eq(8).addClass('estado-pagado');
