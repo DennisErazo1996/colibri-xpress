@@ -1087,11 +1087,21 @@
                     },
                     {
                         data: 'comprador',
-                        name: 'comprador'
+                        name: 'comprador',
+                        render: function(data, type, row) {
+                        // Aquí se ajusta el texto largo para que no se desborde
+                        return '<div style="max-width: 250px !important;  white-space: normal !important; word-wrap: break-word !important;">' +
+                            data + '</div>';
+                    }
                     },
                     {
                         data: 'nombre_producto',
-                        name: 'nombre_producto'
+                        name: 'nombre_producto',
+                        render: function(data, type, row) {
+                        // Aquí se ajusta el texto largo para que no se desborde
+                        return '<div style="max-width: 250px !important;  white-space: normal !important; word-wrap: break-word !important;">' +
+                            data + '</div>';
+                    }
                     },
                     {
                         data: 'cantidad',
