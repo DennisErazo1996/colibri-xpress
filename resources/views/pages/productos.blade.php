@@ -209,6 +209,7 @@
                                         <th>No.</th>
                                         <th>Cliente</th>
                                         <th>Nombre del producto</th>
+                                        <th>Cantidad</th>
                                         <th>Monto adeudado</th>
                                         <th>Cuotas</th>
                                         <th>Monto abonado</th>
@@ -1087,6 +1088,10 @@
                     {
                         data: 'nombre_producto',
                         name: 'nombre_producto'
+                    },
+                    {
+                        data: 'cantidad',
+                        name: 'cantidad'
                     },
                     {
                         data: 'monto_adeudado',

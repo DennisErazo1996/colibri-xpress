@@ -56,11 +56,11 @@ class VentasController extends Controller
                                 GROUP BY p.id, p.nombre
                             ), 
                             cantidades_acreditadas AS (
-                                SELECT COUNT(*) AS cantidad_acreditada, p.id AS id_producto, p.nombre
+                                SELECT coalesce(c.cantidad,0) as cantidad_acreditada, p.id AS id_producto, p.nombre
                                 FROM pedidos.cx_productos p 
                                 JOIN pedidos.cx_creditos c ON c.id_producto = p.id AND c.deleted_at IS NULL
                                 WHERE p.deleted_at IS NULL
-                                GROUP BY p.id, p.nombre
+                                
                             )
                             SELECT 
                                 ROW_NUMBER() OVER(ORDER BY p.id DESC) AS no,
@@ -78,7 +78,7 @@ class VentasController extends Controller
                             LEFT JOIN cantidades_acreditadas ca ON ca.id_producto = p.id
                             WHERE p.deleted_at IS NULL 
                             AND (
-                               
+                            
                                 ((p.cantidad > 1) AND (
                                     (p.id NOT IN (SELECT id_producto FROM pedidos.cx_ventas WHERE deleted_at IS NULL)
                                     AND p.id NOT IN (SELECT id_producto FROM pedidos.cx_creditos WHERE deleted_at IS NULL))
@@ -149,19 +149,34 @@ class VentasController extends Controller
     $precioVenta = $request->precioVenta;
     $cuotas = $request->cuotas;
     $cantidad = $request->cantidad;
+    $totalDeuda = null;
     $mensaje = "Venta registrada correctamente";
 
     if ($metodoPago == 2) { 
-        for ($i = 0; $i < $cantidad; $i++) {
-            DB::select("INSERT INTO pedidos.cx_creditos(id_cliente, id_producto, monto_adeudado, cuotas, created_at)
-                        VALUES (:id_cliente, :id_producto, :monto_adeudado, :cuotas_credito, now())", 
-                        [
-                            'id_cliente' => $idCliente,
-                            'id_producto' => $idProducto,
-                            'monto_adeudado' => $precioVenta,
-                            'cuotas_credito' => $cuotas
-                        ]);
-        }
+       if ($cantidad == 1) {
+                DB::select("INSERT INTO pedidos.cx_creditos(id_cliente, id_producto, monto_adeudado, cuotas, created_at, cantidad)
+                VALUES (:id_cliente, :id_producto, :monto_adeudado, :cuotas_credito, now(), :cantidad)",
+                [
+                    'id_cliente' => $idCliente,
+                    'id_producto' => $idProducto,
+                    'monto_adeudado' => $precioVenta,
+                    'cuotas_credito' => $cuotas,
+                    'cantidad' => $cantidad
+                ]);
+       }else{
+
+                $totalDeuda = $precioVenta * $cantidad;
+
+                DB::select("INSERT INTO pedidos.cx_creditos(id_cliente, id_producto, monto_adeudado, cuotas, created_at, cantidad)
+                VALUES (:id_cliente, :id_producto, :monto_adeudado, :cuotas_credito, now(), :cantidad)", 
+                [
+                    'id_cliente' => $idCliente,
+                    'id_producto' => $idProducto,
+                    'monto_adeudado' => $totalDeuda,  
+                    'cuotas_credito' => $cuotas,
+                    'cantidad' => $cantidad
+                ]);
+       }
     } else { 
         for ($i = 0; $i < $cantidad; $i++) {
             DB::select("INSERT INTO pedidos.cx_ventas(id_producto, id_metodo_pago, created_at, precio_venta, id_cliente)
@@ -229,6 +244,7 @@ class VentasController extends Controller
                                     row_number() over(order by cr.id desc) as no,
                                     c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
                                     p.nombre as nombre_producto,
+                                    coalesce(cr.cantidad,1) as cantidad,
                                     cr.monto_adeudado::numeric::money,
                                     cr.cuotas,
                                     coalesce(cu.cuotas_pagadas, 0) as cuotas_pagadas,
@@ -432,14 +448,24 @@ class VentasController extends Controller
         DB::select("SET lc_monetary = 'es_HN';");
         
         $data = DB::select("
-                select
-                    '$ ' || coalesce(sum(p.precio_compra), 0) as total_inversion, 
+                with cx_creditos as (select
+                    cr.id,
+                    p.nombre,
+                    p.precio_compra,
+                    cr.cantidad,
+                    p.precio_venta,
+                    monto_adeudado,
+                    precio_compra*coalesce(cr.cantidad, 1) as total_precio_compra
+                    from pedidos.cx_creditos cr
+                    join pedidos.cx_productos p on p.id = cr.id_producto and p.deleted_at is null
+                    --left join pedidos.cx_cuotas_credito cu on cu.id_credito = cr.id and cu.deleted_at is null
+                    where cr.deleted_at is null)
+                    select
+                    '$ ' || coalesce(sum(cr.total_precio_compra), 0) as total_inversion, 
                     coalesce(sum(cr.monto_adeudado), 0)::numeric::money as total_monto_adeudado,
                     coalesce(sum(cu.monto_abonado), 0)::numeric::money as total_monto_abonado
-                from pedidos.cx_creditos cr
-                join pedidos.cx_productos p on p.id = cr.id_producto and p.deleted_at is null
-                left join pedidos.cx_cuotas_credito cu on cu.id_credito = cr.id and cu.deleted_at is null
-                    where cr.deleted_at is null");
+                    from cx_creditos cr
+                    left join pedidos.cx_cuotas_credito cu on cu.id_credito = cr.id and cu.deleted_at is null");
         
         return response()->json([
             'data' => $data,
