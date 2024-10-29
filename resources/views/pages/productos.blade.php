@@ -379,6 +379,7 @@
                                                 <th
                                                     class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     Fecha de pago</th>
+                                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Opciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -1548,6 +1549,10 @@
                     {
                         data: 'fecha_pago',
                         name: 'fecha_pago'
+                    },
+                    {
+                        data: 'acciones',
+                        name: 'acciones'
                     }
                 ],
                 columnDefs: [{
@@ -1562,6 +1567,69 @@
                 language: idiomaDatatables,
             });
 
+        }
+
+        function eliminarCuota(idCuota){
+
+            var urlRest = "{{ route('eliminar-cuota') }}";
+
+            $.confirm({
+                type: 'red',
+                animation: 'scale',
+                title: 'Eliminar Cuota',
+                content: 'Seguro que quiere eliminar esta cuota?',
+                buttons: {
+                    confirm: {
+                        text: 'Confirmar',
+                        btnClass: 'btn-red',
+                        action: function() {
+
+                            $(document).ajaxSend(function() {
+                                $("#overlay").fadeIn(300);
+                            });
+
+                            $.ajax({
+                                type: "POST",
+                                url: urlRest,
+                                data: {
+                                    "_token": "{{ csrf_token() }}",
+                                    "idCuota": idCuota,
+                                },
+                                success: function(response) {
+                                    //alert(response)
+                                    const Toast = Swal.mixin({
+                                        toast: true,
+                                        position: "top-end",
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        didOpen: (toast) => {
+                                            toast.onmouseenter = Swal.stopTimer;
+                                            toast.onmouseleave = Swal.resumeTimer;
+                                        }
+                                    });
+                                    Toast.fire({
+                                        icon: "success",
+                                        title: response
+                                    });
+
+                                    $('#tbl-cuotas').DataTable().ajax.reload();
+                                    $('#tbl-creditos').DataTable().ajax.reload();
+                                    inicializarTotalesCreditos()
+                                },
+                                error: function(request, status, error) {
+                                    alert(request.responseText);
+                                }
+                            })
+                        }
+                    },
+                    cancelar: function() {
+                        //$.alert('Canceled!');
+                    },
+
+                }
+            });
+            
         }
 
 

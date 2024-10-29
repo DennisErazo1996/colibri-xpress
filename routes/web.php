@@ -89,6 +89,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('/ver-total-creditos', [VentasController::class, 'datosTotalesCreditos'])->name('total-creditos');
 	Route::post('/registrar-cuota', [VentasController::class, 'registrarCuota'])->name('registrar-cuota');
 	Route::post('/ver-cuotas-credito', [VentasController::class, 'verCuotasCredito'])->name('ver-cuotas-credito');
+	Route::post('/eliminar-cuota', [VentasController::class, 'eliminarCuota'])->name('eliminar-cuota');
 
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');

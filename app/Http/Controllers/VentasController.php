@@ -443,6 +443,27 @@ class VentasController extends Controller
         return $mensaje;
     }
 
+    public function eliminarCuota(Request $request){
+
+        $idCuota = $request->idCuota;
+        $mensaje = null;
+
+        try {
+            DB::beginTransaction();
+
+           DB::select("update pedidos.cx_cuotas_credito set deleted_at = now() where id = :id", ['id' => $idCuota]);
+           $mensaje = "Cuota eliminada correctamente";
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            $mensaje = $e->getMessage();
+        }
+
+        return $mensaje;
+    }
+
     public function datosTotalesCreditos(){
 
         DB::select("SET lc_monetary = 'es_HN';");
@@ -506,6 +527,7 @@ class VentasController extends Controller
             
             $data = DB::select("select 
                                 row_number() over(order by cc.id desc) as no,
+                                cc.id,
                                 cc.id_credito,
                                 cl.nombre_cliente || ' ' || cl.apellido_cliente as nombre_cliente,
                                 initcap(lower(mp.descripcion)) as metodo_pago,
@@ -520,6 +542,10 @@ class VentasController extends Controller
 
             return Datatables::of($data)
                 ->addIndexColumn()
+                ->addColumn('acciones', function ($item) {
+                    return '<a onclick="eliminarCuota('.$item->id.')" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></a>';
+                })
+                ->rawColumns(['acciones'])
                 ->make(true);
         }
 
