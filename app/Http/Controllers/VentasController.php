@@ -233,28 +233,29 @@ class VentasController extends Controller
             
             DB::select("SET lc_monetary = 'es_HN';");
             $data = DB::select("with cuotas as (select 
-                                    id_credito,
-                                    count(*) as cuotas_pagadas,
-                                    sum(monto_abonado) as monto_abonado
-                                from pedidos.cx_cuotas_credito
-                                where deleted_at is null
-                                group by id_credito)
-                                select 
-                                    cr.id,
-                                    row_number() over(order by cr.id desc) as no,
-                                    c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
-                                    p.nombre as nombre_producto,
-                                    coalesce(cr.cantidad,1) as cantidad,
-                                    cr.monto_adeudado::numeric::money,
-                                    cr.cuotas,
-                                    coalesce(cu.cuotas_pagadas, 0) as cuotas_pagadas,
-                                    coalesce(cu.monto_abonado, 0)::numeric::money as monto_abonado,
-                                    to_char(c.created_at::date, 'DD/MM/YYYY') as fecha_compra
-                                from pedidos.cx_creditos cr
-                                join pedidos.cx_productos p on p.id = cr.id_producto and p.deleted_at is null
-                                join pedidos.cx_clientes c on c.id = cr.id_cliente and c.deleted_at is null
-                                left join cuotas cu on cu.id_credito = cr.id	
-                                where cr.deleted_at is null
+                            id_credito,
+                            count(*) as cuotas_pagadas,
+                            sum(monto_abonado) as monto_abonado
+                        from pedidos.cx_cuotas_credito
+                        where deleted_at is null
+                        group by id_credito)
+                        select 
+                            cr.id,
+                            row_number() over(order by cr.id desc) as no,
+                            c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
+                            p.nombre as nombre_producto,
+                            coalesce(cr.cantidad,1) as cantidad,
+                            cr.monto_adeudado::numeric::money,
+                            cr.cuotas,
+                            coalesce(cu.cuotas_pagadas, 0) as cuotas_pagadas,
+                            case when coalesce(cu.cuotas_pagadas, 0) = cr.cuotas or cr.monto_adeudado =  coalesce(cu.monto_abonado, 0) then 'Pagado' else 'No pagado' end as estado,
+                            coalesce(cu.monto_abonado, 0)::numeric::money as monto_abonado,
+                            to_char(c.created_at::date, 'DD/MM/YYYY') as fecha_compra
+                        from pedidos.cx_creditos cr
+                        join pedidos.cx_productos p on p.id = cr.id_producto and p.deleted_at is null
+                        join pedidos.cx_clientes c on c.id = cr.id_cliente and c.deleted_at is null
+                        left join cuotas cu on cu.id_credito = cr.id	
+                        where cr.deleted_at is null
                                 ");
 
             return Datatables::of($data)

@@ -214,6 +214,7 @@
                                         <th>Cuotas</th>
                                         <th>Monto abonado</th>
                                         <th>Cuotas pagadas</th>
+                                        <th>Estado</th>
                                         <th>Fecha de compra</th>
                                         <th>Opciones</th>
                                     </tr>
@@ -379,7 +380,9 @@
                                                 <th
                                                     class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     Fecha de pago</th>
-                                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Opciones</th>
+                                                <th
+                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                    Opciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -545,7 +548,7 @@
                         "nombreProducto": vrNombreProducto,
                         "cantidad": vrCantidad,
                         "precioNormal": vrPrecioNormal,
-                        "precioCompra": vrPrecioCompra*PORCENTAJE_TAXES,
+                        "precioCompra": vrPrecioCompra * PORCENTAJE_TAXES,
                         "precioVenta": vrPrecioVenta,
                     },
                     success: function(response) {
@@ -739,7 +742,7 @@
         });
 
 
-        
+
 
         function cambiarEstadoVenta(idProducto, precioVenta, cantidadProducto) {
 
@@ -748,20 +751,21 @@
             var urlRest = "{{ route('registrar-venta') }}";
             var cantidad = null;
 
-            if(cantidadProducto > 1){
-               cantidad = null;
-            }else{
+            if (cantidadProducto > 1) {
+                cantidad = null;
+            } else {
                 cantidad = cantidadProducto;
             }
 
-        
+
             $.confirm({
                 title: 'Registrar venta',
                 content: '' +
                     '<form action="" class="formName">' +
                     '<div class="form-group" id="cantidad-container">' +
                     '<label>Ingrese la cantidad del producto a vender</label>' +
-                    '<input type="number" id="cantidad" value="'+cantidad+'" class="form-control" placeholder="Cantidad de producto">' +
+                    '<input type="number" id="cantidad" value="' + cantidad +
+                    '" class="form-control" placeholder="Cantidad de producto">' +
                     '</div>' +
                     '<div class="form-group">' +
                     '<label>Selecciona el comprador</label>' +
@@ -799,10 +803,10 @@
                             var cuotas = this.$content.find('#cuotas').val();
                             var cantidad = this.$content.find('#cantidad').val();
 
-                            
+
                             if (cantidad > cantidadProducto) {
                                 $.alert('La cantidad no puede ser mayor a la cantidad de producto')
-                                $('#chkPago-'+idProducto).prop('checked', false);
+                                $('#chkPago-' + idProducto).prop('checked', false);
                                 return;
                             }
 
@@ -856,15 +860,15 @@
                                     }, 500);
 
                                 });
-                            }else{
+                            } else {
                                 $.alert('Debes seleccionar un cliente, metodo de pago y cantidad')
-                                $('#chkPago-'+idProducto).prop('checked', false);
+                                $('#chkPago-' + idProducto).prop('checked', false);
                             }
 
                         }
                     },
                     cancelar: function() {
-                        $('#chkPago-'+idProducto).prop('checked', false);
+                        $('#chkPago-' + idProducto).prop('checked', false);
                     },
                 },
                 onContentReady: function() {
@@ -872,7 +876,7 @@
 
                     //jc.$content.find('#cantidad-container').hide();
 
-                    
+
                     this.$content.find('.cliente').on('input', function() {
                         var inputVal = $(this).val();
                         var option = $('#clientes').find(
@@ -1074,7 +1078,6 @@
                         alert("Ocurrió un error: " + error);
                     },
                     complete: function() {
-                        //$("#overlay").hide();
                         $("#overlay").fadeOut(300);
                     }
                 },
@@ -1113,26 +1116,34 @@
                         className: 'column-color'
                     },
                     {
+                        data: 'estado',
+                        name: 'estado',
+                        className: 'column-color'
+                    },
+                    {
                         data: 'fecha_compra',
                         name: 'fecha_compra'
                     },
-
                     {
                         data: 'opcion',
                         name: 'Opciones',
                         orderable: true,
                         searchable: true
                     }
-
                 ],
                 columnDefs: [{
                     className: 'dt-center',
                     targets: '_all'
-                }, ],
+                }],
+                createdRow: function(row, data, dataIndex) {
+                    if (data.estado === "Pagado") {
+                        $('td', row).eq(8).addClass('estado-pagado');
+                    } else if (data.estado === "No pagado") {
+                        $('td', row).eq(8).addClass('estado-no-pagado');
+                    }
+                },
                 language: idiomaDatatables,
-
             });
-
         }
 
         function inicializarTotalesProductos() {
@@ -1569,7 +1580,7 @@
 
         }
 
-        function eliminarCuota(idCuota){
+        function eliminarCuota(idCuota) {
 
             var urlRest = "{{ route('eliminar-cuota') }}";
 
@@ -1629,7 +1640,7 @@
 
                 }
             });
-            
+
         }
 
 
