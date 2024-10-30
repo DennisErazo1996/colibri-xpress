@@ -248,7 +248,9 @@ class VentasController extends Controller
                             cr.monto_adeudado::numeric::money,
                             cr.cuotas,
                             coalesce(cu.cuotas_pagadas, 0) as cuotas_pagadas,
-                            case when coalesce(cu.cuotas_pagadas, 0) = cr.cuotas or cr.monto_adeudado =  coalesce(cu.monto_abonado, 0) then 'Pagado' else 'No pagado' end as estado,
+                            case when (coalesce(cu.cuotas_pagadas, 0) = cr.cuotas and cr.monto_adeudado =  coalesce(cu.monto_abonado, 0)) or ( coalesce(cu.monto_abonado, 0) > cr.monto_adeudado  and coalesce(cu.cuotas_pagadas, 0) > cr.cuotas)
+                                or (coalesce(cu.cuotas_pagadas, 0) < cr.cuotas and coalesce(cu.monto_abonado, 0) = cr.monto_adeudado) or (coalesce(cu.cuotas_pagadas, 0) > cr.cuotas and coalesce(cu.monto_abonado, 0) = cr.monto_adeudado)
+                                then 'Pagado' else 'No pagado' end as estado,
                             coalesce(cu.monto_abonado, 0)::numeric::money as monto_abonado,
                             to_char(c.created_at::date, 'DD/MM/YYYY') as fecha_compra
                         from pedidos.cx_creditos cr
