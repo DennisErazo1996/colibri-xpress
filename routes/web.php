@@ -33,6 +33,7 @@ use App\Http\Controllers\VentasController;
             
 
 Route::get('/', function () {return redirect('/dashboard');})->middleware('auth');
+
 	Route::get('/crear-casillero', [RegisterController::class, 'create'])->middleware('guest')->name('crear-casillero');
 	Route::post('/register', [RegisterController::class, 'store'])->middleware('guest')->name('register.perform');
 	Route::get('/login', [LoginController::class, 'show'])->middleware('guest')->name('login');
@@ -42,6 +43,7 @@ Route::get('/', function () {return redirect('/dashboard');})->middleware('auth'
 	Route::get('/change-password', [ChangePassword::class, 'show'])->middleware('guest')->name('change-password');
 	Route::post('/change-password', [ChangePassword::class, 'update'])->middleware('guest')->name('change.perform');
 	Route::get('/dashboard', [HomeController::class, 'index'])->name('home')->middleware('auth');
+
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('/virtual-reality', [PageController::class, 'vr'])->name('virtual-reality');
 	Route::get('/rtl', [PageController::class, 'rtl'])->name('rtl');
@@ -51,6 +53,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/sign-in-static', [PageController::class, 'signin'])->name('sign-in-static');
 	Route::get('/sign-up-static', [PageController::class, 'signup'])->name('sign-up-static'); 
 
+	//Endpoints pageController
 	Route::get('/caja/{idCaja}/paquetes', [PageController::class, 'paquetes']); 
 	Route::get('/cajas', [PageController::class, 'cajas'])->name('cajas'); 
 	Route::post('/crear-caja', [CajasController::class, 'crearCaja'])->name('crear-caja');
@@ -58,11 +61,17 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/pedidos', [PageController::class, 'verPedidos'])->name('pedidos');
 	Route::post('/ver-pedidos/caja/{id}', [CajasController::class, 'pedidos'])->name('ver-pedidos');
 	Route::get('/ver-pedidos/caja/{id}/cliente/{idCliente}', [PageController::class, 'pedidosCliente'])->name('ver-pedidos-cliente');
+	Route::get('/productos', [PageController::class, 'verProductos'])->name('productos');
+	Route::get('/clientes', [PageController::class, 'clientes'])->name('clientes');
+	Route::get('/{page}', [PageController::class, 'index'])->name('page');
+	
+	//Endpoints cajasController
 	Route::post('/pedidos-cliente/caja/{id}/cliente/{idCliente}', [CajasController::class, 'verPedidosCliente'])->name('pedidos-cliente');
 	Route::post('/eliminar-pedido/caja/{idCaja}/cliente/{idCliente}', [CajasController::class, 'eliminarPedido'])->name('eliminar-pedido');
 	Route::post('/editar-pedido', [CajasController::class, 'editarPedido'])->name('editar-pedido');
 	Route::post('/crear-pedido', [CajasController::class, 'agregarPedido']);
 	Route::post('/eliminar-caja/{idCaja}', [CajasController::class, 'eliminarCaja'])->name('eliminar-caja');
+	Route::post('/editar-caja', [CajasController::class, 'editarCaja'])->name('editar-caja');
 	Route::post('/ver-paquetes/caja/{id}', [CajasController::class, 'verPaquetes'])->name('ver-paquetes');
 	Route::post('/registrar-paquete', [CajasController::class, 'registrarPaquete']);
 	Route::post('/editar-paquete', [CajasController::class, 'editarPaquete'])->name('editar-paquete');
@@ -71,8 +80,8 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('/guardar-envio', [CajasController::class, 'guardarDatosEnvios'])->name('guardar-envio');
 	Route::post('/datos-envio', [CajasController::class, 'datosTotalesEnvio'])->name('datos-envio');
 	Route::post('/actualizar-estado-pago', [CajasController::class, 'actualizarEstadoPago'])->name('estado-pago');
-	Route::get('/productos', [PageController::class, 'verProductos'])->name('productos');
-	Route::get('/clientes', [PageController::class, 'clientes'])->name('clientes');
+	
+	//Endpoints ventasController
 	Route::post('/ver-clientes', [VentasController::class, 'verClientes'])->name('ver-clientes');
 	Route::post('/registrar-cliente', [VentasController::class, 'registrarCliente'])->name('registrar-cliente');
 	Route::post('/ver-productos', [VentasController::class, 'verProductos'])->name('ver-productos');
@@ -93,6 +102,6 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('/editar-cliente', [VentasController::class, 'editarCliente'])->name('editar-cliente');
 	Route::post('/eliminar-cliente', [VentasController::class, 'eliminarCliente'])->name('eliminar-cliente');
 
-	Route::get('/{page}', [PageController::class, 'index'])->name('page');
+	
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 });

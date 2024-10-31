@@ -230,7 +230,7 @@ class VentasController extends Controller
         if ($request->ajax()) {
             
             DB::select("SET lc_monetary = 'es_HN';");
-            $data = DB::select("select row_number() over( order by x.id desc) as no, x.* from
+            /*$data = DB::select("select row_number() over( order by x.id desc) as no, x.* from
                         (with cuotas as (select 
                             id_credito,
                             count(*) as cuotas_pagadas,
@@ -283,7 +283,28 @@ class VentasController extends Controller
                             group by cp.cantidad,
                             cp.nombre_producto, cp.monto_abonado,
                             cp.comprador,cp.fecha_compra,cp.id_producto)x
-                                ");
+                                ");*/
+            
+            $data = DB::select("
+                select 
+                    row_number() over( order by max(v.id) desc) as no,
+                    count(*) as cantidad,
+                    max(v.id) as id,
+                    max(p.nombre) as nombre,
+                    sum(v.precio_venta)::numeric::money as precio_venta,
+                    c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
+                    initcap(lower(mp.descripcion)) as metodo_pago,
+                    to_char(max(v.created_at)::date, 'DD/MM/YYYY') as fecha_compra
+                from pedidos.cx_ventas v
+                join pedidos.cx_productos p on p.id = v.id_producto and p.deleted_at is null
+                join pedidos.cx_clientes c on c.id = v.id_cliente and c.deleted_at is null
+                join pedidos.cx_metodos_pago mp on mp.id = v.id_metodo_pago and mp.deleted_At is null
+                where v.deleted_at is null
+                group by v.id_producto,
+                c.nombre_cliente, c.apellido_cliente,
+                mp.descripcion
+
+            ");
 
             return Datatables::of($data)
                 ->addIndexColumn()

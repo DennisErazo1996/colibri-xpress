@@ -171,6 +171,22 @@ class CajasController extends Controller
         return $mensaje;
     }
 
+    public function editarCaja(Request $request){
+
+        $idCaja = $request->idCaja;
+        $fechaEnvio = $request->fechaEnvio;
+        $fechaArribo = $request->fechaArribo;
+        $mensaje = "Caja editada correctamente";
+
+        DB::select("update cx_cajas set fecha_envio = :fecha_envio,
+                fecha_arribo = :fecha_arribo
+                where id = :id_caja
+                ", ['fecha_envio' => $fechaEnvio, 'fecha_arribo' => $fechaArribo,
+                'id_caja' => $idCaja]);
+
+        return $mensaje;
+    }
+
     public function verPaquetes(Request $request, $id){
 
         if ($request->ajax()) {
