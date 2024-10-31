@@ -15,21 +15,54 @@ class VentasController extends Controller
             
             $data = DB::select("select 
                         row_number() over(order by id desc) as no,
-                        nombre_cliente || ' ' || apellido_cliente as nombre_cliente,
-                        to_char(created_At::date, 'DD/MM/YYYY') as fecha_registro
+                        id,
+                        nombre_cliente || ' ' || apellido_cliente as nombre_completo,
+                        to_char(created_At::date, 'DD/MM/YYYY') as fecha_registro,
+                        nombre_cliente,
+                        apellido_cliente
                     from pedidos.cx_clientes where deleted_at is null");
 
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     //$url = "{{url('/caja/$row['id_cliente']/pedidos/cliente/'}}";
-                    $actions = "<a class='btn btn-1 m-0' data-bs-toggle='tooltip' data-bs-placement='top' title='Editar Paquete' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>";
+                    $actions = "
+                    <a class='btn btn-1 m-0' data-bs-toggle='tooltip' onclick='editarCliente($row->id, \"".htmlspecialchars($row->nombre_cliente, ENT_QUOTES, 'UTF-8')."\", \"".htmlspecialchars($row->apellido_cliente, ENT_QUOTES, 'UTF-8')."\")' data-bs-placement='top' title='Editar Cliente' data-container='body' data-animation='true'><i class='fi fi-ss-customize-edit'></i></a>
+                    <a class='btn btn-danger btn-1 m-0' data-bs-toggle='tooltip' onclick='eliminarCliente($row->id)' data-bs-placement='top' title='Eliminar Cliente' data-container='body' data-animation='true'><i class='fi fi-sr-trash'></i></a>
+                    ";
+                    
                     return $actions;
                 })
                 ->rawColumns(['opcion'])
                 ->make(true);
         }
 
+    }
+
+    public function editarCliente(Request $request){
+
+        $idCliente = $request->idCliente;
+        $nombreCliente = $request->nombreCliente;
+        $apellidoCliente = $request->apellidoCliente;
+        $mensaje = "Cliente editado correctamente";
+
+        DB::select("update pedidos.cx_clientes set nombre_cliente = :nombre_cliente,
+                apellido_cliente = :apellido_cliente
+                where id = :id_cliente
+                ", ['nombre_cliente' => $nombreCliente, 'apellido_cliente' => $apellidoCliente,
+                'id_cliente' => $idCliente]);
+
+        return $mensaje;
+    }
+
+    public function eliminarCliente(Request $request){
+
+        $idCliente = $request->idCliente;
+        $mensaje = "Cliente eliminado correctamente";
+
+        DB::select("update pedidos.cx_clientes set deleted_at = now() where id = :idCliente", ['idCliente' => $idCliente]);
+
+        return $mensaje;
     }
 
     public function registrarCliente(Request $request){
@@ -197,23 +230,59 @@ class VentasController extends Controller
         if ($request->ajax()) {
             
             DB::select("SET lc_monetary = 'es_HN';");
-            $data = DB::select("select 
-                                    count(*) as cantidad,
-                                    row_number() over(order by max(v.id) desc) as no,
-                                    max(v.id) as id,
-                                    max(p.nombre) as nombre,
-                                    sum(v.precio_venta)::numeric::money as precio_venta,
-                                    c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
-                                    initcap(lower(mp.descripcion)) as metodo_pago,
-                                    to_char(max(v.created_at)::date, 'DD/MM/YYYY') as fecha_compra
-                                from pedidos.cx_ventas v
-                                join pedidos.cx_productos p on p.id = v.id_producto and p.deleted_at is null
-                                join pedidos.cx_clientes c on c.id = v.id_cliente and c.deleted_at is null
-                                join pedidos.cx_metodos_pago mp on mp.id = v.id_metodo_pago and mp.deleted_At is null
-                                where v.deleted_at is null
-                                group by v.id_producto,
-                                c.nombre_cliente, c.apellido_cliente,
-                                mp.descripcion
+            $data = DB::select("select row_number() over( order by x.id desc) as no, x.* from
+                        (with cuotas as (select 
+                            id_credito,
+                            count(*) as cuotas_pagadas,
+                            sum(monto_abonado) as monto_abonado
+                        from pedidos.cx_cuotas_credito
+                        where deleted_at is null
+                        group by id_credito),
+                        credito_pagado as(
+                            select 
+                            p.id as id_producto,
+                            cr.id,
+                            row_number() over(order by cr.id desc) as no,
+                            c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
+                            p.nombre as nombre_producto,
+                            coalesce(cr.cantidad,1) as cantidad,
+                            cr.monto_adeudado::numeric::money,
+                            cr.cuotas,
+                            coalesce(cu.cuotas_pagadas, 0) as cuotas_pagadas,
+                            case when coalesce(cu.cuotas_pagadas, 0) = cr.cuotas then 'Pagado' else 'No pagado' end as estado,
+                            coalesce(cu.monto_abonado, 0)::numeric::money as monto_abonado,
+                            to_char(c.created_at::date, 'DD/MM/YYYY') as fecha_compra
+                        from pedidos.cx_creditos cr
+                        join pedidos.cx_productos p on p.id = cr.id_producto and p.deleted_at is null
+                        join pedidos.cx_clientes c on c.id = cr.id_cliente and c.deleted_at is null
+                        left join cuotas cu on cu.id_credito = cr.id	
+                        where cr.deleted_at is null
+                        )
+                        select 
+                            count(*) as cantidad,
+                            max(v.id) as id,
+                            max(p.nombre) as nombre,
+                            sum(v.precio_venta)::numeric::money as precio_venta,
+                            c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
+                            initcap(lower(mp.descripcion)) as metodo_pago,
+                            to_char(max(v.created_at)::date, 'DD/MM/YYYY') as fecha_compra
+                        from pedidos.cx_ventas v
+                        join pedidos.cx_productos p on p.id = v.id_producto and p.deleted_at is null
+                        join pedidos.cx_clientes c on c.id = v.id_cliente and c.deleted_at is null
+                        join pedidos.cx_metodos_pago mp on mp.id = v.id_metodo_pago and mp.deleted_At is null
+                        where v.deleted_at is null
+                        group by v.id_producto,
+                        c.nombre_cliente, c.apellido_cliente,
+                        mp.descripcion
+                        union all
+                        select cp.cantidad, cp.id_producto,
+                            cp.nombre_producto as nombre, cp.monto_abonado as precio_venta, cp.comprador,
+                            'Credito' as metodo_pago, cp.fecha_compra
+                            from credito_pagado cp
+                            where cp.estado = 'Pagado'
+                            group by cp.cantidad,
+                            cp.nombre_producto, cp.monto_abonado,
+                            cp.comprador,cp.fecha_compra,cp.id_producto)x
                                 ");
 
             return Datatables::of($data)
