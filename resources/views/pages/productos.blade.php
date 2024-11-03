@@ -63,7 +63,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="precio-venta">Precio Venta<span style="color: red">*</span></label>
+                                        <label for="precio-venta">Precio Venta</label>
                                         <input type="number" name="precio-compre" class="form-control" id="inpPrecioVenta"
                                             placeholder="L 0.00" aria-label="precio-venta" required>
                                     </div>
@@ -170,6 +170,7 @@
                                         <th>No.</th>
                                         <th>Nombre producto</th>
                                         <th>Cantidad</th>
+                                        <th>Precio de compra</th>
                                         <th>Precio de venta</th>
                                         <th>Comprador</th>
                                         <th>Método de pago</th>
@@ -209,6 +210,7 @@
                                         <th>No.</th>
                                         <th>Cliente</th>
                                         <th>Nombre del producto</th>
+                                        <th>Precio de compra</th>
                                         <th>Cantidad</th>
                                         <th>Monto adeudado</th>
                                         <th>Cuotas</th>
@@ -958,7 +960,7 @@
                     {
                         data: 'precio_venta',
                         name: 'precio_venta',
-                        className: 'column-color'
+                        className: 'dt-center column-color'
                     },
                     {
                         data: 'estadoPago',
@@ -1018,6 +1020,10 @@
                     {
                         data: 'cantidad',
                         name: 'cantidad'
+                    },
+                    {
+                        data: 'precio_compra',
+                        name: 'precio_compra'
                     },
                     {
                         data: 'precio_venta',
@@ -1088,11 +1094,7 @@
                     {
                         data: 'comprador',
                         name: 'comprador',
-                        render: function(data, type, row) {
-                        // Aquí se ajusta el texto largo para que no se desborde
-                        return '<div style="max-width: 250px !important;  white-space: normal !important; word-wrap: break-word !important;">' +
-                            data + '</div>';
-                    }
+                        
                     },
                     {
                         data: 'nombre_producto',
@@ -1101,7 +1103,12 @@
                         // Aquí se ajusta el texto largo para que no se desborde
                         return '<div style="max-width: 250px !important;  white-space: normal !important; word-wrap: break-word !important;">' +
                             data + '</div>';
-                    }
+                        }
+                    },
+                    {   
+                        data: 'precio_compra',
+                        name: 'precio_compra',
+                        
                     },
                     {
                         data: 'cantidad',
@@ -1147,22 +1154,15 @@
                     },
                     {
                         width: '10px',
-                        targets: 0
+                        targets: 2
                     }, // Cambia el ancho de la columna 'comprador'
-                    {
-                        width: '10px',
-                        targets: 3
-                    },
-                    {
-                        width: '10px',
-                        targets: 7
-                    } // Cambia el ancho de la columna 'nombre_producto'
+                    
                 ],
                 createdRow: function(row, data, dataIndex) {
                     if (data.estado === "Pagado") {
-                        $('td', row).eq(8).addClass('estado-pagado');
+                        $('td', row).eq(9).addClass('estado-pagado');
                     } else if (data.estado === "No pagado") {
-                        $('td', row).eq(8).addClass('estado-no-pagado');
+                        $('td', row).eq(9).addClass('estado-no-pagado');
                     }
                 },
                 language: idiomaDatatables,

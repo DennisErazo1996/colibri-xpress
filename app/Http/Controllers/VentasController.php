@@ -104,7 +104,7 @@ class VentasController extends Controller
                                 COALESCE(p.cantidad - (COALESCE(cv.cantidad_vendida, 0) + COALESCE(ca.cantidad_acreditada, 0)), p.cantidad) AS cantidad,
                                 precio_normal, 
                                 precio_compra, 
-                                precio_venta
+                                coalesce(precio_venta, 0.00) as precio_venta
                             FROM pedidos.cx_productos p
                             JOIN cx_cajas c ON p.id_caja = c.id AND c.deleted_at IS NULL
                             LEFT JOIN cantidades_vendidas cv ON cv.id_producto = p.id
@@ -291,6 +291,7 @@ class VentasController extends Controller
                     count(*) as cantidad,
                     max(v.id) as id,
                     max(p.nombre) as nombre,
+                    '$' || sum(p.precio_compra) as precio_compra,
                     sum(v.precio_venta)::numeric::money as precio_venta,
                     c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
                     initcap(lower(mp.descripcion)) as metodo_pago,
@@ -334,6 +335,7 @@ class VentasController extends Controller
                             row_number() over(order by cr.id desc) as no,
                             c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
                             p.nombre as nombre_producto,
+                            '$' || p.precio_compra*coalesce(cr.cantidad,1) as precio_compra,
                             coalesce(cr.cantidad,1) as cantidad,
                             cr.monto_adeudado::numeric::money,
                             cr.cuotas,
