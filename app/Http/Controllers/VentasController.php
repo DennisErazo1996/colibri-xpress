@@ -82,48 +82,50 @@ class VentasController extends Controller
         if ($request->ajax()) {
             
             $data = DB::select("WITH cantidades_vendidas AS (
-                                SELECT COUNT(*) AS cantidad_vendida, p.id AS id_producto, p.nombre
-                                FROM pedidos.cx_productos p 
-                                JOIN pedidos.cx_ventas v ON v.id_producto = p.id AND v.deleted_at IS NULL
-                                WHERE p.deleted_at IS NULL
-                                GROUP BY p.id, p.nombre
-                            ), 
-                            cantidades_acreditadas AS (
-                                SELECT coalesce(c.cantidad,0) as cantidad_acreditada, p.id AS id_producto, p.nombre
-                                FROM pedidos.cx_productos p 
-                                JOIN pedidos.cx_creditos c ON c.id_producto = p.id AND c.deleted_at IS NULL
-                                WHERE p.deleted_at IS NULL
-                                
-                            )
-                            SELECT 
-                                ROW_NUMBER() OVER(ORDER BY p.id DESC) AS no,
-                                p.id,
-                                id_caja,
-                                'BOX-' || LPAD(c.id::TEXT, 4, '0') AS numero_caja,
-                                p.nombre,
-                                COALESCE(p.cantidad - (COALESCE(cv.cantidad_vendida, 0) + COALESCE(ca.cantidad_acreditada, 0)), p.cantidad) AS cantidad,
-                                precio_normal, 
-                                precio_compra, 
-                                coalesce(precio_venta, 0.00) as precio_venta
-                            FROM pedidos.cx_productos p
-                            JOIN cx_cajas c ON p.id_caja = c.id AND c.deleted_at IS NULL
-                            LEFT JOIN cantidades_vendidas cv ON cv.id_producto = p.id
-                            LEFT JOIN cantidades_acreditadas ca ON ca.id_producto = p.id
-                            WHERE p.deleted_at IS NULL 
-                            AND (
-                            
-                                ((p.cantidad > 1) AND (
-                                    (p.id NOT IN (SELECT id_producto FROM pedidos.cx_ventas WHERE deleted_at IS NULL)
-                                    AND p.id NOT IN (SELECT id_producto FROM pedidos.cx_creditos WHERE deleted_at IS NULL))
-                                    OR (COALESCE(cv.cantidad_vendida, 0) + COALESCE(ca.cantidad_acreditada, 0) < p.cantidad)
-                                ))
-                                
-                                OR (p.cantidad = 1 AND (
-                                    (p.id NOT IN (SELECT id_producto FROM pedidos.cx_ventas WHERE deleted_at IS NULL)
-                                    AND p.id NOT IN (SELECT id_producto FROM pedidos.cx_creditos WHERE deleted_at IS NULL))
+                                    SELECT COUNT(*) AS cantidad_vendida, p.id AS id_producto, p.nombre
+                                    FROM pedidos.cx_productos p 
+                                    JOIN pedidos.cx_ventas v ON v.id_producto = p.id AND v.deleted_at IS NULL
+                                    WHERE p.deleted_at IS NULL
+                                    GROUP BY p.id, p.nombre
+                                ), 
+                                cantidades_acreditadas AS (
+                                    SELECT sum(coalesce(c.cantidad,0)) as cantidad_acreditada,
+                                    p.id AS id_producto, p.nombre
+                                    FROM pedidos.cx_productos p 
+                                    JOIN pedidos.cx_creditos c ON c.id_producto = p.id AND c.deleted_at IS NULL
+                                    WHERE p.deleted_at IS NULL
+                                    group by p.id
                                     
-                                ))
-                            );");
+                                )
+                                SELECT 
+                                    ROW_NUMBER() OVER(ORDER BY p.id DESC) AS no,
+                                    p.id,
+                                    id_caja,
+                                    'BOX-' || LPAD(c.id::TEXT, 4, '0') AS numero_caja,
+                                    p.nombre,
+                                    COALESCE(p.cantidad - (COALESCE(cv.cantidad_vendida, 0) + COALESCE(ca.cantidad_acreditada, 0)), p.cantidad) AS cantidad,
+                                    precio_normal, 
+                                    precio_compra, 
+                                    coalesce(precio_venta, 0.00) as precio_venta
+                                FROM pedidos.cx_productos p
+                                JOIN cx_cajas c ON p.id_caja = c.id AND c.deleted_at IS NULL
+                                LEFT JOIN cantidades_vendidas cv ON cv.id_producto = p.id
+                                LEFT JOIN cantidades_acreditadas ca ON ca.id_producto = p.id
+                                WHERE p.deleted_at IS NULL 
+                                AND (
+
+                                    ((p.cantidad > 1) AND (
+                                        (p.id NOT IN (SELECT id_producto FROM pedidos.cx_ventas WHERE deleted_at IS NULL)
+                                        AND p.id NOT IN (SELECT id_producto FROM pedidos.cx_creditos WHERE deleted_at IS NULL))
+                                        OR (COALESCE(cv.cantidad_vendida, 0) + COALESCE(ca.cantidad_acreditada, 0) < p.cantidad)
+                                    ))
+                                    
+                                    OR (p.cantidad = 1 AND (
+                                        (p.id NOT IN (SELECT id_producto FROM pedidos.cx_ventas WHERE deleted_at IS NULL)
+                                        AND p.id NOT IN (SELECT id_producto FROM pedidos.cx_creditos WHERE deleted_at IS NULL))
+                                        
+                                    ))
+                                );");
 
             return Datatables::of($data)
                 ->addIndexColumn()

@@ -96,10 +96,10 @@
                         <a class="nav-link" aria-current="page" id="lnk-list-productos">Lista de productos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" id="lnk-list-ventas">Productos vendidos</a>
+                        <a class="nav-link" aria-current="page" id="lnk-list-ventas">Ventas al contado</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" id="lnk-list-creditos">Lista de crédito</a>
+                        <a class="nav-link" aria-current="page" id="lnk-list-creditos">Ventas al crédito</a>
                     </li>
                 </ul>
 
