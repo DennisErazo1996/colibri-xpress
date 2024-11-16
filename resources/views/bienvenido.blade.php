@@ -18,7 +18,7 @@
         {{-- <h1>¡Bienvenido/a, Dennis Armando!</h1> --}}
     <p>Gracias por crear tu casillero, hemos enviado un correo a <strong>{{$data['email']}}</strong><br>
     {{-- <p>Gracias por crear tu casillero, hemos enviado un correo a <strong>derazo@unag.edu.hn</strong><br> --}}
-        con la información de nuestra dirección en Bradenton, Florida. </p>
+        con la información de nuestra dirección en Miami, Florida. </p>
         <p>Para cualquier consulta puedes escribirnos a nuestro Whatsapp: <a href="https://wa.me/+50492136696">+50492136696</a></p>
     </div>
 
