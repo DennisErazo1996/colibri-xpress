@@ -101,6 +101,8 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('/eliminar-cuota', [VentasController::class, 'eliminarCuota'])->name('eliminar-cuota');
 	Route::post('/editar-cliente', [VentasController::class, 'editarCliente'])->name('editar-cliente');
 	Route::post('/eliminar-cliente', [VentasController::class, 'eliminarCliente'])->name('eliminar-cliente');
+	Route::post('/liquidar-ventas', [VentasController::class, 'liquidarVentas'])->name('liquidar-ventas');
+	Route::post('/liquidar-creditos', [VentasController::class, 'liquidarCreditos'])->name('liquidar-creditos');
 
 	
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');

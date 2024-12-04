@@ -156,6 +156,9 @@
                             data-bs-target="#modal-form">Agregar nuevo pedido</button>
                     </div> --}}
                     <div class="card-body px-2 pt-0 pb-2">
+                        <div class="d-flex  justify-content-end">
+                            <button id="btn-liquidar-ventas-contado" onclick="liquidarVentas(1)" class="btn btn-warning btn-1 mb-5"><i class="fi fi-ss-money"></i> Liquidar Ventas</button>
+                        </div>
                         <div class="container">
                             <div id="total-ventas" class="row text-center justify-content-center">
 
@@ -188,6 +191,7 @@
                     </div>
                 </div>
                 <div class="card mb-0 p-2" id="card-list-creditos">
+                    
                     <div class="card-header pb-0 text-center">
                         {{-- <h6>Authors table</h6> --}}
                     </div>
@@ -196,6 +200,9 @@
                             data-bs-target="#modal-form">Agregar nuevo pedido</button>
                     </div> --}}
                     <div class="card-body px-2 pt-0 pb-2">
+                        <div class="d-flex  justify-content-end">
+                            <button id="btn-liquidar-creditos-contado" onclick="liquidarCreditos(2)" class="btn btn-warning btn-1 mb-5"><i class="fi fi-ss-money"></i> Liquidar Creditos</button>
+                        </div>
                         <div class="container">
                             <div id="total-creditos" class="row text-center justify-content-center">
 
@@ -743,7 +750,146 @@
             }
         });
 
+        function liquidarVentas(idVenta) {
+            var totalVenta = $('#total_venta').val();
+            var totalInversion = $('#total_inversion').val();
+            var urlRest = "{{ route('liquidar-ventas') }}";
+            
+            $.confirm({
+                type: 'blue',
+                animation: 'scale',
+                title: 'Liquidar Ventas',
+                content: 'Seguro que quiere liquidar las ventas?',
+                buttons: {
+                    confirm: {
+                        text: 'Confirmar',
+                        btnClass: 'btn-green',
+                        action: function() {
 
+                            $(document).ajaxSend(function() {
+                                $("#overlay").fadeIn(300);
+                            });
+
+                            $.ajax({
+                                type: "POST",
+                                url: urlRest,
+                                data: {
+                                    "_token": "{{ csrf_token() }}",
+                                    "idVenta": idVenta,
+                                    "totalVenta": totalVenta,
+                                    "totalInversion": totalInversion
+                                },
+                                success: function(response) {
+                                    //alert(response)
+                                    const Toast = Swal.mixin({
+                                        toast: true,
+                                        position: "top-end",
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        didOpen: (toast) => {
+                                            toast.onmouseenter = Swal.stopTimer;
+                                            toast.onmouseleave = Swal.resumeTimer;
+                                        }
+                                    });
+                                    Toast.fire({
+                                        icon: "success",
+                                        title: response
+                                    });
+
+        
+                                    $('#tbl-ventas').DataTable().ajax.reload();
+                                    $('#tbl-creditos').DataTable().ajax.reload();
+                                    inicializarTotalesVentas()
+                                    inicializarTotalesCreditos()
+                                },
+                                error: function(request, status, error) {
+                                    alert(request.responseText);
+                                }
+                            }).done(function() {
+                                setTimeout(function() {
+                                    $("#overlay").fadeOut(300);
+                                }, 500);
+                            });
+                        }
+                    },
+                    cancelar: function() {
+                        //$.alert('Canceled!');
+                    },
+
+                }
+            });
+        }
+
+        function liquidarCreditos(idVenta) {
+            
+            var totalVenta = $('#total_productos_pagados').val();
+            var totalInversion = $('#total_inversion_pagada').val();
+            var urlRest = "{{ route('liquidar-creditos') }}";
+            
+            $.confirm({
+                type: 'blue',
+                animation: 'scale',
+                title: 'Liquidar Creditos',
+                content: 'Seguro que quiere liquidar los creditos?',
+                buttons: {
+                    confirm: {
+                        text: 'Confirmar',
+                        btnClass: 'btn-green',
+                        action: function() {
+
+                            $(document).ajaxSend(function() {
+                                $("#overlay").fadeIn(300);
+                            });
+
+                            $.ajax({
+                                type: "POST",
+                                url: urlRest,
+                                data: {
+                                    "_token": "{{ csrf_token() }}",
+                                    "idVenta": idVenta,
+                                    "totalVenta": totalVenta,
+                                    "totalInversion": totalInversion
+                                },
+                                success: function(response) {
+                                    //alert(response)
+                                    const Toast = Swal.mixin({
+                                        toast: true,
+                                        position: "top-end",
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        didOpen: (toast) => {
+                                            toast.onmouseenter = Swal.stopTimer;
+                                            toast.onmouseleave = Swal.resumeTimer;
+                                        }
+                                    });
+                                    Toast.fire({
+                                        icon: "success",
+                                        title: response
+                                    });
+
+    
+                                    $('#tbl-creditos').DataTable().ajax.reload();
+                                    inicializarTotalesCreditos()
+                                },
+                                error: function(request, status, error) {
+                                    alert(request.responseText);
+                                }
+                            }).done(function() {
+                                setTimeout(function() {
+                                    $("#overlay").fadeOut(300);
+                                }, 500);
+                            });
+                        }
+                    },
+                    cancelar: function() {
+                        //$.alert('Canceled!');
+                    },
+
+                }
+            });
+        }
 
 
         function cambiarEstadoVenta(idProducto, precioVenta, cantidadProducto) {
@@ -1241,6 +1387,8 @@
                         var total_occidente = response.data[0].total_occidente;
                         var total_venta = response.data[0].total_venta;
                         var total_inversion = response.data[0].total_inversion;
+                        var total_venta_format = response.data[0].total_venta_format;
+                        var total_inversion_format = response.data[0].total_inversion_format;
 
 
                         $('div#total-ventas').html(
@@ -1270,11 +1418,11 @@
                             '</div>' +
                             '<div class="col-12 col-sm-3">' +
                             '<div class="item-total-focus mt-2" style="color:#fff">Total Venta: <strong style="color:#fff">' +
-                            total_venta + '</strong></div>' +
+                            total_venta + '<input type="hidden" id="total_venta" value="'+total_venta_format+'"></strong></div>' +
                             '</div>' +
                             '<div class="col-12 col-sm-3">' +
                             '<div class="item-total-focus mt-2" style="color:#fff">Total Inversión: <strong style="color:#fff">' +
-                            total_inversion + '</strong></div>' +
+                            total_inversion + '<input type="hidden" id="total_inversion" value="'+total_inversion_format+'"></strong></div>' +
                             '</div>')
 
 
@@ -1310,11 +1458,16 @@
                         var total_inversion = response.data[0].total_inversion;
                         var total_monto_adeudado = response.data[0].total_monto_adeudado;
                         var total_monto_abonado = response.data[0].total_monto_abonado;
+                        var productos_pagados = response.data[0].productos_pagados;
+                        var total_inversion_pagada = response.data[0].total_inversion_pagada;
+                        var total_productos_pagados = response.data[0].total_productos_pagados;
+                        var total_inversion_pagada_format = response.data[0].total_inversion_pagada_format;
+                        var total_productos_pagados_format = response.data[0].total_productos_pagados_format;
 
 
                         $('div#total-creditos').html(
                             '<div class="col-12 col-sm-3">' +
-                            '<div class="item-total mt-2">Total inversión: <strong style="color:#3ed06a">' +
+                            '<div class="item-total mt-2">Inversión: <strong style="color:#3ed06a">' +
                             total_inversion + '</strong></div>' +
                             '</div>' +
                             '<div class="col-12 col-sm-3">' +
@@ -1322,9 +1475,22 @@
                             total_monto_adeudado + '</strong></div>' +
                             '</div>' +
                             '<div class="col-12 col-sm-3">' +
-                            '<div class="item-total mt-2">Total Abonado: <strong style="color:#3ed06a">' +
+                            '<div class="item-total mt-2">Abonado: <strong style="color:#3ed06a">' +
                             total_monto_abonado + '</strong></div>' +
+                            '</div>'+
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total mt-2">Productos pagados: <strong style="color:#3ed06a">' +
+                            productos_pagados + '</strong></div>' +
+                            '</div>'+
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total-focus mt-2" style="color:#fff">Inversión pagada: <strong style="color:#fff">' +
+                            total_inversion_pagada + ' <input type="hidden" id="total_inversion_pagada" value="'+total_inversion_pagada_format+'"></strong></div>' +
+                            '</div>'+
+                            '<div class="col-12 col-sm-3">' +
+                            '<div class="item-total-focus mt-2" style="color:#fff">Total pagado: <strong style="color:#fff">' +
+                            total_productos_pagados + ' <input type="hidden" id="total_productos_pagados" value="'+total_productos_pagados_format+'"></strong></div>' +
                             '</div>'
+                            
                         );
                     } else {
                         alert("No se encontraron datos.");

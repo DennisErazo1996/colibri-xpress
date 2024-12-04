@@ -111,7 +111,7 @@ class VentasController extends Controller
                                 JOIN cx_cajas c ON p.id_caja = c.id AND c.deleted_at IS NULL
                                 LEFT JOIN cantidades_vendidas cv ON cv.id_producto = p.id
                                 LEFT JOIN cantidades_acreditadas ca ON ca.id_producto = p.id
-                                WHERE p.deleted_at IS NULL 
+                                WHERE p.deleted_at IS NULL and p.liquidado = false
                                 AND (
 
                                     ((p.cantidad > 1) AND (
@@ -302,7 +302,7 @@ class VentasController extends Controller
                 join pedidos.cx_productos p on p.id = v.id_producto and p.deleted_at is null
                 join pedidos.cx_clientes c on c.id = v.id_cliente and c.deleted_at is null
                 join pedidos.cx_metodos_pago mp on mp.id = v.id_metodo_pago and mp.deleted_At is null
-                where v.deleted_at is null
+                where v.deleted_at is null and v.liquidado = false
                 group by v.id_producto,
                 c.nombre_cliente, c.apellido_cliente,
                 mp.descripcion
@@ -351,7 +351,7 @@ class VentasController extends Controller
                         join pedidos.cx_productos p on p.id = cr.id_producto and p.deleted_at is null
                         join pedidos.cx_clientes c on c.id = cr.id_cliente and c.deleted_at is null
                         left join cuotas cu on cu.id_credito = cr.id	
-                        where cr.deleted_at is null
+                        where cr.deleted_at is null and cr.liquidado = false
                                 ");
 
             return Datatables::of($data)
@@ -401,7 +401,7 @@ class VentasController extends Controller
                     JOIN cx_cajas c ON p.id_caja = c.id AND c.deleted_at IS NULL
                     LEFT JOIN cantidades_vendidas cv ON cv.id_producto = p.id
                     LEFT JOIN cantidades_acreditadas ca ON ca.id_producto = p.id
-                    WHERE p.deleted_at IS NULL 
+                    WHERE p.deleted_at IS NULL and p.liquidado = false
                     AND (
                         -- Condición general para productos con cantidad mayor a 1
                         ((p.cantidad > 1) AND (
@@ -473,10 +473,12 @@ class VentasController extends Controller
                     coalesce(sum(case when v.id_metodo_pago = 6 then v.precio_venta else 0 end), 0)::numeric::money as total_banpais,
                     coalesce(sum(case when v.id_metodo_pago = 7 then v.precio_venta else 0 end), 0)::numeric::money as total_occidente,
                     coalesce(sum(case when v.id_producto is not null then v.precio_venta end), 0)::numeric::money as total_venta,
-                    '$ ' || coalesce(sum(p.precio_compra), 0) as total_inversion
+                    '$ ' || coalesce(sum(p.precio_compra), 0) as total_inversion,
+                    coalesce(sum(case when v.id_producto is not null then v.precio_venta end), 0) as total_venta_format,
+                    coalesce(sum(p.precio_compra), 0) as total_inversion_format
                 from pedidos.cx_ventas v
                 join pedidos.cx_productos p on p.id = v.id_producto and p.deleted_at is null
-                    where v.deleted_at is null");
+                    where v.deleted_at is null and v.liquidado = false");
         return response()->json([
             'data' => $data,
         ]);      
@@ -565,7 +567,7 @@ class VentasController extends Controller
 
         DB::select("SET lc_monetary = 'es_HN';");
         
-        $data = DB::select("
+        /*$data = DB::select("
                 with cx_creditos as (select
                     cr.id,
                     p.nombre,
@@ -577,13 +579,54 @@ class VentasController extends Controller
                     from pedidos.cx_creditos cr
                     join pedidos.cx_productos p on p.id = cr.id_producto and p.deleted_at is null
                     --left join pedidos.cx_cuotas_credito cu on cu.id_credito = cr.id and cu.deleted_at is null
-                    where cr.deleted_at is null)
+                    where cr.deleted_at is null and cr.liquidado = false and p.liquidado = false)
                     select
                     '$ ' || coalesce(sum(cr.total_precio_compra), 0) as total_inversion, 
                     coalesce(sum(cr.monto_adeudado), 0)::numeric::money as total_monto_adeudado,
-                    coalesce(sum(cu.monto_abonado), 0)::numeric::money as total_monto_abonado
+                    coalesce(sum(cu.monto_abonado), 0)::numeric::money as total_monto_abonado,
+                    coalesce(sum(cr.total_precio_compra), 0) as total_inversion_format
+
                     from cx_creditos cr
-                    left join pedidos.cx_cuotas_credito cu on cu.id_credito = cr.id and cu.deleted_at is null");
+                    left join pedidos.cx_cuotas_credito cu on cu.id_credito = cr.id and cu.deleted_at is null");*/
+        $data = DB::select("select
+                    '$ ' || coalesce(sum(case when cr.estado = 'Pagado' then cr.precio_compra end), 0) as total_inversion_pagada,
+                    '$ ' || coalesce(sum(case when cr.estado = 'No pagado' then cr.precio_compra end), 0) as total_inversion,
+                    coalesce(sum(cr.monto_adeudado), 0)::numeric::money as total_monto_adeudado,
+                    coalesce(sum(case when cr.estado = 'No pagado' then cr.monto_abonado end), 0)::numeric::money as total_monto_abonado,
+                    coalesce(sum(cr.precio_compra), 0) as total_inversion_format,
+                    coalesce(sum(case when cr.estado = 'Pagado' then cr.monto_abonado end), 0)::numeric::money as total_productos_pagados,
+                    coalesce(sum(case when cr.estado = 'Pagado' then cr.monto_abonado end), 0) as total_productos_pagados_format,
+                    coalesce(sum(case when cr.estado = 'Pagado' then cr.precio_compra end), 0) as total_inversion_pagada_format,
+                    count(case when cr.estado = 'Pagado' then 1 end) as productos_pagados from
+                    (with cuotas as (select 
+                        id_credito,
+                        count(*) as cuotas_pagadas,
+                        sum(monto_abonado) as monto_abonado
+                    from pedidos.cx_cuotas_credito
+                    where deleted_at is null
+                    group by id_credito)
+                    select 
+                        cr.id,
+                        row_number() over(order by cr.id desc) as no,
+                        c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
+                        p.nombre as nombre_producto,
+                        p.precio_compra*coalesce(cr.cantidad,1) as precio_compra,
+                        coalesce(cr.cantidad,1) as cantidad,
+                        cr.monto_adeudado,
+                        cr.cuotas,
+                        coalesce(cu.cuotas_pagadas, 0) as cuotas_pagadas,
+                        case when (coalesce(cu.cuotas_pagadas, 0) = cr.cuotas and cr.monto_adeudado =  coalesce(cu.monto_abonado, 0)) or ( coalesce(cu.monto_abonado, 0) > cr.monto_adeudado  and coalesce(cu.cuotas_pagadas, 0) > cr.cuotas)
+                            or (coalesce(cu.cuotas_pagadas, 0) < cr.cuotas and coalesce(cu.monto_abonado, 0) = cr.monto_adeudado) or (coalesce(cu.cuotas_pagadas, 0) > cr.cuotas and coalesce(cu.monto_abonado, 0) = cr.monto_adeudado)
+                            then 'Pagado' else 'No pagado' end as estado,
+                        coalesce(cu.monto_abonado, 0) as monto_abonado,
+                        to_char(c.created_at::date, 'DD/MM/YYYY') as fecha_compra,
+                        cr.liquidado
+                    from pedidos.cx_creditos cr
+                    join pedidos.cx_productos p on p.id = cr.id_producto and p.deleted_at is null
+                    join pedidos.cx_clientes c on c.id = cr.id_cliente and c.deleted_at is null
+                    left join cuotas cu on cu.id_credito = cr.id	
+                    where cr.deleted_at is null and cr.liquidado = false) cr");
+                
         
         return response()->json([
             'data' => $data,
@@ -640,14 +683,105 @@ class VentasController extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('acciones', function ($item) {
-                    return '<a onclick="eliminarCuota('.$item->id.')" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></a>';
+                    return '<a onclick="eliminarCuota('.$item->id.')" class="btn btn-danger btn-sm"><i class="fi fi-sr-trash"></i></a>';
                 })
                 ->rawColumns(['acciones'])
                 ->make(true);
         }
-
-
     }
+    
+    public function liquidarVentas(Request $request){
+
+        $totalVenta = $request->totalVenta;
+        $totalInversion = $request->totalInversion;
+        $idVenta = $request->idVenta;
+        $mensaje = "Ventas liquidada correctamente";
+
         
+
+       if($idVenta == 1){
+            try {
+                DB::beginTransaction();
+
+                DB::select("insert into pedidos.cx_liquidaciones(ganancia, inversion, id_metodo_pago, created_at) values(:total_venta, :total_inversion, :id_venta, now())",
+                ['total_venta' => $totalVenta, 'total_inversion' => $totalInversion, 'id_venta' => $idVenta]);
+                
+                $productos = DB::select("select id_producto from pedidos.cx_ventas where deleted_at is null and liquidado = false");
+                foreach($productos as $p){
+                    DB::select("update pedidos.cx_ventas set liquidado = true where id_producto = :id", ['id' => $p->id_producto]);
+                }
+                
+                DB::commit();
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+
+                return response()->json(['mensaje' => $e->getMessage()], 500);
+            }
+       }  
+
+        return $mensaje;
+    }
+
+    public function liquidarCreditos(Request $request){
+
+        $totalVenta = $request->totalVenta;
+        $totalInversion = $request->totalInversion;
+        $idVenta = $request->idVenta;
+        $mensaje = "Creditos liquidado correctamente";
+
+        
+        try {
+                DB::beginTransaction();
+                
+                DB::select("insert into pedidos.cx_liquidaciones(ganancia, inversion, id_metodo_pago, created_at) values(:total_venta, :total_inversion, :id_venta, now())",
+                ['total_venta' => $totalVenta, 'total_inversion' => $totalInversion, 'id_venta' => $idVenta]);
+
+                $creditos = DB::select("with cuotas as (select 
+                                        id_credito,
+                                        count(*) as cuotas_pagadas,
+                                        sum(monto_abonado) as monto_abonado
+                                    from pedidos.cx_cuotas_credito
+                                    where deleted_at is null
+                                    group by id_credito),
+                                    productos_credito as(
+                                    select 
+                                        cr.id_producto,
+                                        cr.id,
+                                        row_number() over(order by cr.id desc) as no,
+                                        c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
+                                        p.nombre as nombre_producto,
+                                        '$' || p.precio_compra*coalesce(cr.cantidad,1) as precio_compra,
+                                        coalesce(cr.cantidad,1) as cantidad,
+                                        cr.monto_adeudado::numeric::money,
+                                        cr.cuotas,
+                                        coalesce(cu.cuotas_pagadas, 0) as cuotas_pagadas,
+                                        case when (coalesce(cu.cuotas_pagadas, 0) = cr.cuotas and cr.monto_adeudado =  coalesce(cu.monto_abonado, 0)) or ( coalesce(cu.monto_abonado, 0) > cr.monto_adeudado  and coalesce(cu.cuotas_pagadas, 0) > cr.cuotas)
+                                            or (coalesce(cu.cuotas_pagadas, 0) < cr.cuotas and coalesce(cu.monto_abonado, 0) = cr.monto_adeudado) or (coalesce(cu.cuotas_pagadas, 0) > cr.cuotas and coalesce(cu.monto_abonado, 0) = cr.monto_adeudado)
+                                            then 'Pagado' else 'No pagado' end as estado,
+                                        coalesce(cu.monto_abonado, 0)::numeric::money as monto_abonado,
+                                        to_char(c.created_at::date, 'DD/MM/YYYY') as fecha_compra,
+                                        cr.liquidado
+                                    from pedidos.cx_creditos cr
+                                    join pedidos.cx_productos p on p.id = cr.id_producto and p.deleted_at is null
+                                    join pedidos.cx_clientes c on c.id = cr.id_cliente and c.deleted_at is null
+                                    left join cuotas cu on cu.id_credito = cr.id	
+                                    where cr.deleted_at is null and cr.liquidado = false
+                                    )
+                                    select pc.id_producto from productos_credito pc
+                                    where pc.estado = 'Pagado'");
+                foreach($creditos as $c){
+                    DB::select("update pedidos.cx_creditos set liquidado = true where id_producto = :id", ['id' => $c->id_producto]);
+                }
+                DB::commit();
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+
+                return response()->json(['mensaje' => $e->getMessage()], 500);
+            }
+       }
+    
+
 
 }
