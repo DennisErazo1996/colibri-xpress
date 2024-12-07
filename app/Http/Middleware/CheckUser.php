@@ -16,7 +16,7 @@ class CheckUser
      */
     public function handle(Request $request, Closure $next)
     {
-        if ((Auth::check() && Auth::user()->id = 1) || (Auth::check() && Auth::user()->id = 19)) { // Cambia 1 por el ID del usuario permitido
+        if ((Auth::check() && Auth::user()->role == 'admin')) { // Cambia 1 por el ID del usuario permitido
             return $next($request);
         }
 
