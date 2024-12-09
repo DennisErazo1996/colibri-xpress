@@ -706,9 +706,9 @@ class VentasController extends Controller
                 DB::select("insert into pedidos.cx_liquidaciones(ganancia, inversion, id_metodo_pago, created_at) values(:total_venta, :total_inversion, :id_venta, now())",
                 ['total_venta' => $totalVenta, 'total_inversion' => $totalInversion, 'id_venta' => $idVenta]);
                 
-                $productos = DB::select("select id_producto from pedidos.cx_ventas where deleted_at is null and liquidado = false");
+                $productos = DB::select("select id from pedidos.cx_ventas where deleted_at is null and liquidado = false");
                 foreach($productos as $p){
-                    DB::select("update pedidos.cx_ventas set liquidado = true where id_producto = :id", ['id' => $p->id_producto]);
+                    DB::select("update pedidos.cx_ventas set liquidado = true where id = :id", ['id' => $p->id_producto]);
                 }
                 
                 DB::commit();
@@ -747,7 +747,7 @@ class VentasController extends Controller
                                     productos_credito as(
                                     select 
                                         cr.id_producto,
-                                        cr.id,
+                                        cr.id_credito,
                                         row_number() over(order by cr.id desc) as no,
                                         c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
                                         p.nombre as nombre_producto,
@@ -768,10 +768,10 @@ class VentasController extends Controller
                                     left join cuotas cu on cu.id_credito = cr.id	
                                     where cr.deleted_at is null and cr.liquidado = false
                                     )
-                                    select pc.id_producto from productos_credito pc
+                                    select pc.id_credito from productos_credito pc
                                     where pc.estado = 'Pagado'");
                 foreach($creditos as $c){
-                    DB::select("update pedidos.cx_creditos set liquidado = true where id_producto = :id", ['id' => $c->id_producto]);
+                    DB::select("update pedidos.cx_creditos set liquidado = true where id = :id", ['id' => $c->id_producto]);
                 }
                 DB::commit();
 
