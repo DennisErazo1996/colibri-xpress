@@ -55,6 +55,17 @@
             @endif
             @if (Auth::user()->role == 'super-admin' || Auth::user()->role == 'admin')
             <li class="nav-item">
+                <a class="nav-link {{ Route::currentRouteName() == 'liquidaciones' ? 'active' : '' }}" href="{{ route('liquidaciones') }}">
+                    <div
+                        class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="ni ni-folder-17 text-dark text-sm opacity-10"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Liquidaciones</span>
+                </a>
+            </li>
+            @endif
+            @if (Auth::user()->role == 'super-admin' || Auth::user()->role == 'admin')
+            <li class="nav-item">
                 <a class="nav-link {{ Route::currentRouteName() == 'clientes' ? 'active' : '' }}" href="{{ route('clientes') }}">
                     <div
                         class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">

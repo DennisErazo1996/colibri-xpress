@@ -155,4 +155,9 @@ class PageController extends Controller
     {   
         return view("pages.clientes");
     }
+
+    public function liquidaciones()
+    {
+        return view("pages.liquidaciones");
+    }
 }

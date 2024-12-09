@@ -63,9 +63,10 @@ Route::group(['middleware' => 'auth'], function () {
 		Route::get('/pedidos', [PageController::class, 'verPedidos'])->name('pedidos');
 		Route::post('/ver-pedidos/caja/{id}', [CajasController::class, 'pedidos'])->name('ver-pedidos');
 		Route::get('/ver-pedidos/caja/{id}/cliente/{idCliente}', [PageController::class, 'pedidosCliente'])->name('ver-pedidos-cliente');
-		Route::get('/productos', [PageController::class, 'verProductos'])->name('productos')->middleware('checkUser');;
-		Route::get('/clientes', [PageController::class, 'clientes'])->name('clientes')->middleware('checkUser');;
-		Route::get('/{page}', [PageController::class, 'index'])->name('page')->middleware('checkUser');
+		Route::get('/productos', [PageController::class, 'verProductos'])->name('productos');
+		Route::get('/clientes', [PageController::class, 'clientes'])->name('clientes');
+		Route::get('/{page}', [PageController::class, 'index'])->name('page');
+		Route::get('/liquidaciones', [PageController::class, 'liquidaciones'])->name('liquidaciones');
 		
 		//Endpoints cajasController
 		Route::post('/pedidos-cliente/caja/{id}/cliente/{idCliente}', [CajasController::class, 'verPedidosCliente'])->name('pedidos-cliente');
@@ -105,6 +106,8 @@ Route::group(['middleware' => 'auth'], function () {
 		Route::post('/eliminar-cliente', [VentasController::class, 'eliminarCliente'])->name('eliminar-cliente');
 		Route::post('/liquidar-ventas', [VentasController::class, 'liquidarVentas'])->name('liquidar-ventas');
 		Route::post('/liquidar-creditos', [VentasController::class, 'liquidarCreditos'])->name('liquidar-creditos');
+		Route::post('/ver-liquidaciones', [VentasController::class, 'verLiquidaciones'])->name('ver-liquidaciones');
+		Route::post('/ver-montos-liquidados', [VentasController::class, 'montosLiquidados'])->name('ver-montos-liquidados');
 		
 	});
 	

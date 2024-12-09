@@ -782,6 +782,66 @@ class VentasController extends Controller
             }
        }
     
+        public function verLiquidaciones(Request $request){
 
+            $data = DB::select("select 
+                            max(v.id) as id,
+                            max(p.nombre) as nombre_producto,
+                            sum(p.precio_compra) as precio_compra,
+                            sum(v.precio_venta) as precio_venta,
+                            c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
+                            to_char(max(v.created_at)::date, 'DD/MM/YYYY') as fecha_compra,
+                            'Al Contado' as metodo_compra
+                        from pedidos.cx_ventas v
+                        join pedidos.cx_productos p on p.id = v.id_producto and p.deleted_at is null
+                        join pedidos.cx_clientes c on c.id = v.id_cliente and c.deleted_at is null
+                        join pedidos.cx_metodos_pago mp on mp.id = v.id_metodo_pago and mp.deleted_At is null
+                        where v.deleted_at is null and v.liquidado = true
+                        group by v.id_producto,
+                        c.nombre_cliente, c.apellido_cliente,
+                        mp.descripcion
+                        union all
+                        select * from (with cuotas as (select 
+                            id_credito,
+                            count(*) as cuotas_pagadas,
+                            sum(monto_abonado) as monto_abonado
+                        from pedidos.cx_cuotas_credito
+                        where deleted_at is null
+                        group by id_credito)
+                        select 
+                            cr.id,
+                            p.nombre as nombre_producto,
+                            p.precio_compra*coalesce(cr.cantidad,1) as precio_compra,
+                            coalesce(cu.monto_abonado, 0) as precio_venta,
+                            c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
+                            to_char(c.created_at::date, 'DD/MM/YYYY') as fecha_compra,
+                            'Al Crédito' as metodo_compra
+                        from pedidos.cx_creditos cr
+                        join pedidos.cx_productos p on p.id = cr.id_producto and p.deleted_at is null
+                        join pedidos.cx_clientes c on c.id = cr.id_cliente and c.deleted_at is null
+                        left join cuotas cu on cu.id_credito = cr.id	
+                        where cr.deleted_at is null and cr.liquidado = true)x  
+                        ");
+            
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->make(true);
+        }
+
+        public function montosLiquidados(Request $request){
+
+            Db::select("SET lc_monetary = 'es_HN';");
+            $data = DB::select("select 
+                                    row_number() over(order by id desc) as no,
+                                    '$ '|| inversion as inversion,
+                                    ganancia::numeric::money,
+                                    case when id_metodo_pago = 1 then 'Ventas al contado' else 'Ventas al crédito' end as metodo_pago,
+                                    to_char(created_at::date, 'DD/MM/YYYY') as fecha_liquidacion
+                                from pedidos.cx_liquidaciones
+                                where deleted_at is null");
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->make(true);
+        }   
 
 }
