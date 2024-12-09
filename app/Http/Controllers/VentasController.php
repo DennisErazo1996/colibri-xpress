@@ -832,7 +832,7 @@ class VentasController extends Controller
 
             Db::select("SET lc_monetary = 'es_HN';");
             $data = DB::select("select 
-                                    row_number() over(order by id desc) as no,
+                                    row_number() over(order by id) as no,
                                     '$ '|| inversion as inversion,
                                     ganancia::numeric::money,
                                     case when id_metodo_pago = 1 then 'Ventas al contado' else 'Ventas al crédito' end as metodo_pago,
