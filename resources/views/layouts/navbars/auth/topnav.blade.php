@@ -49,9 +49,9 @@
                     </a> --}}
                 </li>
                 <li class="nav-item dropdown pe-2 d-flex align-items-center">
-                    <a href="javascript:;" class="nav-link text-white p-0" id="dropdownMenuButton"
+                    <a href="javascript:;" class="nav-link p-0" id="dropdownMenuButton"
                         data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fi fi-sr-user"></i> &nbsp;{{Auth::user()->firstname}}
+                        <span class="text-white"><i class="fi fi-sr-user"></i> &nbsp;{{Auth::user()->firstname}}</span>
                     </a>
                     <ul class="dropdown-menu  dropdown-menu-end  px-2 py-3 me-sm-n4"
                         aria-labelledby="dropdownMenuButton">
@@ -80,7 +80,7 @@
                                     </div>
                                     <div class="d-flex flex-column justify-content-center">
                                         <h6 class="text-sm font-weight-normal mb-1">
-                                            <span>&nbsp; Cerrar Sesion</span>
+                                            &nbsp; Cerrar Sesion
                                         </h6>
                                         
                                     </div>
