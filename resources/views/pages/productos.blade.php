@@ -1068,6 +1068,7 @@
                 processing: true,
                 serverSide: true,
                 bDestroy: true,
+                stateSave: true,
                 ajax: {
                     url: urlTableProductos,
                     type: 'POST',
@@ -1141,6 +1142,7 @@
             $('#tbl-ventas').DataTable({
                 processing: true,
                 serverSide: true,
+                stateSave: true,
                 bDestroy: true,
                 ajax: {
                     url: urlTableVentas,
@@ -1220,6 +1222,7 @@
                 processing: true,
                 serverSide: true,
                 bDestroy: true,
+                stateSave: true,
                 ajax: {
                     url: urlTableVentas,
                     type: 'POST',
