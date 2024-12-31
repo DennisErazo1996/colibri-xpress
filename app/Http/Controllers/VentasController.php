@@ -747,7 +747,7 @@ class VentasController extends Controller
                                     productos_credito as(
                                     select 
                                         cr.id_producto,
-                                        cr.id,
+                                        cr.id as id_credito,
                                         row_number() over(order by cr.id desc) as no,
                                         c.nombre_cliente || ' ' || c.apellido_cliente as comprador,
                                         p.nombre as nombre_producto,
