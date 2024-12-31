@@ -706,9 +706,9 @@ class VentasController extends Controller
                 DB::select("insert into pedidos.cx_liquidaciones(ganancia, inversion, id_metodo_pago, created_at) values(:total_venta, :total_inversion, :id_venta, now())",
                 ['total_venta' => $totalVenta, 'total_inversion' => $totalInversion, 'id_venta' => $idVenta]);
                 
-                $productos = DB::select("select id from pedidos.cx_ventas where deleted_at is null and liquidado = false");
+                $productos = DB::select("select id as id_venta from pedidos.cx_ventas where deleted_at is null and liquidado = false");
                 foreach($productos as $p){
-                    DB::select("update pedidos.cx_ventas set liquidado = true where id = :id", ['id' => $p->id_producto]);
+                    DB::select("update pedidos.cx_ventas set liquidado = true where id = :id", ['id' => $p->id_venta]);
                 }
                 
                 DB::commit();
@@ -771,7 +771,7 @@ class VentasController extends Controller
                                     select pc.id_credito from productos_credito pc
                                     where pc.estado = 'Pagado'");
                 foreach($creditos as $c){
-                    DB::select("update pedidos.cx_creditos set liquidado = true where id = :id", ['id' => $c->id_producto]);
+                    DB::select("update pedidos.cx_creditos set liquidado = true where id = :id", ['id' => $c->id_credito]);
                 }
                 DB::commit();
 
