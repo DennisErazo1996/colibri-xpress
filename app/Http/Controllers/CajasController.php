@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 use Mail;
 use App\Mail\PackageMail;
+use Auth;
 
 class CajasController extends Controller
 {
@@ -486,5 +487,27 @@ class CajasController extends Controller
                     ", ['id_caja' => $idCaja, 'id_usuario' => $idUsuario, 'estado_pago' => $estado]);
        
        return $mensaje;
+    }
+
+    public function indexEnvios(Request $request){
+
+        $idUsuario = Auth::user()->id;
+        $perPage = $request->input('per_page', 9); // Cantidad de envíos por página (default 6)
+
+        $enviosData = DB::table('cx_paquetes as p')
+            ->join('cx_cajas as c', 'c.id', '=', 'p.id_caja')
+            ->select(
+                'id_caja',
+                DB::raw("'BOX-' || LPAD(c.id::TEXT, 4, '0') as lote"),
+                DB::raw("to_char(fecha_envio, 'DD/MM/YYYY') as fecha_envio"),
+                DB::raw("to_char(fecha_arribo, 'DD/MM/YYYY') as fecha_arribo")
+            )
+            ->where('id_usuario', $idUsuario)
+            ->groupBy('id_caja', 'c.id', 'fecha_envio', 'fecha_arribo')
+            ->orderBy('id_caja', 'desc')
+            ->paginate($perPage);
+
+        // Retornar la vista principal si no es una solicitud AJAX
+        return view('pages.envios', compact('enviosData'));
     }
 }

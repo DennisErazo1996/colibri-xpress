@@ -52,6 +52,9 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/profile-static', [PageController::class, 'profile'])->name('profile-static'); 
 	Route::get('/sign-in-static', [PageController::class, 'signin'])->name('sign-in-static');
 	Route::get('/sign-up-static', [PageController::class, 'signup'])->name('sign-up-static'); 
+	
+	//Route::get('/envios', [PageController::class, 'verEnvios'])->name('envios');
+	Route::get('/ver-envios', [CajasController::class, 'indexEnvios'])->name('envios.index');
 
 	Route::middleware('checkUser')->group(function () {
 
@@ -83,6 +86,8 @@ Route::group(['middleware' => 'auth'], function () {
 		Route::post('/guardar-envio', [CajasController::class, 'guardarDatosEnvios'])->name('guardar-envio');
 		Route::post('/datos-envio', [CajasController::class, 'datosTotalesEnvio'])->name('datos-envio');
 		Route::post('/actualizar-estado-pago', [CajasController::class, 'actualizarEstadoPago'])->name('estado-pago');
+		
+		
 		
 		//Endpoints ventasController
 		Route::post('/ver-clientes', [VentasController::class, 'verClientes'])->name('ver-clientes');

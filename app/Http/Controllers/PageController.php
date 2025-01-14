@@ -160,4 +160,9 @@ class PageController extends Controller
     {
         return view("pages.liquidaciones");
     }
+
+    public function verEnvios(Request $request)
+    {
+        return view('pages.envios');
+    }
 }
