@@ -44,7 +44,7 @@
             @endif
             
             <li class="nav-item">
-                <a class="nav-link {{ Route::currentRouteName() == 'ver-envios' ? 'active' : '' }}" href="{{ route('envios.index') }}">
+                <a class="nav-link {{ Route::currentRouteName() == 'envios.index' ? 'active' : '' }}" href="{{ route('envios.index') }}">
                     <div
                         class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                         <i class="ni ni-send text-dark text-sm opacity-10"></i>
