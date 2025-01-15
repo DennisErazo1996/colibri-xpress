@@ -55,6 +55,7 @@ Route::group(['middleware' => 'auth'], function () {
 	
 	//Route::get('/envios', [PageController::class, 'verEnvios'])->name('envios');
 	Route::get('/ver-envios', [CajasController::class, 'indexEnvios'])->name('envios.index');
+	Route::post('/ver-paquetes-cliente', [CajasController::class, 'verPaquetesCliente'])->name('ver-paquetes-cliente');
 
 	Route::middleware('checkUser')->group(function () {
 

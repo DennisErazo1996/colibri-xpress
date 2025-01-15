@@ -42,7 +42,7 @@
                 </a>
             </li>
             @endif
-            @if (Auth::user()->role == 'super-admin')
+            
             <li class="nav-item">
                 <a class="nav-link {{ Route::currentRouteName() == 'cajas' ? 'active' : '' }}" href="{{ route('envios.index') }}">
                     <div
@@ -52,7 +52,7 @@
                     <span class="nav-link-text ms-1">Envios</span>
                 </a>
             </li>
-            @endif
+            
             @if (Auth::user()->role == 'super-admin' || Auth::user()->role == 'admin')
             <li class="nav-item">
                 <a class="nav-link {{ Route::currentRouteName() == 'productos' ? 'active' : '' }}" href="{{ route('productos') }}">

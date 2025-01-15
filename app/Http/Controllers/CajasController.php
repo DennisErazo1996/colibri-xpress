@@ -494,20 +494,71 @@ class CajasController extends Controller
         $idUsuario = Auth::user()->id;
         $perPage = $request->input('per_page', 9); // Cantidad de envíos por página (default 6)
 
-        $enviosData = DB::table('cx_paquetes as p')
-            ->join('cx_cajas as c', 'c.id', '=', 'p.id_caja')
-            ->select(
-                'id_caja',
-                DB::raw("'BOX-' || LPAD(c.id::TEXT, 4, '0') as lote"),
-                DB::raw("to_char(fecha_envio, 'DD/MM/YYYY') as fecha_envio"),
-                DB::raw("to_char(fecha_arribo, 'DD/MM/YYYY') as fecha_arribo")
-            )
+        DB::select("SET lc_monetary = 'es_HN';");
+        $enviosData = DB::table('cx_paquetes as paq')
+            ->leftJoin('cx_envios as env', function($join) {
+                $join->on('paq.id', '=', 'env.id_paquete')
+                     ->whereNull('paq.deleted_at');
+            })
+            ->join('users as u', 'u.id', '=', 'paq.id_usuario')
+            ->join('cx_cajas as c', function($join) {
+                $join->on('c.id', '=', 'paq.id_caja')
+                     ->whereNull('c.deleted_at');
+            })
+            ->selectRaw("
+                paq.id_usuario,
+                u.firstname || ' ' || u.lastname as firstname,
+                paq.id_caja,
+                'BOX-' || LPAD(paq.id_caja::TEXT, 4, '0') as lote,
+                count(*) as cantidad_paquetes,
+                coalesce(precio_envio, 0)::numeric::money as precio_envio,
+                coalesce(peso_envio, 0)::text || ' lbs' as peso_envio,
+                to_char(fecha_envio, 'DD/MM/YYYY') as fecha_envio,
+                to_char(fecha_arribo, 'DD/MM/YYYY') as fecha_arribo,
+                case 
+                    when max(paq.id) not in(select id_paquete from cx_envios) then 'No Enviado'  
+                    when max(paq.id) in (select id_paquete from cx_envios) and env.pagado = false then 'Enviado' 
+                    when max(paq.id) in (select id_paquete from cx_envios) and env.pagado = true then 'Entregado'
+                end as estado_envio
+            ")
+            ->whereNull('env.deleted_at')
             ->where('id_usuario', $idUsuario)
-            ->groupBy('id_caja', 'c.id', 'fecha_envio', 'fecha_arribo')
-            ->orderBy('id_caja', 'desc')
+            ->groupBy('paq.id_caja', 'id_usuario', 'precio_envio', 'peso_envio', 'u.firstname', 'fecha_envio', 'fecha_arribo', 'u.lastname', 'env.pagado')
+            ->orderByRaw('3 desc')
             ->paginate($perPage);
 
         // Retornar la vista principal si no es una solicitud AJAX
         return view('pages.envios', compact('enviosData'));
+    }
+
+    public function verPaquetesCliente(Request $request)
+    {
+        $idUsuario = Auth::user()->id;
+        $idCaja = $request->idCaja;
+
+        // Depurar los valores de los parámetros
+        // dd($idUsuario, $idCaja);
+
+        $dataPaquetesCliente = DB::select("
+            SELECT 
+                row_number() OVER (ORDER BY created_at DESC) AS no,
+                id_caja,
+                numero_tracking,
+                descripcion,
+                to_char(created_at::date, 'DD/MM/YYYY') AS fecha_registro,
+                to_char(created_at::time, 'HH12:MI:SS PM') AS hora_registro
+            FROM cx_paquetes 
+            WHERE id_usuario = :idUsuario 
+                AND id_caja = :idCaja 
+                AND deleted_at IS NULL 
+            ORDER BY created_at DESC
+        ", ['idUsuario' => $idUsuario, 'idCaja' => $idCaja]);
+
+        // Depurar el resultado de la consulta
+        // dd($dataPaquetesCliente);
+
+        return response()->json([
+            'data' => $dataPaquetesCliente,
+        ]);
     }
 }
