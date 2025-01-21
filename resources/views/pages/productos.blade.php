@@ -281,7 +281,7 @@
                                             <div class="form-group">
                                                 <label for="precio-normal">Precio normal<span
                                                         style="color: red">*</span></label>
-                                                <input type="number" name="precio-normal" class="form-control"
+                                                <input type="text" name="precio-normal" class="form-control"
                                                     id="inpPrecioNormalEdit" placeholder="$ 0.00"
                                                     aria-label="precio-normal" required>
                                             </div>
@@ -290,7 +290,7 @@
                                             <div class="form-group">
                                                 <label for="precio-compra">Precio Compra<span
                                                         style="color: red">*</span></label>
-                                                <input type="number" name="precio-compre" class="form-control"
+                                                <input type="text" name="precio-compre" class="form-control"
                                                     id="inpPrecioCompraEdit" placeholder="$ 0.00"
                                                     aria-label="precio-compra" required>
                                             </div>
@@ -299,7 +299,7 @@
                                             <div class="form-group">
                                                 <label for="precio-venta">Precio Venta<span
                                                         style="color: red">*</span></label>
-                                                <input type="number" name="precio-compre" class="form-control"
+                                                <input type="text" name="precio-compre" class="form-control"
                                                     id="inpPrecioVentaEdit" placeholder="L 0.00"
                                                     aria-label="precio-venta" required>
                                             </div>
