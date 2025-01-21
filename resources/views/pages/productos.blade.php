@@ -616,7 +616,7 @@
             var vrPrecioCompra = $('#inpPrecioCompraEdit').val();
             var vrPrecioVenta = $('#inpPrecioVentaEdit').val();
             //var vrChckPago = $('#chkPago').val();
-            if (vrIdProducto != '' && vrNombreProducto != '' && vrCantidad != '' && vrPrecioNormal != '' &&
+            if (vrIdProducto != '' && vrNombreProducto != '' && vrPrecioNormal != '' &&
                 vrPrecioCompra != '' && vrPrecioVenta != '') {
 
                 $(document).ajaxSend(function() {
