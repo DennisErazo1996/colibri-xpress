@@ -431,7 +431,7 @@ class VentasController extends Controller
 
         $idProducto = $request->idProducto;
         $nombreProducto = $request->nombreProducto;
-        $cantidadProducto = $request->cantidadProducto;
+        //$cantidadProducto = $request->cantidadProducto;
         $precioNormal = $request->precioNormal;
         $precioCompra = $request->precioCompra;
         $precioVenta = $request->precioVenta;
@@ -441,14 +441,14 @@ class VentasController extends Controller
             DB::beginTransaction();
 
             DB::select("update pedidos.cx_productos set nombre = :nombre_producto,
-                cantidad = :cantidad_producto,
+                --cantidad = :cantidad_producto,
                 precio_normal = :precio_normal,
                 precio_compra = :precio_compra,
                 precio_venta = :precio_venta
                 where id = :id_producto
-                ", ['nombre_producto' => $request->nombreProducto, 'cantidad_producto' => $request->cantidadProducto,
-                'precio_normal' => $request->precioNormal, 'precio_compra' => $request->precioCompra,
-                'precio_venta' => $request->precioVenta, 'id_producto' => $request->idProducto]);
+                ", ['nombre_producto' => $nombreProducto,
+                'precio_normal' => $precioNormal, 'precio_compra' => $precioCompra,
+                'precio_venta' => $precioVenta, 'id_producto' => $idProducto]);
 
             DB::commit();
 

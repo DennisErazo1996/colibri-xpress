@@ -274,7 +274,7 @@
                                             <div class="form-group">
                                                 <label for="cantidad">Cantidad<span style="color: red">*</span></label>
                                                 <input type="number" name="precio-normal" class="form-control"
-                                                    id="inpCantidadEdit" placeholder="0" aria-label="cantidad" required>
+                                                    id="inpCantidadEdit" placeholder="0" aria-label="cantidad" disabled>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -611,7 +611,7 @@
 
             var vrIdProducto = $('#inpIdProducto').val();
             var vrNombreProducto = $('#inpNombreProductoEdit').val();
-            var vrCantidad = $('#inpCantidadEdit').val();
+            //var vrCantidad = $('#inpCantidadEdit').val();
             var vrPrecioNormal = $('#inpPrecioNormalEdit').val();
             var vrPrecioCompra = $('#inpPrecioCompraEdit').val();
             var vrPrecioVenta = $('#inpPrecioVentaEdit').val();
@@ -632,7 +632,7 @@
                         "_token": "{{ csrf_token() }}",
                         "idProducto": vrIdProducto,
                         "nombreProducto": vrNombreProducto,
-                        "cantidadProducto": vrCantidad,
+                        //"cantidadProducto": vrCantidad,
                         "precioNormal": vrPrecioNormal,
                         "precioCompra": vrPrecioCompra,
                         "precioVenta": vrPrecioVenta,
