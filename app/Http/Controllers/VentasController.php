@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 use Exception;
+use Auth;
 
 class VentasController extends Controller
 {
@@ -79,6 +80,8 @@ class VentasController extends Controller
 
     public function verProductos(Request $request){
 
+        $idInversor = Auth::user()->id;
+
         if ($request->ajax()) {
             
             $data = DB::select("WITH cantidades_vendidas AS (
@@ -111,7 +114,7 @@ class VentasController extends Controller
                                 JOIN cx_cajas c ON p.id_caja = c.id AND c.deleted_at IS NULL
                                 LEFT JOIN cantidades_vendidas cv ON cv.id_producto = p.id
                                 LEFT JOIN cantidades_acreditadas ca ON ca.id_producto = p.id
-                                WHERE p.deleted_at IS NULL and p.liquidado = false
+                                WHERE p.deleted_at IS NULL and p.liquidado = false and id_inversor = :id_inversor
                                 AND (
 
                                     ((p.cantidad > 1) AND (
@@ -125,7 +128,7 @@ class VentasController extends Controller
                                         AND p.id NOT IN (SELECT id_producto FROM pedidos.cx_creditos WHERE deleted_at IS NULL))
                                         
                                     ))
-                                );");
+                                );", ['id_inversor' => $idInversor]);
 
             return Datatables::of($data)
                 ->addIndexColumn()
@@ -154,15 +157,16 @@ class VentasController extends Controller
         $precioCompra = $request->precioCompra;
         $precioVenta = $request->precioVenta;
         $cantidad = $request->cantidad;
+        $idInversor = Auth::user()->id;
         $mensaje = "Producto registrado correctamente";
 
         try {
             DB::beginTransaction();
     
-            DB::select("insert into pedidos.cx_productos(nombre, precio_normal, precio_compra, precio_venta, created_at, id_caja, cantidad)
-                    values(:nombre_producto, :precio_normal, :precio_compra, :precio_venta, now(), :id_caja, :cantidad)", 
+            DB::select("insert into pedidos.cx_productos(nombre, precio_normal, precio_compra, precio_venta, created_at, id_caja, cantidad, id_inversor)
+                    values(:nombre_producto, :precio_normal, :precio_compra, :precio_venta, now(), :id_caja, :cantidad, :id_inversor)",
                     ['nombre_producto' => $nombreProducto, 'precio_normal' => $precioNormal, 'precio_compra' => $precioCompra, 'precio_venta' => $precioVenta,
-                    'id_caja' => $idCaja, 'cantidad' => $cantidad]);
+                    'id_caja' => $idCaja, 'cantidad' => $cantidad, 'id_inversor' => $idInversor]);
     
             DB::commit();
 
@@ -229,6 +233,9 @@ class VentasController extends Controller
 }
 
     public function verVentas(Request $request){
+
+        $idInversor = Auth::user()->id;
+
         if ($request->ajax()) {
             
             DB::select("SET lc_monetary = 'es_HN';");
@@ -302,12 +309,12 @@ class VentasController extends Controller
                 join pedidos.cx_productos p on p.id = v.id_producto and p.deleted_at is null
                 join pedidos.cx_clientes c on c.id = v.id_cliente and c.deleted_at is null
                 join pedidos.cx_metodos_pago mp on mp.id = v.id_metodo_pago and mp.deleted_At is null
-                where v.deleted_at is null and v.liquidado = false
+                where v.deleted_at is null and v.liquidado = false and p.id_inversor = :id_inversor
                 group by v.id_producto,
                 c.nombre_cliente, c.apellido_cliente,
                 mp.descripcion
 
-            ");
+            ", ['id_inversor' => $idInversor]);
 
             return Datatables::of($data)
                 ->addIndexColumn()
@@ -322,6 +329,9 @@ class VentasController extends Controller
     }
 
     public function verCreditos(Request $request){
+        
+        $idInversor = Auth::user()->id;
+
         if ($request->ajax()) {
             
             DB::select("SET lc_monetary = 'es_HN';");
@@ -351,8 +361,8 @@ class VentasController extends Controller
                         join pedidos.cx_productos p on p.id = cr.id_producto and p.deleted_at is null
                         join pedidos.cx_clientes c on c.id = cr.id_cliente and c.deleted_at is null
                         left join cuotas cu on cu.id_credito = cr.id	
-                        where cr.deleted_at is null and cr.liquidado = false
-                                ");
+                        where cr.deleted_at is null and cr.liquidado = false and p.id_inversor = :id_inversor
+                                ", ['id_inversor' => $idInversor]);
 
             return Datatables::of($data)
                 ->addIndexColumn()
@@ -368,6 +378,8 @@ class VentasController extends Controller
     }
 
     public function datosTotalesProductos(Request $request){
+
+        $idInversor = Auth::user()->id;
 
         DB::select("SET lc_monetary = 'es_HN';");
         $data = DB::select("
@@ -401,7 +413,7 @@ class VentasController extends Controller
                     JOIN cx_cajas c ON p.id_caja = c.id AND c.deleted_at IS NULL
                     LEFT JOIN cantidades_vendidas cv ON cv.id_producto = p.id
                     LEFT JOIN cantidades_acreditadas ca ON ca.id_producto = p.id
-                    WHERE p.deleted_at IS NULL and p.liquidado = false
+                    WHERE p.deleted_at IS NULL and p.liquidado = false and id_inversor = :id_inversor
                     AND (
                         -- Condición general para productos con cantidad mayor a 1
                         ((p.cantidad > 1) AND (
@@ -421,7 +433,7 @@ class VentasController extends Controller
                 coalesce(sum(cantidad), 0) as total_productos,
                 '$ ' || coalesce(sum(total_precio_inversion), 0) as total_inversion,
                 coalesce(sum(total_precio_producto), 0)::numeric::money as total_venta
-            from productos");
+            from productos", ['id_inversor' => $idInversor]);
         return response()->json([
             'data' => $data,
         ]);
@@ -463,6 +475,8 @@ class VentasController extends Controller
 
     public function datosTotalesVentas(){
 
+        $idInversor = Auth::user()->id;
+
         DB::select("SET lc_monetary = 'es_HN';");
         $data = DB::select("
                  select
@@ -478,7 +492,7 @@ class VentasController extends Controller
                     coalesce(sum(p.precio_compra), 0) as total_inversion_format
                 from pedidos.cx_ventas v
                 join pedidos.cx_productos p on p.id = v.id_producto and p.deleted_at is null
-                    where v.deleted_at is null and v.liquidado = false");
+                    where v.deleted_at is null and v.liquidado = false and p.id_inversor = :id_inversor", ['id_inversor' => $idInversor]);
         return response()->json([
             'data' => $data,
         ]);      
@@ -565,6 +579,8 @@ class VentasController extends Controller
 
     public function datosTotalesCreditos(){
 
+        $idInversor = Auth::user()->id;
+
         DB::select("SET lc_monetary = 'es_HN';");
         
         /*$data = DB::select("
@@ -625,7 +641,7 @@ class VentasController extends Controller
                     join pedidos.cx_productos p on p.id = cr.id_producto and p.deleted_at is null
                     join pedidos.cx_clientes c on c.id = cr.id_cliente and c.deleted_at is null
                     left join cuotas cu on cu.id_credito = cr.id	
-                    where cr.deleted_at is null and cr.liquidado = false) cr");
+                    where cr.deleted_at is null and cr.liquidado = false and p.id_inversor = :id_inversor) cr", ['id_inversor' => $idInversor]);
                 
         
         return response()->json([
@@ -784,6 +800,8 @@ class VentasController extends Controller
     
         public function verLiquidaciones(Request $request){
 
+            $idInversor = Auth::user()->id;
+
             $data = DB::select("select 
                             max(v.id) as id,
                             max(p.nombre) as nombre_producto,
@@ -796,7 +814,7 @@ class VentasController extends Controller
                         join pedidos.cx_productos p on p.id = v.id_producto and p.deleted_at is null
                         join pedidos.cx_clientes c on c.id = v.id_cliente and c.deleted_at is null
                         join pedidos.cx_metodos_pago mp on mp.id = v.id_metodo_pago and mp.deleted_At is null
-                        where v.deleted_at is null and v.liquidado = true
+                        where v.deleted_at is null and v.liquidado = true and p.id_inversor = :id_inversor
                         group by v.id_producto,
                         c.nombre_cliente, c.apellido_cliente,
                         mp.descripcion
@@ -820,8 +838,8 @@ class VentasController extends Controller
                         join pedidos.cx_productos p on p.id = cr.id_producto and p.deleted_at is null
                         join pedidos.cx_clientes c on c.id = cr.id_cliente and c.deleted_at is null
                         left join cuotas cu on cu.id_credito = cr.id	
-                        where cr.deleted_at is null and cr.liquidado = true)x  
-                        ");
+                        where cr.deleted_at is null and cr.liquidado = true and p.id_inversor = :id_inversor)x
+                        ", ['id_inversor' => $idInversor]);
             
             return Datatables::of($data)
                 ->addIndexColumn()
