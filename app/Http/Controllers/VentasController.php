@@ -80,7 +80,8 @@ class VentasController extends Controller
 
     public function verProductos(Request $request){
 
-        $idInversor = Auth::user()->id;
+        $idSesionInversor = $request->session()->get('id_inversor');
+        $idInversor = $idSesionInversor ?? Auth::user()->id;
 
         if ($request->ajax()) {
             
@@ -234,7 +235,8 @@ class VentasController extends Controller
 
     public function verVentas(Request $request){
 
-        $idInversor = Auth::user()->id;
+        $idSesionInversor = $request->session()->get('id_inversor');
+        $idInversor = $idSesionInversor ?? Auth::user()->id;
 
         if ($request->ajax()) {
             
@@ -330,7 +332,8 @@ class VentasController extends Controller
 
     public function verCreditos(Request $request){
         
-        $idInversor = Auth::user()->id;
+        $idSesionInversor = $request->session()->get('id_inversor');
+        $idInversor = $idSesionInversor ?? Auth::user()->id;
 
         if ($request->ajax()) {
             
@@ -379,7 +382,8 @@ class VentasController extends Controller
 
     public function datosTotalesProductos(Request $request){
 
-        $idInversor = Auth::user()->id;
+        $idSesionInversor = $request->session()->get('id_inversor');
+        $idInversor = $idSesionInversor ?? Auth::user()->id;
 
         DB::select("SET lc_monetary = 'es_HN';");
         $data = DB::select("
@@ -473,9 +477,10 @@ class VentasController extends Controller
         }       
     }
 
-    public function datosTotalesVentas(){
+    public function datosTotalesVentas(Request $request){
 
-        $idInversor = Auth::user()->id;
+        $idSesionInversor = $request->session()->get('id_inversor');
+        $idInversor = $idSesionInversor ?? Auth::user()->id;
 
         DB::select("SET lc_monetary = 'es_HN';");
         $data = DB::select("
@@ -577,9 +582,10 @@ class VentasController extends Controller
         return $mensaje;
     }
 
-    public function datosTotalesCreditos(){
+    public function datosTotalesCreditos(Request $request){
 
-        $idInversor = Auth::user()->id;
+        $idSesionInversor = $request->session()->get('id_inversor');
+        $idInversor = $idSesionInversor ?? Auth::user()->id;
 
         DB::select("SET lc_monetary = 'es_HN';");
         
@@ -713,16 +719,21 @@ class VentasController extends Controller
         $idVenta = $request->idVenta;
         $mensaje = "Ventas liquidada correctamente";
 
-        
+        $idSesionInversor = $request->session()->get('id_inversor');
+        $idInversor = $idSesionInversor ?? Auth::user()->id;
 
+    
        if($idVenta == 1){
             try {
                 DB::beginTransaction();
 
-                DB::select("insert into pedidos.cx_liquidaciones(ganancia, inversion, id_metodo_pago, created_at) values(:total_venta, :total_inversion, :id_venta, now())",
-                ['total_venta' => $totalVenta, 'total_inversion' => $totalInversion, 'id_venta' => $idVenta]);
+                DB::select("insert into pedidos.cx_liquidaciones(ganancia, inversion, id_metodo_pago, created_at, id_inversor) values(:total_venta, :total_inversion, :id_venta, now(), :id_inversor)",
+                ['total_venta' => $totalVenta, 'total_inversion' => $totalInversion, 'id_venta' => $idVenta, 'id_inversor' => $idInversor]);
                 
-                $productos = DB::select("select id as id_venta from pedidos.cx_ventas where deleted_at is null and liquidado = false");
+                $productos = DB::select("select v.id as id_venta
+                                        from pedidos.cx_ventas v
+                                            join pedidos.cx_productos p on p.id = v.id_producto and p.deleted_at is null
+                                        where v.deleted_at is null and v.liquidado = false and p.id_inversor = :id_inversor", ['id_inversor' => $idInversor]);
                 foreach($productos as $p){
                     DB::select("update pedidos.cx_ventas set liquidado = true where id = :id", ['id' => $p->id_venta]);
                 }
@@ -746,12 +757,15 @@ class VentasController extends Controller
         $idVenta = $request->idVenta;
         $mensaje = "Creditos liquidado correctamente";
 
+        $idSesionInversor = $request->session()->get('id_inversor');
+        $idInversor = $idSesionInversor ?? Auth::user()->id;
+
         
         try {
                 DB::beginTransaction();
                 
-                DB::select("insert into pedidos.cx_liquidaciones(ganancia, inversion, id_metodo_pago, created_at) values(:total_venta, :total_inversion, :id_venta, now())",
-                ['total_venta' => $totalVenta, 'total_inversion' => $totalInversion, 'id_venta' => $idVenta]);
+                DB::select("insert into pedidos.cx_liquidaciones(ganancia, inversion, id_metodo_pago, created_at, id_inversor) values(:total_venta, :total_inversion, :id_venta, now(), :id_inversor)",
+                ['total_venta' => $totalVenta, 'total_inversion' => $totalInversion, 'id_venta' => $idVenta, 'id_inversor' => $idInversor]);
 
                 $creditos = DB::select("with cuotas as (select 
                                         id_credito,
@@ -782,10 +796,10 @@ class VentasController extends Controller
                                     join pedidos.cx_productos p on p.id = cr.id_producto and p.deleted_at is null
                                     join pedidos.cx_clientes c on c.id = cr.id_cliente and c.deleted_at is null
                                     left join cuotas cu on cu.id_credito = cr.id	
-                                    where cr.deleted_at is null and cr.liquidado = false
+                                    where cr.deleted_at is null and cr.liquidado = false and p.id_inversor = :id_inversor
                                     )
                                     select pc.id_credito from productos_credito pc
-                                    where pc.estado = 'Pagado'");
+                                    where pc.estado = 'Pagado'", ['id_inversor' => $idInversor]);
                 foreach($creditos as $c){
                     DB::select("update pedidos.cx_creditos set liquidado = true where id = :id", ['id' => $c->id_credito]);
                 }
@@ -800,10 +814,12 @@ class VentasController extends Controller
     
         public function verLiquidaciones(Request $request){
 
-            $idInversor = Auth::user()->id;
+            $idSesionInversor = $request->session()->get('id_inversor');
+            $idInversor = $idSesionInversor ?? Auth::user()->id;
 
             $data = DB::select("select 
                             max(v.id) as id,
+                            count(*) as cantidad,
                             max(p.nombre) as nombre_producto,
                             sum(p.precio_compra) as precio_compra,
                             sum(v.precio_venta) as precio_venta,
@@ -828,6 +844,7 @@ class VentasController extends Controller
                         group by id_credito)
                         select 
                             cr.id,
+                            cr.cantidad,
                             p.nombre as nombre_producto,
                             p.precio_compra*coalesce(cr.cantidad,1) as precio_compra,
                             coalesce(cu.monto_abonado, 0) as precio_venta,
@@ -848,6 +865,9 @@ class VentasController extends Controller
 
         public function montosLiquidados(Request $request){
 
+            $idSesionInversor = $request->session()->get('id_inversor');
+            $idInversor = $idSesionInversor ?? Auth::user()->id;
+
             Db::select("SET lc_monetary = 'es_HN';");
             $data = DB::select("select 
                                     row_number() over(order by id) as no,
@@ -856,10 +876,20 @@ class VentasController extends Controller
                                     case when id_metodo_pago = 1 then 'Ventas al contado' else 'Ventas al crédito' end as metodo_pago,
                                     to_char(created_at::date, 'DD/MM/YYYY') as fecha_liquidacion
                                 from pedidos.cx_liquidaciones
-                                where deleted_at is null");
+                                where deleted_at is null and id_inversor = :id_inversor", ['id_inversor' => $idInversor]);
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->make(true);
-        }   
+        }
+
+        public function cambiarInversores(Request $request){
+
+            $mensaje = "Se cambio el inversor correctamente";
+
+            $request->session()->put('id_inversor', $request->investor_id);
+
+            return $mensaje;
+
+        }
 
 }

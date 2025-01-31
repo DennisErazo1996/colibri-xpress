@@ -114,6 +114,7 @@ Route::group(['middleware' => 'auth'], function () {
 		Route::post('/liquidar-creditos', [VentasController::class, 'liquidarCreditos'])->name('liquidar-creditos');
 		Route::post('/ver-liquidaciones', [VentasController::class, 'verLiquidaciones'])->name('ver-liquidaciones');
 		Route::post('/ver-montos-liquidados', [VentasController::class, 'montosLiquidados'])->name('ver-montos-liquidados');
+		Route::post('/cambiar-inversores', [VentasController::class, 'cambiarInversores'])->name('cambiar-inversores');
 		
 	});
 	

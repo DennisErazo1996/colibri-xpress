@@ -104,8 +104,22 @@
                 </ul>
 
                 <div class="card mb-0 p-2" id="card-list-productos">
-                    <div class="text-center d-flex flex-row justify-content-center">
+                    <div class="text-center d-flex flex-row justify-content-center col-md-2">
+                        
+                        @if (Auth::user()->role == 'super-admin')
+                            <div
+                                class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                                <i class="ni ni-circle-08 text-dark text-sm opacity-10"></i>
+                            </div>
 
+                            <select name="investor_id" id="investor_id" class="form-control"
+                                onchange="cambiarInversor(this.value)">
+                                <option selected disabled>Seleccione el inversionista</option>
+                                @foreach ($inversores as $inv)
+                                    <option value="{{ $inv->id }}">{{ $inv->firstname }}</option>
+                                @endforeach
+                            </select>
+                        @endif
 
                     </div>
                     <div class="card-header pb-0 text-center">
@@ -157,7 +171,8 @@
                     </div> --}}
                     <div class="card-body px-2 pt-0 pb-2">
                         <div class="d-flex  justify-content-end">
-                            <button id="btn-liquidar-ventas-contado" onclick="liquidarVentas(1)" class="btn btn-warning btn-1 mb-5"><i class="fi fi-ss-money"></i> Liquidar Ventas</button>
+                            <button id="btn-liquidar-ventas-contado" onclick="liquidarVentas(1)"
+                                class="btn btn-warning btn-1 mb-5"><i class="fi fi-ss-money"></i> Liquidar Ventas</button>
                         </div>
                         <div class="container">
                             <div id="total-ventas" class="row text-center justify-content-center">
@@ -191,7 +206,7 @@
                     </div>
                 </div>
                 <div class="card mb-0 p-2" id="card-list-creditos">
-                    
+
                     <div class="card-header pb-0 text-center">
                         {{-- <h6>Authors table</h6> --}}
                     </div>
@@ -201,7 +216,9 @@
                     </div> --}}
                     <div class="card-body px-2 pt-0 pb-2">
                         <div class="d-flex  justify-content-end">
-                            <button id="btn-liquidar-creditos-contado" onclick="liquidarCreditos(2)" class="btn btn-warning btn-1 mb-5"><i class="fi fi-ss-money"></i> Liquidar Creditos</button>
+                            <button id="btn-liquidar-creditos-contado" onclick="liquidarCreditos(2)"
+                                class="btn btn-warning btn-1 mb-5"><i class="fi fi-ss-money"></i> Liquidar
+                                Creditos</button>
                         </div>
                         <div class="container">
                             <div id="total-creditos" class="row text-center justify-content-center">
@@ -754,7 +771,7 @@
             var totalVenta = $('#total_venta').val();
             var totalInversion = $('#total_inversion').val();
             var urlRest = "{{ route('liquidar-ventas') }}";
-            
+
             $.confirm({
                 type: 'blue',
                 animation: 'scale',
@@ -797,7 +814,7 @@
                                         title: response
                                     });
 
-        
+
                                     $('#tbl-ventas').DataTable().ajax.reload();
                                     $('#tbl-creditos').DataTable().ajax.reload();
                                     inicializarTotalesVentas()
@@ -822,11 +839,11 @@
         }
 
         function liquidarCreditos(idVenta) {
-            
+
             var totalVenta = $('#total_productos_pagados').val();
             var totalInversion = $('#total_inversion_pagada').val();
             var urlRest = "{{ route('liquidar-creditos') }}";
-            
+
             $.confirm({
                 type: 'blue',
                 animation: 'scale',
@@ -869,7 +886,7 @@
                                         title: response
                                     });
 
-    
+
                                     $('#tbl-creditos').DataTable().ajax.reload();
                                     inicializarTotalesCreditos()
                                 },
@@ -1243,21 +1260,21 @@
                     {
                         data: 'comprador',
                         name: 'comprador',
-                        
+
                     },
                     {
                         data: 'nombre_producto',
                         name: 'nombre_producto',
                         render: function(data, type, row) {
-                        // Aquí se ajusta el texto largo para que no se desborde
-                        return '<div style="max-width: 250px !important;  white-space: normal !important; word-wrap: break-word !important;">' +
-                            data + '</div>';
+                            // Aquí se ajusta el texto largo para que no se desborde
+                            return '<div style="max-width: 250px !important;  white-space: normal !important; word-wrap: break-word !important;">' +
+                                data + '</div>';
                         }
                     },
-                    {   
+                    {
                         data: 'precio_compra',
                         name: 'precio_compra',
-                        
+
                     },
                     {
                         data: 'cantidad',
@@ -1305,7 +1322,7 @@
                         width: '10px',
                         targets: 2
                     }, // Cambia el ancho de la columna 'comprador'
-                    
+
                 ],
                 createdRow: function(row, data, dataIndex) {
                     if (data.estado === "Pagado") {
@@ -1421,11 +1438,13 @@
                             '</div>' +
                             '<div class="col-12 col-sm-3">' +
                             '<div class="item-total-focus mt-2" style="color:#fff">Total Venta: <strong style="color:#fff">' +
-                            total_venta + '<input type="hidden" id="total_venta" value="'+total_venta_format+'"></strong></div>' +
+                            total_venta + '<input type="hidden" id="total_venta" value="' +
+                            total_venta_format + '"></strong></div>' +
                             '</div>' +
                             '<div class="col-12 col-sm-3">' +
                             '<div class="item-total-focus mt-2" style="color:#fff">Total Inversión: <strong style="color:#fff">' +
-                            total_inversion + '<input type="hidden" id="total_inversion" value="'+total_inversion_format+'"></strong></div>' +
+                            total_inversion + '<input type="hidden" id="total_inversion" value="' +
+                            total_inversion_format + '"></strong></div>' +
                             '</div>')
 
 
@@ -1480,20 +1499,24 @@
                             '<div class="col-12 col-sm-3">' +
                             '<div class="item-total mt-2">Abonado: <strong style="color:#3ed06a">' +
                             total_monto_abonado + '</strong></div>' +
-                            '</div>'+
+                            '</div>' +
                             '<div class="col-12 col-sm-3">' +
                             '<div class="item-total mt-2">Productos pagados: <strong style="color:#3ed06a">' +
                             productos_pagados + '</strong></div>' +
-                            '</div>'+
+                            '</div>' +
                             '<div class="col-12 col-sm-3">' +
                             '<div class="item-total-focus mt-2" style="color:#fff">Inversión pagada: <strong style="color:#fff">' +
-                            total_inversion_pagada + ' <input type="hidden" id="total_inversion_pagada" value="'+total_inversion_pagada_format+'"></strong></div>' +
-                            '</div>'+
+                            total_inversion_pagada +
+                            ' <input type="hidden" id="total_inversion_pagada" value="' +
+                            total_inversion_pagada_format + '"></strong></div>' +
+                            '</div>' +
                             '<div class="col-12 col-sm-3">' +
                             '<div class="item-total-focus mt-2" style="color:#fff">Total pagado: <strong style="color:#fff">' +
-                            total_productos_pagados + ' <input type="hidden" id="total_productos_pagados" value="'+total_productos_pagados_format+'"></strong></div>' +
+                            total_productos_pagados +
+                            ' <input type="hidden" id="total_productos_pagados" value="' +
+                            total_productos_pagados_format + '"></strong></div>' +
                             '</div>'
-                            
+
                         );
                     } else {
                         alert("No se encontraron datos.");
@@ -1845,6 +1868,45 @@
                 }
             }
             return null;
+        }
+
+        function cambiarInversor(idInversor) {
+
+            var urlRest = "{{ route('cambiar-inversores') }}";
+
+            $.ajax({
+                type: "POST",
+                url: urlRest,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "investor_id": idInversor,
+                },
+                success: function(response) {
+                    //alert(response)
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                    });
+                    Toast.fire({
+                        icon: "success",
+                        title: response
+                    });
+
+                    $('#tbl-productos').DataTable().ajax.reload();
+                    inicializarTotalesProductos()
+                },
+                error: function(request, status, error) {
+                    alert(request.responseText);
+                }
+            })
+
         }
     </script>
 @endpush

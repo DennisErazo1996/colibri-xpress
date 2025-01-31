@@ -145,9 +145,12 @@ class PageController extends Controller
         
         $clientes = DB::select("select * from pedidos.cx_clientes where deleted_at is null");
 
+        $inversores = DB::select("select * from users where deleted_at is null and inversor = true");
+
         return view("pages.productos")
         ->with('metodosPago', $metodosPago)
         ->with('clientes', $clientes)
+        ->with('inversores', $inversores)
         ->with('cajas', $cajas);
     }
 
