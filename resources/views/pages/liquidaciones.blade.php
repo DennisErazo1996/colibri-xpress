@@ -47,6 +47,7 @@
                                     <tr>
 
                                         <th>No.</th>
+                                        <th>cantidad</th>
                                         <th>Nombre del producto</th>
                                         <th>Precio de compra</th>
                                         <th>Precio de venta</th>
@@ -96,6 +97,10 @@
             columns: [{
                     data: 'id',
                     name: 'id'  
+                    },
+                    {
+                        data: 'cantidad',
+                        name: 'cantidad'
                     },
                     {
                         data: 'nombre_producto',
