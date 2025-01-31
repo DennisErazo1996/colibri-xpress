@@ -1851,8 +1851,13 @@
                                         title: response
                                     });
 
+                                    var table = $('#tbl-creditos').DataTable();
+                                    var currentPage = table.page();
+
+                                    table.ajax.reload(function(){
+                                        table.page(currentPage).draw(false);
+                                    });
                                     $('#tbl-cuotas').DataTable().ajax.reload();
-                                    $('#tbl-creditos').DataTable().ajax.reload();
                                     inicializarTotalesCreditos()
                                 },
                                 error: function(request, status, error) {
