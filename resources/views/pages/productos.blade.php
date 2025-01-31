@@ -106,27 +106,7 @@
                 <div class="card mb-0 p-2" id="card-list-productos">
                     <div class="text-center d-flex flex-row justify-content-center col-md-2">
 
-                        @if (Auth::user()->role == 'super-admin')
-                            <div
-                                class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                                <i class="ni ni-circle-08 text-dark text-sm opacity-10"></i>
-                            </div>
-
-                            <select name="investor_id" id="investor_id" class="form-control" onchange="cambiarInversor(this.value)">
-                                <option value="" disabled
-                                    @if (session('id_inversor') == null)
-                                        selected
-                                    @endif
-                                >Seleccione el inversionista</option>
-                                @foreach ($inversores as $inv)
-                                    <option value="{{ $inv->id }}"
-                                        @if (session('id_inversor') == $inv->id)
-                                            selected
-                                        @endif
-                                    >{{ $inv->firstname.' '.$inv->lastname }}</option>
-                                @endforeach
-                            </select>
-                        @endif
+                        @include('envios.btn-inversor')
 
                     </div>
                     <div class="card-header pb-0 text-center">
@@ -169,15 +149,19 @@
                 </div>
 
                 <div class="card mb-0 p-2" id="card-list-ventas">
-                    <div class="card-header pb-0 text-center">
-                        {{-- <h6>Authors table</h6> --}}
+
+                    <div class="text-center d-flex flex-row justify-content-center col-md-2 mb-2">
+                        @include('envios.btn-inversor')
                     </div>
+                    {{-- <div class="card-header pb-0 text-center">
+                        <h6>Authors table</h6>
+                    </div> --}}
                     {{-- <div class="align-items-center text-center">
                         <button type="button" class="btn btn-primary btn-default mb-3" data-bs-toggle="modal"
                             data-bs-target="#modal-form">Agregar nuevo pedido</button>
                     </div> --}}
                     <div class="card-body px-2 pt-0 pb-2">
-                        <div class="d-flex  justify-content-end">
+                        <div class="d-flex  justify-content-end ">
                             <button id="btn-liquidar-ventas-contado" onclick="liquidarVentas(1)"
                                 class="btn btn-warning btn-1 mb-5"><i class="fi fi-ss-money"></i> Liquidar Ventas</button>
                         </div>
@@ -214,9 +198,12 @@
                 </div>
                 <div class="card mb-0 p-2" id="card-list-creditos">
 
-                    <div class="card-header pb-0 text-center">
-                        {{-- <h6>Authors table</h6> --}}
+                    <div class="text-center d-flex flex-row justify-content-center col-md-2 mb-2">
+                        @include('envios.btn-inversor')       
                     </div>
+                    {{-- <div class="card-header pb-0 text-center">
+                        <h6>Authors table</h6>
+                    </div> --}}
                     {{-- <div class="align-items-center text-center">
                         <button type="button" class="btn btn-primary btn-default mb-3" data-bs-toggle="modal"
                             data-bs-target="#modal-form">Agregar nuevo pedido</button>
@@ -1906,8 +1893,13 @@
                         title: response
                     });
 
+                    $('.investor-select').val(idInversor);
                     $('#tbl-productos').DataTable().ajax.reload();
+                    $('#tbl-ventas').DataTable().ajax.reload();
+                    $('#tbl-creditos').DataTable().ajax.reload();
                     inicializarTotalesProductos()
+                    inicializarTotalesVentas()
+                    inicializarTotalesCreditos()
                 },
                 error: function(request, status, error) {
                     alert(request.responseText);
