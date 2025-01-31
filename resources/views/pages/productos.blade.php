@@ -748,7 +748,13 @@
                     }
                 }).done(function() {
 
-                    $('#tbl-creditos').DataTable().ajax.reload();
+                    var table = $('#tbl-creditos').DataTable();
+                    var currentPage = table.page();
+
+                    table.ajax.reload(function(){
+                        table.page(currentPage).draw(false);
+                    });
+
                     inicializarTotalesCreditos()
                     $('#inpMontoAbono').val('');
                     $('#metodos-pago').val('');
@@ -1079,7 +1085,6 @@
                 processing: true,
                 serverSide: true,
                 bDestroy: true,
-                stateSave: true,
                 ajax: {
                     url: urlTableProductos,
                     type: 'POST',
@@ -1132,6 +1137,13 @@
                     }
 
                 ],
+                stateSave: true,
+                stateSaveCallback: function(settings, data) {
+                    localStorage.setItem('DataTableState_tblVentas', JSON.stringify(data));
+                },
+                stateLoadCallback: function(settings) {
+                    return JSON.parse(localStorage.getItem('DataTableState_tblVentas'));
+                },
                 columnDefs: [{
                     className: 'dt-center',
                     targets: '_all'
@@ -1233,7 +1245,6 @@
                 processing: true,
                 serverSide: true,
                 bDestroy: true,
-                stateSave: true,
                 ajax: {
                     url: urlTableVentas,
                     type: 'POST',
@@ -1247,6 +1258,13 @@
                         $("#overlay").fadeOut(300);
                     }
                 },
+                stateSave: true,
+                    stateSaveCallback: function(settings, data) {
+                        localStorage.setItem('DataTableState_tblCreditos', JSON.stringify(data));
+                    },
+                    stateLoadCallback: function(settings) {
+                        return JSON.parse(localStorage.getItem('DataTableState_tblCreditos'));
+                    },
                 columns: [{
                         data: 'no',
                         name: 'no'
