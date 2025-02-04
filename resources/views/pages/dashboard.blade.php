@@ -2,6 +2,9 @@
 
 @section('content')
     @include('layouts.navbars.auth.topnav', ['title' => 'Dashboard'])
+    <div class="row container ">
+        @include('envios.totales-dashboard')
+    </div>
     <div class="container-fluid py-4">
         <div class="card" style="overflow: hidden">
             <div id="carouselExampleAutoplaying" class="carousel slide " data-bs-ride="carousel">
@@ -194,7 +197,7 @@
                 </div>
             </div>
         </div> --}}
-        {{-- <div class="row mt-4">
+        <div class="row mt-4">
             <div class="col-lg-7 mb-lg-0 mb-4">
                 <div class="card ">
                     <div class="card-header pb-0 p-3">
@@ -205,42 +208,50 @@
                     <div class="table-responsive">
                         <table class="table align-items-center ">
                             <tbody>
+                               @foreach ($ultimosPaquetes as $up)
                                 <tr>
-                                    <td class="w-30">
+                                    <td class="">
                                         <div class="d-flex px-2 py-1 align-items-center">
-                                            <div>
+                                            {{-- <div>
                                                 <img src="./img/icons/flags/US.png" alt="Country flag">
-                                            </div>
+                                            </div> --}}
                                             <div class="ms-4">
-                                                <p class="text-xs font-weight-bold mb-0">Country:</p>
-                                                <h6 class="text-sm mb-0">United States</h6>
+                                                <p class="text-xs font-weight-bold mb-0">No.</p>
+                                                <h6 class="text-sm mb-0">{{ $up->numero }}</h6>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="text-center">
-                                            <p class="text-xs font-weight-bold mb-0">Sales:</p>
-                                            <h6 class="text-sm mb-0">2500</h6>
+                                            <p class="text-xs font-weight-bold mb-0">Número de seguimiento:</p>
+                                            <h6 class="text-sm mb-0">{{ $up->numero_tracking }}</h6>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="text-center">
-                                            <p class="text-xs font-weight-bold mb-0">Value:</p>
-                                            <h6 class="text-sm mb-0">$230,900</h6>
+                                            <p class="text-xs font-weight-bold mb-0">Descripción:</p>
+                                            <h6 class="text-sm mb-0">{{ $up->descripcion }}</h6>
                                         </div>
                                     </td>
                                     <td class="align-middle text-sm">
                                         <div class="col text-center">
-                                            <p class="text-xs font-weight-bold mb-0">Bounce:</p>
-                                            <h6 class="text-sm mb-0">29.9%</h6>
+                                            <p class="text-xs font-weight-bold mb-0">Fecha de registro:</p>
+                                            <h6 class="text-sm mb-0">{{ $up->fecha_registro }}</h6>
                                         </div>
                                     </td>
-                                </tr>                                
+                                    <td class="align-middle text-sm">
+                                        <div class="col text-center">
+                                            <p class="text-xs font-weight-bold mb-0">Hora de registro:</p>
+                                            <h6 class="text-sm mb-0">{{ $up->hora_registro }}</h6>
+                                        </div>
+                                    </td>
+                                </tr>        
+                               @endforeach                        
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div> --}}
+            </div>
             {{-- <div class="col-lg-5">
                 <div class="card">
                     <div class="card-header pb-0 p-3">
