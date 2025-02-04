@@ -106,7 +106,7 @@
                 <div class="card mb-0 p-2" id="card-list-productos">
                     <div class="text-center d-flex flex-row justify-content-center col-md-2">
 
-                        @include('envios.btn-inversor')
+                        @include('envios.btn-inversor', ['tipoCard' => 'productos'])
 
                     </div>
                     <div class="card-header pb-0 text-center">
@@ -151,7 +151,7 @@
                 <div class="card mb-0 p-2" id="card-list-ventas">
 
                     <div class="text-center d-flex flex-row justify-content-center col-md-2 mb-2">
-                        @include('envios.btn-inversor')
+                        @include('envios.btn-inversor', ['tipoCard' => 'ventas'])
                     </div>
                     {{-- <div class="card-header pb-0 text-center">
                         <h6>Authors table</h6>
@@ -199,7 +199,7 @@
                 <div class="card mb-0 p-2" id="card-list-creditos">
 
                     <div class="text-center d-flex flex-row justify-content-center col-md-2 mb-2">
-                        @include('envios.btn-inversor')       
+                        @include('envios.btn-inversor', ['tipoCard' => 'creditos'])
                     </div>
                     {{-- <div class="card-header pb-0 text-center">
                         <h6>Authors table</h6>
@@ -1887,7 +1887,7 @@
             return null;
         }
 
-        function cambiarInversor(idInversor) {
+        function cambiarInversor(idInversor, tipoCard) {
 
             var urlRest = "{{ route('cambiar-inversores') }}";
 
@@ -1917,12 +1917,19 @@
                     });
 
                     $('.investor-select').val(idInversor);
-                    $('#tbl-productos').DataTable().ajax.reload();
-                    $('#tbl-ventas').DataTable().ajax.reload();
-                    $('#tbl-creditos').DataTable().ajax.reload();
-                    inicializarTotalesProductos()
-                    inicializarTotalesVentas()
-                    inicializarTotalesCreditos()
+                    
+                    if (tipoCard == 'productos') {
+                        $('#tbl-productos').DataTable().ajax.reload();
+                        inicializarTotalesProductos()
+                    }
+                    else if (tipoCard == 'ventas') {
+                        $('#tbl-ventas').DataTable().ajax.reload();
+                        inicializarTotalesVentas()
+                    }else{
+                        $('#tbl-creditos').DataTable().ajax.reload();
+                        inicializarTotalesCreditos()
+                    }
+                    
                 },
                 error: function(request, status, error) {
                     alert(request.responseText);

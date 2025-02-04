@@ -4,7 +4,7 @@
     <i class="ni ni-circle-08 text-dark text-sm opacity-10"></i>
 </div>
 
-<select name="investor_id" id="investor_id" class="form-control investor-select" onchange="cambiarInversor(this.value)">
+<select name="investor_id" id="investor_id" class="form-control investor-select" onchange="cambiarInversor(this.value, '{{ $tipoCard }}')">
     <option value="" disabled
         @if (session('id_inversor') == null)
             selected
