@@ -13,12 +13,14 @@
                         <img id="logo-colibri-xpress" src="{{asset('img/logo-colibri-xpress-blanco.png')}}" alt="">
                         <h1 class="text-white mb-2 mt-2">Crear casillero</h1>
                         <p class="text-lead text-white">Ingresa tus datos para empezar a recibir y enviar tus compras</p>
+                        <a class="btn btn-default w-30 text-lead text-white" href="{{route('login')}}"><i class="fi fi-ss-user"></i> Ingresar</a>
                     </div>
                 </div>
             </div>
         </div>
         <div class="container">
             <div class="row mt-lg-n10 mt-md-n11 mt-n10 justify-content-center">
+                
                 <div class="col-xl-10 ">
                     <div class="card z-index-0">
                         {{-- <div class="card-header text-center pt-4">
@@ -83,13 +85,14 @@
                             </div>
                         </div> --}}
                         <div class="card-body">
-                            <div class="alert alert-light alert-dismissible fade show" role="alert">
+                            {{-- <div class="alert alert-light alert-dismissible fade show" role="alert">
                                 <span class="alert-icon"><i class="ni ni-notification-70"></i></span>
                                 <span class="alert-text"><strong>Nota!</strong> La contraseña será para ingresar a nuestro sistema una vez esté terminado.</span>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
-                            </div>
+                            </div> --}}
+                           
                             <form method="POST" action="{{ route('register.perform') }}">
                                 @csrf
                                 <div class="row">
@@ -137,8 +140,23 @@
                                     <div class="col-md-4 form-group">
                                         <label for="department">Departamento<span style="color: red">*</span></label>
                                         <select name="department" class="form-control" required>
-                                          {{-- <option selected disabled>Selecciona el departamento</option>                                           --}}
-                                          <option selected>Olancho</option>                                          
+                                          <option selected disabled>Selecciona tu departamento</option>                                          
+                                          <option >Atlántida</option>                                          
+                                          <option >Choluteca</option>                                          
+                                          <option >Colón</option>                                           
+                                          <option >Comayagua</option>                                          
+                                          <option >Copán</option>                                          
+                                          <option >Cortés</option>                                          
+                                          <option >El Paraíso</option>                                          
+                                          <option >Francisco Morazán</option>                                          
+                                          <option >Intibucá</option>                                          
+                                          <option >La Paz</option>                                          
+                                          <option >Lempira</option>                                          
+                                          <option >Olancho</option>                                          
+                                          <option >Ocotepeque</option>                                          
+                                          <option >Santa Bárbara</option>                                          
+                                          <option >Valle</option>                                          
+                                          <option >Yoro</option>                                          
                                           {{-- <option>Francisco Morazan</option>                                           --}}
                                         </select>
                                     </div>
@@ -151,11 +169,12 @@
                                     </div> --}}
                                     <div class="col-md-4 form-group">
                                         <label for="city">Municipio<span style="color: red">*</span></label>
-                                        <select name="city" class="form-control" required>
+                                        <input type="text" name="city" class="form-control" placeholder="Ingresa tu municipio" aria-label="Name" required autofocus>
+                                        {{-- <select name="city" class="form-control" required>
                                           <option selected disabled>Selecciona el municipio</option>                                          
                                           <option>Juticalpa</option>                                          
                                           <option>Catacamas</option>                                          
-                                        </select>
+                                        </select> --}}
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
