@@ -15,8 +15,34 @@
                     </div> --}}
                     <div class="card-body px-2 pt-0 pb-2">
                         <nav aria-label="breadcrumb">
+                            <h2>Cajas Liquidadas</h2>
+                        </nav>
+                        <div class="table-responsive p-0">
+                            <table id="tbl-cajas-liquidadas" class="table align-items-center table-striped" style="width:100%">
+                                <thead class="">
+                                    <tr>
+
+                                        <th>No.</th>
+                                        <th>Nombre caja</th>
+                                        <th>Costo de envío</th>
+                                        <th>Mitad del costo</th>
+                                        <th>Ganancia total</th>
+                                        <th>Mitad de la ganancia</th>
+                                        <th>Fecha de liquidación</th>
+                                                                              
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br><br><br>
+                        <nav aria-label="breadcrumb">
                             <h2>Montos Liquidados</h2>
-                          </nav>
+                        </nav>
                         <div class="table-responsive p-0">
                             <table id="tbl-montos-liquidados" class="table align-items-center table-striped" style="width:100%">
                                 <thead class="">
@@ -80,6 +106,7 @@
     <script>
         var urlTableLiquidaciones = "{{ route('ver-liquidaciones') }}";
         var urlTableMontosLiquidados = "{{ route('ver-montos-liquidados') }}";
+        var urlTableCajasLiquidadas = "{{ route('ver-cajas-liquidadas') }}";
 
         $('#tbl-liquidaciones').DataTable({
             processing: true,
@@ -95,8 +122,8 @@
                 }
             },
             columns: [{
-                    data: 'id',
-                    name: 'id'  
+                        data: 'id',
+                        name: 'id'  
                     },
                     {
                         data: 'cantidad',
@@ -188,6 +215,60 @@
                     dom: 'Bfrtip',
                     
             });
+
+            $('#tbl-cajas-liquidadas').DataTable({
+                processing: true,
+                serverSide: true,
+                bDestroy: true,
+                ajax: {
+                    url: urlTableCajasLiquidadas,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Agrega el token al encabezado
+                    },
+                    complete: function() {
+                        $("#overlay").fadeOut(300);
+                    }
+                },
+                columns: [{
+                        data: 'no',
+                        name: 'no'
+                    },
+                    {
+                        data: 'nombre_caja',
+                        name: 'nombre_caja'
+                    },
+                    {
+                        data: 'costo_envio',
+                        name: 'costo_envio'
+                    },
+                    {
+                        data: 'mitad_costo',
+                        name: 'mitad_costo'
+                    },
+                    {
+                        data: 'valor_total_envio',
+                        name: 'valor_total_envio'
+                    },
+                    {
+                        data: 'mitad_ganancia',
+                        name: 'mitad_ganancia'
+                    },
+                    {
+                        data: 'fecha_liquidacion',
+                        name: 'fecha_liquidacion'
+                    }
+                    ],
+                    columnDefs: [{
+                        className: 'dt-center',
+                        targets: '_all'
+                    }, ],
+                    language: idiomaDatatables,
+                    order: [[ 0, "desc" ]],
+                    responsive: true,
+                    dom: 'Bfrtip',
+                    
+            });  
 
        
     </script>

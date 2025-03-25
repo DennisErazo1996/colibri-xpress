@@ -424,7 +424,9 @@ class CajasController extends Controller
                  select 
                     coalesce(sum(x.peso_envio), 0) as total_libras,
                     coalesce(sum(x.precio_envio), 0)::numeric::money as total_precio_envio,
+                    coalesce(sum(x.precio_envio), 0) as total_precio_envio_format,
                     coalesce((sum(x.precio_envio)/2),0)::numeric::money as mitad_ganancia,
+                    coalesce((sum(x.precio_envio)/2),0) as mitad_ganancia_format,
                     coalesce(sum(case when x.pagado = true then x.precio_envio end), 0)::numeric::money as total_pagado
                     from (with paquetes_enviados as (
                         select 
@@ -561,5 +563,60 @@ class CajasController extends Controller
         return response()->json([
             'data' => $dataPaquetesCliente,
         ]);
+    }
+
+    public function liquidarCaja(Request $request){
+
+        $idCaja = $request->idCaja;
+        $costoEnvio = $request->costoEnvio;
+        $mitadGanancia = $request->mitadGanancia;
+        $totalPagado = $request->totalPrecioEnvio;
+        $mensaje = "¡La caja se liquidó correctamente!";
+
+        try {
+
+            DB::beginTransaction();
+
+            DB::select("
+                UPDATE cx_cajas
+                SET liquidado = true
+                WHERE id = :idCaja
+            ", ['idCaja' => $idCaja]);
+
+            DB::select("
+                INSERT INTO cx_liquidaciones_cajas (id_caja, costo_envio, mitad_ganancia, valor_total_envio)
+                VALUES (:idCaja, :costoEnvio, :mitadGanancia, :totalPagado)
+            ", ['idCaja' => $idCaja, 'costoEnvio' => $costoEnvio, 'mitadGanancia' => $mitadGanancia, 'totalPagado' => $totalPagado]);
+
+            DB::commit();
+        
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $mensaje = "¡Error al liquidar la caja!";
+        }
+
+        return $mensaje;
+
+    }
+
+    public function verLiquidacionesCaja(Request $request){
+
+        $data = DB::select("
+            select 
+                row_number() over(order by id) as no,
+                'CX-' || LPAD(id_caja::TEXT, 4, '10') as nombre_caja,
+                to_char(created_at::date, 'DD/MM/YYYY') as fecha_liquidacion,
+                '$' || costo_envio/2 as mitad_costo,
+                '$' || costo_envio as costo_envio,
+                'L ' || mitad_ganancia as mitad_ganancia,
+                'L ' || valor_total_envio as valor_total_envio
+                from cx_liquidaciones_cajas
+            where deleted_at is null
+        ");
+
+        return Datatables::of(collect($data))
+                ->addIndexColumn()
+                ->make(true);
+
     }
 }

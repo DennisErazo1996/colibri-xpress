@@ -5,8 +5,22 @@
     <div class="container-fluid py-4">
         <div class="row">
             <div class="col-12">
-                <div class="card mb-0 p-4">
-                    <div class="card-header pb-0 text-center">
+                <div class="card mb-0 p-4" >
+                    <div class="card-header pb-0 text-start justify-content-between row">
+                        <div class="col-md-10">
+
+                            @foreach ($infoCaja as $box)
+                                <h1 class="m-0 p-0">{{ $box->locker_number }}</h1>
+                                <p>Fecha de envio: <strong>{{ $box->fecha_envio}}</strong> <br> Costo de envío: <strong>{{ $box->costo ?? 'Por definir'}}</strong>
+                                    <br> Estado: <strong>{{ $box->liquidado == 1 ? 'Liquidado' : 'No liquidado' }}</strong></p> 
+                                <br>
+                            @endforeach
+
+                        </div>
+                        <div class="col-md-2">
+                            <img style="width: 150px" src="{{ asset('img/no-envios.png') }}" alt="">
+                        </div>
+
                         {{-- <h6>Authors table</h6> --}}
                     </div>
                     {{-- <div class="align-items-center text-center">
@@ -138,7 +152,21 @@
                     <div class="card-body px-2 pt-0 pb-2">
                         <div class="d-flex  justify-content-end ">
                             <button id="btn-liquidar-caja" onclick="liquidarCaja()"
-                                class="btn btn-warning btn-1 mb-5"><i class="fi fi-ss-money"></i> Liquidar Caja</button>
+                                class="btn btn-warning btn-1 mb-5"
+                                @php
+                                    if($estadoLiquidadoCaja == 1){
+                                        echo 'disabled';
+                                    }
+                                @endphp><i class="fi fi-ss-money"></i> 
+                                &nbsp;
+                                @php
+                                    if($estadoLiquidadoCaja == 1){
+                                        echo 'Caja Liquidada';
+                                    }else{
+                                        echo 'Liquidar Caja';
+                                    }
+                                @endphp
+                            </button>
                         </div>
                         <div class="container">
                             <div id="total-envio" class="row text-center">
@@ -152,7 +180,7 @@
                                     Mitad Ganancia: <strong>5000</strong>
                                 </div> --}}
                             </div>
-                            <input type="text" id="inpMitadTotal" style="display: none">
+                            
                         </div>
                         <br>
                         <div class="table-responsive p-0">
@@ -322,10 +350,10 @@
         var urlTable = "{{ route('ver-paquetes', ['id' => $idCaja]) }}";
         var urlTableEnviados = "{{ route('ver-paquetes-enviados', ['id' => $idCaja]) }}";
         var vrIdCaja = "{{ $idCaja }}";
+        var vrCostoEnvioCaja = "{{ $costoEnvioCaja }}";
         var stateCookieEnviado = getCookie("stateListEnviados");
 
         //alert(stateCookieEnviado)
-
 
 
         if (stateCookieEnviado == null) {
@@ -888,10 +916,13 @@
 
                         var total_libras = response.data[0].total_libras;
                         var total_precio_envio = response.data[0].total_precio_envio;
+                        var total_precio_envio_format = response.data[0].total_precio_envio_format;
                         var mitad_ganancia = response.data[0].mitad_ganancia;
+                        var mitad_ganancia_format = response.data[0].mitad_ganancia_format;
                         var total_pagado = response.data[0].total_pagado;
+                        
 
-                        $('#inpMitadTotal').val(mitad_ganancia);
+                        //$('#inpMitadTotal').val(mitad_ganancia);
 
 
                         $('div#total-envio').html(
@@ -901,10 +932,12 @@
                             '</div>' +
                             '<div class="col-12 col-sm-3">' +
                             '<div class="item-total mt-2">Total Precio Envio: <strong style="color:#3ed06a">' +
+                            '<input type="text" id="inpTotalPrecioEnvio" value = "'+total_precio_envio_format+'" style="display: none">'+
                             total_precio_envio + '</strong></div>' +
                             '</div>' +
                             '<div class="col-12 col-sm-3">' +
                             '<div class="item-total mt-2">Mitad Total: <strong style="color:#3ed06a">' +
+                            '<input type="text" id="inpMitadTotal" value = "'+mitad_ganancia_format+'" style="display: none">'+
                             mitad_ganancia + '</strong></div>' +
                             '</div>' +
                             '<div class="col-12 col-sm-3">' +
@@ -971,42 +1004,81 @@
 
         function liquidarCaja(){
             
+            var urlRest = "{{ route('liquidar-caja') }}";
+
             var mitadGanancia = $('#inpMitadTotal').val();
+            var totalPrecioEnvio = $('#inpTotalPrecioEnvio').val();
 
-            alert(mitadGanancia)
+            //alert(totalPrecioEnvio)
 
-            /*$.ajax({
-                type: "POST",
-                url: urlRest,
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                    "idCaja": vrIdCaja,
-                },
-                success: function(response) {
+            vrCostoEnvioCaja == 0 ? $.alert('No se puede liquidar la caja sin costo de envío') :
+            $.confirm({
+                title: 'Confirmar liquidación',
+                type: 'green',
+                content: 'Seguro que quiere liquidar la caja?',
+                buttons: {
+                    Confirmar: function() {
 
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: "top-end",
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.onmouseenter = Swal.stopTimer;
-                            toast.onmouseleave = Swal.resumeTimer;
-                        }
-                    });
-                    Toast.fire({
-                        icon: "success",
-                        title: response
-                    });
+                        $(document).ajaxSend(function() {
+                            $("#overlay").fadeIn(300);
+                        });
 
-                    //$('#totales-envio').append(response.data);
+                        $('#btn-liquidar-caja').prop('disabled', true);
 
-                },
-                error: function(request, status, error) {
-                    alert(request.responseText);
+                        $.ajax({
+                            type: "POST",
+                            url: urlRest,
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                                "idCaja": vrIdCaja,
+                                "mitadGanancia": mitadGanancia,
+                                "totalPrecioEnvio": totalPrecioEnvio,
+                                "costoEnvio": vrCostoEnvioCaja,
+                            },
+                            success: function(response) {
+                                //alert(response)
+                                const Toast = Swal.mixin({
+                                    toast: true,
+                                    position: "top-end",
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    didOpen: (toast) => {
+                                        toast.onmouseenter = Swal.stopTimer;
+                                        toast.onmouseleave = Swal.resumeTimer;
+                                    }
+                                });
+                                Toast.fire({
+                                    icon: "success",
+                                    title: response
+                                });
+
+                                //window.location.reload();
+                                //$('#tbl-paquetes').DataTable().ajax.reload();
+                            },
+                            error: function(request, status, error) {
+                                alert(request.responseText);
+                            }
+                        }).done(function() {
+
+                            $('#btn-liquidar-caja').prop('disabled', true);
+                            $('#btn-liquidar-caja').html('')
+                            $('#btn-liquidar-caja').html(
+                                '<i class="fi fi-ss-paper-plane"></i> Caja Liquidada')
+
+                            setTimeout(function() {
+                                $("#overlay").fadeOut(300);
+                            }, 500);
+                        });
+                    },
+                    cancelar: function() {
+                        // $.alert('Canceled!');
+                    }
+
                 }
-            });*/
+            });
+
+            
             
         }
 

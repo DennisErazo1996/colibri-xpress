@@ -61,10 +61,22 @@ class PageController extends Controller
         $statusEnvio = DB::select("select id_caja from cx_envios where id_caja = :id_caja
                     and deleted_at is null
                     group by id_caja", ['id_caja' => $idCaja]);
+        
+        $costoEnvio = DB::select("select coalesce(costo, 0) as costo, liquidado from cx_cajas where id = :id_caja and deleted_at is null", ['id_caja' => $idCaja]);
+        foreach($costoEnvio as $costo){
+            $costoEnvioCaja = $costo->costo;
+            $estadoLiquidadoCaja = $costo->liquidado;
+        }
+
+        $infoCaja = DB::select("select 'BOX-' || LPAD(id::TEXT, 4, '0') AS locker_number, to_char(created_at::date, 'DD-MM-YYYY') as fecha_envio,
+        liquidado, '$' || costo as costo from cx_cajas where id = :id_caja and deleted_at is null", ['id_caja' => $idCaja]);
 
         return view("pages.paquetes")
         ->with('usuarios', $clientes)
         ->with('statusEnvio', $statusEnvio)
+        ->with('costoEnvioCaja', $costoEnvioCaja)
+        ->with('estadoLiquidadoCaja', $estadoLiquidadoCaja)
+        ->with('infoCaja', $infoCaja)
         ->with('idCaja', $idCaja);
         
     }

@@ -23,7 +23,7 @@ class VentasController extends Controller
                         apellido_cliente
                     from pedidos.cx_clientes where deleted_at is null");
 
-            return Datatables::of($data)
+            return Datatables::of(collect($data))
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     //$url = "{{url('/caja/$row['id_cliente']/pedidos/cliente/'}}";
@@ -131,7 +131,7 @@ class VentasController extends Controller
                                     ))
                                 );", ['id_inversor' => $idInversor]);
 
-            return Datatables::of($data)
+            return Datatables::of(collect($data))
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     
@@ -173,7 +173,7 @@ class VentasController extends Controller
 
             return $mensaje;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
 
             return response()->json(['mensaje' => $e->getMessage()], 500);
@@ -318,7 +318,7 @@ class VentasController extends Controller
 
             ", ['id_inversor' => $idInversor]);
 
-            return Datatables::of($data)
+            return Datatables::of(collect($data))
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     
@@ -367,7 +367,7 @@ class VentasController extends Controller
                         where cr.deleted_at is null and cr.liquidado = false and p.id_inversor = :id_inversor
                                 ", ['id_inversor' => $idInversor]);
 
-            return Datatables::of($data)
+            return Datatables::of(collect($data))
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     
@@ -470,7 +470,7 @@ class VentasController extends Controller
 
             return $mensaje;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
 
             return response()->json(['mensaje' => $e->getMessage()], 500);
@@ -513,7 +513,7 @@ class VentasController extends Controller
             DB::select("update pedidos.cx_ventas set deleted_at = now() where id = :idVenta", ['idVenta' => $idVenta]);
             DB::commit();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
 
             return response()->json(['mensaje' => $e->getMessage()], 500);
@@ -532,7 +532,7 @@ class VentasController extends Controller
             DB::select("update pedidos.cx_productos set deleted_at = now() where id = :idProducto", ['idProducto' => $idProducto]);
             DB::commit();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
 
             return response()->json(['mensaje' => $e->getMessage()], 500);
@@ -552,7 +552,7 @@ class VentasController extends Controller
             DB::select("update pedidos.cx_cuotas_credito set deleted_at = now() where id_credito = :idCredito", ['idCredito' => $idCredito]);
             DB::commit();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
 
             return response()->json(['mensaje' => $e->getMessage()], 500);
@@ -573,7 +573,7 @@ class VentasController extends Controller
            $mensaje = "Cuota eliminada correctamente";
 
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
 
             $mensaje = $e->getMessage();
@@ -670,7 +670,7 @@ class VentasController extends Controller
             );
             DB::commit();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
 
             return response()->json(['mensaje' => $e->getMessage()], 500);
@@ -702,7 +702,7 @@ class VentasController extends Controller
                                 where cc.deleted_at is null and cc.id_credito = :idCredito
                                 ", ['idCredito' => $idCredito]);
 
-            return Datatables::of($data)
+            return Datatables::of(collect($data))
                 ->addIndexColumn()
                 ->addColumn('acciones', function ($item) {
                     return '<a onclick="eliminarCuota('.$item->id.')" class="btn btn-danger btn-sm"><i class="fi fi-sr-trash"></i></a>';
@@ -740,7 +740,7 @@ class VentasController extends Controller
                 
                 DB::commit();
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 DB::rollBack();
 
                 return response()->json(['mensaje' => $e->getMessage()], 500);
@@ -805,7 +805,7 @@ class VentasController extends Controller
                 }
                 DB::commit();
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 DB::rollBack();
 
                 return response()->json(['mensaje' => $e->getMessage()], 500);
@@ -858,7 +858,7 @@ class VentasController extends Controller
                         where cr.deleted_at is null and cr.liquidado = true and p.id_inversor = :id_inversor)x
                         ", ['id_inversor' => $idInversor]);
             
-            return Datatables::of($data)
+            return Datatables::of(collect($data))
                 ->addIndexColumn()
                 ->make(true);
         }
@@ -877,7 +877,7 @@ class VentasController extends Controller
                                     to_char(created_at::date, 'DD/MM/YYYY') as fecha_liquidacion
                                 from pedidos.cx_liquidaciones
                                 where deleted_at is null and id_inversor = :id_inversor", ['id_inversor' => $idInversor]);
-            return Datatables::of($data)
+            return Datatables::of(collect($data))
                 ->addIndexColumn()
                 ->make(true);
         }

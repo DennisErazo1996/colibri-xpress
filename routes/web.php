@@ -87,6 +87,8 @@ Route::group(['middleware' => 'auth'], function () {
 		Route::post('/guardar-envio', [CajasController::class, 'guardarDatosEnvios'])->name('guardar-envio');
 		Route::post('/datos-envio', [CajasController::class, 'datosTotalesEnvio'])->name('datos-envio');
 		Route::post('/actualizar-estado-pago', [CajasController::class, 'actualizarEstadoPago'])->name('estado-pago');
+		Route::post('/liquidar-caja', [CajasController::class, 'liquidarCaja'])->name('liquidar-caja');
+		Route::post('/ver-liquidaciones-caja', [CajasController::class, 'verLiquidacionesCaja'])->name('ver-cajas-liquidadas');
 		
 		
 		
