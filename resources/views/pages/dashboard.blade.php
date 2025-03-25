@@ -2,7 +2,7 @@
 
 @section('content')
     @include('layouts.navbars.auth.topnav', ['title' => 'Dashboard'])
-    <div class="row container ">
+    <div class="row container">
         @include('envios.totales-dashboard')
     </div>
     <div class="container-fluid py-4">
@@ -198,7 +198,7 @@
             </div>
         </div> --}}
         <div class="row mt-4">
-            <div class="col-lg-7 mb-lg-0 mb-4">
+            <div class="col-lg-12 mb-lg-0 mb-4">
                 <div class="card ">
                     <div class="card-header pb-0 p-3">
                         <div class="d-flex justify-content-between">

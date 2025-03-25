@@ -20,7 +20,7 @@ class PageController extends Controller
             return view("pages.{$page}");
         }
 
-        return abort(404);
+        abort(404);
     }
 
     public function vr()
@@ -81,7 +81,9 @@ class PageController extends Controller
                 'BOX-' || LPAD(id::TEXT, 4, '0') AS numero_caja,  
                 to_char(fecha_envio, 'DD/MM/YYYY') as fecha_envio,
                 to_char(fecha_arribo, 'DD/MM/YYYY') as fecha_arribo,
-                to_char(created_at::date, 'DD/MM/YYYY') as fecha_registro
+                to_char(created_at::date, 'DD/MM/YYYY') as fecha_registro,
+                coalesce(costo, 0)::text as costo,
+                case when liquidado = true then 'Liquidado' else 'No liquidado' end as liquidado
             from cx_cajas 
             where deleted_at is null 
             order by id desc

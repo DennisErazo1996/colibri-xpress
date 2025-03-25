@@ -24,6 +24,8 @@
                                         <th>Fecha de envío</th>
                                         <th>Fecha estimada de recepción</th>
                                         <th>Fecha de registro</th>
+                                        <th>Estado</th>
+                                        <th>costo</th>
                                         <th>Opciones</th>
                                     </tr>
                                 </thead>
@@ -35,13 +37,23 @@
                                             <td>{{ $bxs->fecha_envio }}</td>
                                             <td>{{ $bxs->fecha_arribo }}</td>
                                             <td>{{ $bxs->fecha_registro }}</td>
+                                            <td 
+                                            @php
+                                                    if ($bxs->liquidado == 'Liquidado') {
+                                                        echo 'class = "estado-pagado"';
+                                                    } else {
+                                                        echo 'class = "estado-no-pagado"';
+                                                    }
+                                                    @endphp
+                                            >{{ $bxs->liquidado }}</td>
+                                            <td>{{ '$'.$bxs->costo }}</td>
                                             <td>
                                                 <a class="btn btn-1 m-0" href="{{ url('/caja/' . $bxs->id . '/paquetes') }}"
                                                     data-bs-toggle="tooltip" data-bs-placement="top" title="Ver caja"
                                                     data-container="body" data-animation="true"><i
                                                         class="fi fi-sr-eye"></i></a>
                                                 <a class="btn btn-1 m-0" href="#"
-                                                    onclick="editarCaja({{ $bxs->id }}, '{{ $bxs->fecha_envio }}', '{{ $bxs->fecha_arribo }}', '{{ $bxs->numero_caja }}');"
+                                                    onclick="editarCaja({{ $bxs->id }}, '{{ $bxs->fecha_envio }}', '{{ $bxs->fecha_arribo }}', '{{ $bxs->numero_caja }}', '{{ $bxs->costo }}');"
                                                     data-bs-toggle="tooltip" data-bs-placement="top" title="Editar caja"
                                                     data-container="body" data-animation="true"><i
                                                         class="fi fi-sr-edit"></i></a>
@@ -97,11 +109,12 @@
                                         <input type="date" name="fechaArribo" class="form-control"
                                             placeholder="Ingresa la fecha de llegada" aria-label="Date" required>
                                     </div>
-                                    <div class="text-center d-flex flex-row">
+                                    <div class="text-center d-flex flex-row justify-content-end">
                                         <button id="btn-crear-caja" type="submit"
-                                            class="btn btn-round bg-gradient-info btn-lg w-100 mt-4 mb-0">Crear</button>
+                                            class="btn btn-round bg-gradient-info btn-lg mt-4 mb-0">Crear</button>
+                                            &nbsp;&nbsp;
                                         <button id="btn-cancelar-caja" type="button"
-                                            class="btn btn-round btn-lg w-100 mt-4 mb-0">Cancelar</button>
+                                            class="btn btn-round btn-lg mt-4 mb-0">Cancelar</button>
                                     </div>
                                 </form>
                             </div>
@@ -156,6 +169,15 @@
                                                 <input type="date" name="fechaArribo" class="form-control"
                                                     id="inpFechaArribo" placeholder="Ingresa la fecha de llegada"
                                                     aria-label="fecha de llegada" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Valor del envío</label>
+                                                <div class="input-group mb-3">
+                                                    <input type="text" id="inpCosto" name="costo" class="form-control"
+                                                        placeholder="Ingresa el valor del envío" aria-label="Date">
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-md-12 text-center" id="mensaje"
@@ -275,6 +297,7 @@
             var vrIdCaja = $('#inpIdCaja').val();
             var vrFechaEnvio = $('#inpFechaEnvio').val();
             var vrFechaArribo = $('#inpFechaArribo').val();
+            var vrCosto = $('#inpCosto').val(); 
             //var vrChckPago = $('#chkPago').val();
 
             if (vrIdCaja != '' && vrFechaEnvio != '' && vrFechaArribo != '') {
@@ -293,6 +316,7 @@
                         "idCaja": vrIdCaja,
                         "fechaEnvio": vrFechaEnvio,
                         "fechaArribo": vrFechaArribo,
+                        "costo": vrCosto,
                     },
                     success: function(response) {
                         //alert(response)
@@ -324,6 +348,7 @@
                     $('#inpIdCaja').val('');
                     $('#inpFechaEnvio').val('');
                     $('#inpFechaArribo').val('');
+                    $('#inpCosto').val('');
                     $('#btn-actualizar-caja').prop('disabled', false);
 
                     setTimeout(function() {
@@ -335,7 +360,7 @@
             }
         });
 
-        function editarCaja(idCaja, fechaEnvio, fechaArribo, nombreCaja) {
+        function editarCaja(idCaja, fechaEnvio, fechaArribo, nombreCaja, costo) {
             
             fechaEnvio = fechaEnvio.toString();
             fechaArribo = fechaArribo.toString();
@@ -354,6 +379,7 @@
                 $('#inpFechaEnvio').val(fechaFormateadaEnvio);
                 $('#inpFechaArribo').val(fechaFormateadaArribo);
                 $('#inpNombreCaja').val(nombreCaja);
+                $('#inpCosto').val(costo);
 
                 
                 $('#modal-form-edit').modal('toggle');

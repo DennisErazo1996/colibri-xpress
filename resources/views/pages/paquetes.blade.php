@@ -136,6 +136,10 @@
                             data-bs-target="#modal-form">Agregar nuevo pedido</button>
                     </div> --}}
                     <div class="card-body px-2 pt-0 pb-2">
+                        <div class="d-flex  justify-content-end ">
+                            <button id="btn-liquidar-caja" onclick="liquidarCaja()"
+                                class="btn btn-warning btn-1 mb-5"><i class="fi fi-ss-money"></i> Liquidar Caja</button>
+                        </div>
                         <div class="container">
                             <div id="total-envio" class="row text-center">
                                 {{-- <div class="col">
@@ -148,6 +152,7 @@
                                     Mitad Ganancia: <strong>5000</strong>
                                 </div> --}}
                             </div>
+                            <input type="text" id="inpMitadTotal" style="display: none">
                         </div>
                         <br>
                         <div class="table-responsive p-0">
@@ -886,6 +891,8 @@
                         var mitad_ganancia = response.data[0].mitad_ganancia;
                         var total_pagado = response.data[0].total_pagado;
 
+                        $('#inpMitadTotal').val(mitad_ganancia);
+
 
                         $('div#total-envio').html(
                             '<div class="col-12 col-sm-3">' +
@@ -961,5 +968,48 @@
                 }
             });
         }
+
+        function liquidarCaja(){
+            
+            var mitadGanancia = $('#inpMitadTotal').val();
+
+            alert(mitadGanancia)
+
+            /*$.ajax({
+                type: "POST",
+                url: urlRest,
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "idCaja": vrIdCaja,
+                },
+                success: function(response) {
+
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                    });
+                    Toast.fire({
+                        icon: "success",
+                        title: response
+                    });
+
+                    //$('#totales-envio').append(response.data);
+
+                },
+                error: function(request, status, error) {
+                    alert(request.responseText);
+                }
+            });*/
+            
+        }
+
+        
     </script>
 @endpush

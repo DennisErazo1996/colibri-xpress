@@ -73,7 +73,7 @@ class CajasController extends Controller
                 ;  
         ", ['idCaja'=> $id]);
 
-            return Datatables::of($data)
+            return Datatables::of(collect($data))
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     //$url = "{{url('/caja/$row['id_cliente']/pedidos/cliente/'}}";
@@ -109,7 +109,7 @@ class CajasController extends Controller
                 ;  
         ", ['idCaja'=> $id , 'idUsuario' =>$idCliente]);
 
-            return Datatables::of($data)
+            return Datatables::of(collect($data))
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     //$url = "{{url('/caja/$row['id_cliente']/pedidos/cliente/'}}";
@@ -177,13 +177,14 @@ class CajasController extends Controller
         $idCaja = $request->idCaja;
         $fechaEnvio = $request->fechaEnvio;
         $fechaArribo = $request->fechaArribo;
+        $costo = $request->costo;
         $mensaje = "Caja editada correctamente";
 
         DB::select("update cx_cajas set fecha_envio = :fecha_envio,
-                fecha_arribo = :fecha_arribo
+                fecha_arribo = :fecha_arribo, costo = :costo
                 where id = :id_caja
                 ", ['fecha_envio' => $fechaEnvio, 'fecha_arribo' => $fechaArribo,
-                'id_caja' => $idCaja]);
+                'id_caja' => $idCaja, 'costo' => $costo]);
 
         return $mensaje;
     }
@@ -220,7 +221,7 @@ class CajasController extends Controller
                 ;  
         ", ['idCaja'=> $id]);
 
-            return Datatables::of($data)
+            return Datatables::of(collect($data))
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     //$url = "{{url('/caja/$row['id_cliente']/pedidos/cliente/'}}";
@@ -371,7 +372,7 @@ class CajasController extends Controller
                 ;  
         ", ['idCaja'=> $id]);
 
-            return Datatables::of($data)
+            return Datatables::of(collect($data))
                 ->addIndexColumn()
                 ->addColumn('opcion', function($row){
                     //$url = "{{url('/caja/$row['id_cliente']/pedidos/cliente/'}}";
