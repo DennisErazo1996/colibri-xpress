@@ -68,7 +68,7 @@ class PageController extends Controller
             $estadoLiquidadoCaja = $costo->liquidado;
         }
 
-        $infoCaja = DB::select("select 'BOX-' || LPAD(id::TEXT, 4, '0') AS locker_number, to_char(created_at::date, 'DD-MM-YYYY') as fecha_envio,
+        $infoCaja = DB::select("select 'BOX-' || LPAD(id::TEXT, 4, '0') AS locker_number, to_char(fecha_envio, 'DD/MM/YYYY') as fecha_envio,
         liquidado, '$' || costo as costo from cx_cajas where id = :id_caja and deleted_at is null", ['id_caja' => $idCaja]);
 
         return view("pages.paquetes")
