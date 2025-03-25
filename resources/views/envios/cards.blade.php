@@ -89,7 +89,7 @@
                 <div class="card-footer pt-0">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <button type="button" onclick="verPaquetesCliente({{$envio->id_caja}})" id="btn-ver-paquetes-cliente" class="btn btn-default btn-sm mb-0"><i class="ni ni-app text-dark text-sm opacity-10"></i> &nbsp; ver paquetes cliente</button>
+                            <button type="button" onclick="verPaquetesCliente({{$envio->id_caja}})" id="btn-ver-paquetes-cliente" class="btn btn-default btn-sm mb-0"><i class="ni ni-app text-dark text-sm opacity-10"></i> &nbsp; ver mis paquetes</button>
                         </div>
                     </div>
                 </div>
@@ -109,7 +109,7 @@
 
     <div class="modal fade" id="modal-listado-paquetes" data-bs-backdrop="static" data-bs-keyboard="false"
         tabindex="-1" role="dialog" aria-labelledby="modal-form" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
             <div class="modal-content">
                 <div class="modal-body p-0">
                     <div class="card card-plain">
@@ -124,9 +124,9 @@
                                 <table id="tbl-paquetes-cliente" class="table align-items-center mb-0">
                                     <thead>
                                         <tr>
-                                            <th
+                                            {{-- <th
                                                 class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                No.</th>
+                                                No.</th> --}}
                                             <th
                                                 class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                 Número de seguimiento</th>
@@ -136,9 +136,9 @@
                                             <th
                                                 class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                                                 Fecha de registro</th>
-                                            <th
+                                            {{-- <th
                                                 class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                Hora de registro</th>
+                                                Hora de registro</th> --}}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -188,11 +188,11 @@
                 for (var i = 0; i < response.data.length; i++) {
                     $('#tbl-paquetes-cliente tbody').append(
                         '<tr class="text-center">' +
-                            '<td>' + response.data[i].no + '</td>' +
+                            // '<td>' + response.data[i].no + '</td>' +
                             '<td>' + response.data[i].numero_tracking + '</td>' +
                             '<td style="max-width: 230px !important;  white-space: normal !important; word-wrap: break-word !important;">' + response.data[i].descripcion + '</td>' +
                             '<td>' + response.data[i].fecha_registro + '</td>' +
-                            '<td>' + response.data[i].hora_registro + '</td>' +
+                            // '<td>' + response.data[i].hora_registro + '</td>' +
                         '</tr>'
                     );
                 }
