@@ -29,7 +29,8 @@ use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\ResetPassword;
 use App\Http\Controllers\ChangePassword;            
 use App\Http\Controllers\CajasController;            
-use App\Http\Controllers\VentasController;            
+use App\Http\Controllers\VentasController;
+
             
 
 Route::get('/', function () {return redirect('/dashboard');})->middleware('auth');

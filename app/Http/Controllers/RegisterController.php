@@ -9,6 +9,7 @@ use Auth;
 use App\Mail\WelcomeMail;
 use App\Mail\RegisterMail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class RegisterController extends Controller
 {
@@ -34,6 +35,25 @@ class RegisterController extends Controller
             'password' => 'required|confirmed|min:5|max:255',
             //'terms' => 'required'
         ]);
+
+        if ($request->input('honeyfield')) {
+            abort(403, 'Acceso denegado.');
+        }
+
+        // Validar reCAPTCHA v3
+        $recaptchaToken = $request->input('recaptcha_token');
+        $recaptchaSecret = config('services.recaptcha.secret_key');
+        $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+            'secret' => $recaptchaSecret,
+            'response' => $recaptchaToken,
+            'remoteip' => $request->ip(),
+        ]);
+        $result = $response->json();
+
+        if (!$result['success'] || $result['score'] < 0.5) {
+            return back()->withErrors(['recaptcha' => 'No se pudo verificar que eres humano.']);
+        }
+        
         $user = User::create($attributes);
         $userId = $user->id;
         $lockNum = DB::select("SELECT 'CX-' || LPAD(:id::TEXT, 4, '10') AS locker_number", ['id'=>$user->id]);
@@ -41,7 +61,6 @@ class RegisterController extends Controller
             $lockerNumber = $ln->locker_number;
         }
         
-
 
         Mail::to($user->email)->send(new WelcomeMail($user, $lockerNumber));
         Mail::to('dennis.erazo@outlook.com')->send(new RegisterMail($user, $lockerNumber));

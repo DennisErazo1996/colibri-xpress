@@ -95,6 +95,11 @@
                            
                             <form method="POST" action="{{ route('register.perform') }}">
                                 @csrf
+
+                                @if ($errors->has('recaptcha'))
+                                    <div class="alert alert-danger">{{ $errors->first('recaptcha') }}</div>
+                                @endif
+                                
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -200,6 +205,12 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div style="display:none;">
+                                    <input type="text" name="honeyfield" />
+                                </div>
+
+                                <input type="hidden" name="recaptcha_token" id="recaptcha_token">
                                
                                 
                                
@@ -230,6 +241,16 @@
     {{-- @include('layouts.footers.guest.footer') --}}
 @endsection
 @push('js')
+<script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
+
+<script>
+    grecaptcha.ready(function() {
+        grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {action: 'register'}).then(function(token) {
+            document.getElementById('recaptcha_token').value = token;
+        });
+    });
+</script>
+
 <script>
     function formatPhone(input) {
         let value = input.value.replace(/\D/g, '');
