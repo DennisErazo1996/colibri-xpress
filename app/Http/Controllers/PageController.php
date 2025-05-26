@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Auth;
+use Yajra\DataTables\DataTables;
 
 class PageController extends Controller
 {
@@ -49,7 +50,7 @@ class PageController extends Controller
     }
 
     public function paquetes($idCaja)
-    {   
+    {
         $clientes = DB::select("
             select 
                 id,
@@ -61,9 +62,9 @@ class PageController extends Controller
         $statusEnvio = DB::select("select id_caja from cx_envios where id_caja = :id_caja
                     and deleted_at is null
                     group by id_caja", ['id_caja' => $idCaja]);
-        
+
         $costoEnvio = DB::select("select coalesce(costo, 0) as costo, liquidado from cx_cajas where id = :id_caja and deleted_at is null", ['id_caja' => $idCaja]);
-        foreach($costoEnvio as $costo){
+        foreach ($costoEnvio as $costo) {
             $costoEnvioCaja = $costo->costo;
             $estadoLiquidadoCaja = $costo->liquidado;
         }
@@ -72,20 +73,20 @@ class PageController extends Controller
         liquidado, '$' || costo as costo from cx_cajas where id = :id_caja and deleted_at is null", ['id_caja' => $idCaja]);
 
         return view("pages.paquetes")
-        ->with('usuarios', $clientes)
-        ->with('statusEnvio', $statusEnvio)
-        ->with('costoEnvioCaja', $costoEnvioCaja)
-        ->with('estadoLiquidadoCaja', $estadoLiquidadoCaja)
-        ->with('infoCaja', $infoCaja)
-        ->with('idCaja', $idCaja);
-        
+            ->with('usuarios', $clientes)
+            ->with('statusEnvio', $statusEnvio)
+            ->with('costoEnvioCaja', $costoEnvioCaja)
+            ->with('estadoLiquidadoCaja', $estadoLiquidadoCaja)
+            ->with('infoCaja', $infoCaja)
+            ->with('idCaja', $idCaja);
+
     }
 
     public function cajas()
-    {   
-        if (Auth::user()->role != 'super-admin' && Auth::user()->role != 'admin'){
+    {
+        if (Auth::user()->role != 'super-admin' && Auth::user()->role != 'admin') {
             return;
-        }else{
+        } else {
             $dataCajas = DB::select("
             select 
                 row_number() over(order by id desc) as numero, 
@@ -101,14 +102,14 @@ class PageController extends Controller
             order by id desc
         ");
 
-        return view("pages.cajas")->with('cajas', $dataCajas);
+            return view("pages.cajas")->with('cajas', $dataCajas);
         }
 
-        
+
     }
 
     public function pedidos($id)
-    {  
+    {
         $clientes = DB::select("
             select 
                 id,
@@ -118,13 +119,14 @@ class PageController extends Controller
         ");
 
         return view("pages.pedidos")
-        ->with('usuarios', $clientes)
-        ->with('idCaja', $id);
+            ->with('usuarios', $clientes)
+            ->with('idCaja', $id);
     }
 
-    public function pedidosCliente($id, $idCliente){
+    public function pedidosCliente($id, $idCliente)
+    {
 
-        $infoCliente = DB::select("select * from users where id = :idUsuario", ['idUsuario'=>$idCliente]);
+        $infoCliente = DB::select("select * from users where id = :idUsuario", ['idUsuario' => $idCliente]);
 
         DB::select("SET lc_monetary = 'es_HN';");
         $totales = DB::select("
@@ -137,17 +139,17 @@ class PageController extends Controller
             (precio*cantidad)::numeric::money as total_precio
             from pedidos.cx_pedidos where deleted_at is null
             and id_caja = :idCaja and id_usuario = :idUsuario)x                                 
-        ", ['idUsuario'=>$idCliente, 'idCaja'=>$id]);
+        ", ['idUsuario' => $idCliente, 'idCaja' => $id]);
 
         return view("pages.pedidos-cliente")
-        ->with('idCaja', $id)
-        ->with('totales', $totales)
-        ->with('dataCliente', $infoCliente)
-        ->with('idUsuario', $idCliente );
+            ->with('idCaja', $id)
+            ->with('totales', $totales)
+            ->with('dataCliente', $infoCliente)
+            ->with('idUsuario', $idCliente);
     }
 
     public function verProductos()
-    {   
+    {
         $cajas = DB::select("select id,
                     'BOX-' || LPAD(id::TEXT, 4, '0') AS numero_caja,
                     to_char(fecha_envio, 'DD/MM/YYYY') as fecha_envio
@@ -156,20 +158,20 @@ class PageController extends Controller
                 order by id desc");
 
         $metodosPago = DB::select("select * from pedidos.cx_metodos_pago where deleted_at is null");
-        
+
         $clientes = DB::select("select * from pedidos.cx_clientes where deleted_at is null");
 
         $inversores = DB::select("select * from users where deleted_at is null and inversor = true");
 
         return view("pages.productos")
-        ->with('metodosPago', $metodosPago)
-        ->with('clientes', $clientes)
-        ->with('inversores', $inversores)
-        ->with('cajas', $cajas);
+            ->with('metodosPago', $metodosPago)
+            ->with('clientes', $clientes)
+            ->with('inversores', $inversores)
+            ->with('cajas', $cajas);
     }
 
     public function clientes()
-    {   
+    {
         return view("pages.clientes");
     }
 
@@ -181,5 +183,27 @@ class PageController extends Controller
     public function verEnvios(Request $request)
     {
         return view('pages.envios');
+    }
+
+    public function casilleros(Request $request)
+    {
+        if ($request->ajax()) {
+            $casilleros = DB::select("select 
+                'CX-' || LPAD(id::TEXT, 4, '10') AS locker_number,
+                firstname || ' ' || lastname as cliente,
+                identity,
+                email,
+                phone,
+                city || ', ' || department as lugar,
+                address, country,
+                to_char(created_at::date, 'DD/MM/YYYY') as fecha_registro
+            from users where deleted_at is null order by id desc");
+
+            return DataTables::of(collect($casilleros))
+                ->addIndexColumn()
+                ->make(true);
+        }
+
+        return view("pages.casilleros");
     }
 }

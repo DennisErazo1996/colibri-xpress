@@ -60,6 +60,9 @@ Route::group(['middleware' => 'auth'], function () {
 
 	Route::middleware('checkUser')->group(function () {
 
+		Route::post('/casilleros', [PageController::class, 'casilleros'])->name('casilleros');
+
+
 		//Endpoints pageController
 		Route::get('/caja/{idCaja}/paquetes', [PageController::class, 'paquetes']); 
 		Route::get('/cajas', [PageController::class, 'cajas'])->name('cajas');
